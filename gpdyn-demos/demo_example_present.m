@@ -14,8 +14,8 @@
 % IEEE Transactions on NN, Vol.1 No. 1, 4-27, 1990.
 
 %% See Also
-% EXAMPLE, DEMO_EXAMPLE_GP_DATA, DEMO_EXAMPLE_GP_TRAINING, 
-% DEMO_EXAMPLE_GP_SIMULATION 
+% demo_example, demo_example_gp_data, demo_example_gp_training, 
+% demo_example_gp_simulation
 
 
 clear;
@@ -31,7 +31,7 @@ Uplot = repmat(uplot,length(xplot),1);
 Xplot = repmat(xplot,1,length(uplot)); 
 Uplot = reshape(Uplot,prod(size(Uplot)),1); 
 Xplot = reshape(Xplot,prod(size(Xplot)),1); 
-Yplot = example([Xplot,Uplot]); 
+Yplot = demo_example([Xplot,Uplot]); 
 yplot = reshape(Yplot,length(xplot),length(uplot)); 
 
 
@@ -39,7 +39,7 @@ yplot = reshape(Yplot,length(xplot),length(uplot));
 ueq = [-1.5:0.02:1.5]';
 for ii=1:length(ueq)
     ueq0 = ueq(ii);
-    ytmp = example(repmat(ueq0,400,1));
+    ytmp = demo_example(repmat(ueq0,400,1));
     yeq(ii,1) = ytmp(end);      
 end 
 zeq = yeq + 0.02; 
