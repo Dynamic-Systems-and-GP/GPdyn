@@ -1,0 +1,3 @@
+[submodule "gpml-sparse-deriv"]
+	path = gpml-sparse-deriv
+	url = https://github.com/kimsoohwan/GPML.git
