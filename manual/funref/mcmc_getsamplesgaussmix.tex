@@ -1,0 +1,38 @@
+\subsection*{mcmc\_getsamplesgaussmix} \label{fun:mcmc_getsamplesgaussmix}
+
+
+\textbf{Syntax}
+\\ \texttt{function [x,y,indexes,samples,xsamples,fwarning] =
+\\ \tab mcmc\_getsamplesgaussmix(x,Mi,Sig,N)}
+
+\textbf{Description}
+\\ Function returns the samples from the mixtures of Gaussian distributions,
+ given by Mi and Sig and also estimates the quality of the
+sampled  distribution. First the cumulative distribution is
+estimated, then the
+ inverse transform method with the use of Matlab random ganerator
+is used
+ to obtain individual samples.
+\\ Inputs:
+\\ x .. partitioned input space
+\\ Mi .. vector of Gaussian mixture means
+\\ Sig .. vectors of Gaussian mixture standard deviations
+\\ N ... number of returned samples
+\\ Outputs:
+\\ x .. partitioned inpout space
+\\ y .. probabitily density function (pdf) of Gaussian mixture
+\\ indexes .. indexes of chosen samples, should be applied to x to get the
+  values
+\\ samples .. number of samples at particular elements of x - for testing
+   the quality of the \tab approximated distribution
+\\ xsamples .. indexes applied to x (samples)
+\\ fwarning .. warning flag, risen if less than 98\% of distribution is
+   covered with samples
+\\
+\\ Function uses rand (internal Matlab command) and mcmc\_getgaussmix,
+\\ defined at the end of the function. It is used by the function
+\\ simul00mcmcm.
+
+\textbf{See Also}
+\\
+\\ RAND, SIMUL00MCMC

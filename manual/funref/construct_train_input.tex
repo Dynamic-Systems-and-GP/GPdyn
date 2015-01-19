@@ -1,0 +1,30 @@
+\subsection*{construct\_train\_input} \label{fun:construct_train_input}
+
+
+\textbf{Syntax}
+\\ \texttt{function [target,tinput] = construct\_train\_input(lag,u,x0)}
+
+\textbf{Description}
+\\ Function contructs matrix of regressors for GP model training from input and
+\\ output signals of the system. Shape of the matrix:
+\\ tinput = [y(1)      ... y(lag)   u(1)       ... u(lag);
+\\          y(2)       ... y(lag+1) u(2)       ... u(lag+1);
+\\    $\vdots$
+\\          y(end-lag) ... y(end-1) u(end-lag) ... u(end-1)];
+\\
+\\ target = [y(lag+1) y(lag+2) ... y(end)]';
+\\
+\\ Inputs:
+\\ lag .. order of the system
+\\ u .. system input signal u, u = [u(1) ... u(end)]'
+\\ y .. system output signal y, y = [y(1) ... y(end)]'
+\\ Outputs:
+\\ target.. target vector for the training routines
+\\ tinput .. matrix of regressors for the training rutines
+
+\textbf{Examples}
+\\ demo\_example\_gp\_simulation.m
+
+\textbf{See Also}
+\\
+\\ SIMUL02NAIVE, SIMUL00EXACT, etc.

@@ -1,0 +1,1724 @@
+\documentclass[12pt,twoside]{article}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{color}
+
+\usepackage[slovene]{babel}
+\usepackage[cp1250]{inputenc}   %encription for slovene letters e.g. ž -> \v{z}
+
+\newcommand{\bi}[1]{\ensuremath{\mathbf{#1}}\ifmmode \relax \else
+\ \fi}
+\newcommand{\bs}[1]{\ensuremath{\pmb{#1}}\ifmmode \relax \else \ \fi}
+
+\oddsidemargin 0.1cm \evensidemargin 0.1cm \topmargin -0.7cm
+\textwidth 160mm \textheight 234mm
+\parskip 0.5cm
+
+% define shortcuts...
+
+% novejši stil paragrafov
+\setlength{\parindent}{0mm} \setlength{\parskip}{11pt plus1pt
+minus1pt}
+
+% razmak med vrsticami
+\renewcommand{\baselinestretch}{1.25}
+
+\begin{document}
+\thispagestyle{empty}
+%\begin{flushright}\psfig{figure=IJS.eps,width=1.5cm}\end{flushright}
+{\bf\LARGE\em Jožef Stefan Institute, Ljubljana, Slovenia}
+%{\bf\LARGE\em Working notes - CONFIDENTIAL!}\\
+\vspace{3cm}
+%\begin{flushright}{\LARGE Report \bf DP-XXXX}\end{flushright}
+%\begin{flushright}{\LARGE E2 -- Interno}\end{flushright}
+
+\vspace{4cm}
+ \centerline{\Huge\bf Gaussian Process Model}
+  \vspace{4mm}
+ \centerline{\Huge\bf  Dynamic System Identification}
+  \vspace{4mm}
+\centerline{\Huge\bf  Toolbox for Matlab}
+ \vspace{4mm}
+ \centerline{\Huge\bf  Version 1.02}
+ \vspace{3mm}
+\vspace{3cm}
+\begin{flushright}{\Large Kristjan Ažman\\ Juš Kocijan} \end{flushright}
+%\begin{flushright}{\large Jožef Stefan Institute, Ljubljana} \end{flushright}
+
+  \vfill \centerline{\Large \today}
+\pagebreak\setcounter{page}{1}
+\newpage
+%\thispagestyle{empty} \setcounter{page}{-2} ~\newpage
+%\thispagestyle{empty} \tableofcontents \thispagestyle{empty}
+%\newpage
+
+\input{defs}
+\newpage
+\thispagestyle{empty} .\newpage \pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section{Introduction}
+
+Our research activities included the use of Gaussian processes
+(GP) models to describe the (mainly nonlinear) dynamic systems.
+Although most of the code presented in this toolbox was already
+written for personal use of various authors, there were problems
+with its transparency and consistency, which presented some
+problems at the start of the work on the dynamic systems GP
+modelling. Beside simulated examples GP models proved useful also
+in practical applications. To promote their further use we decided
+to contribute at least the basics for the dynamical systems GP
+modelling toolbox.
+
+The idea of this toolbox is to facilitate dynamic systems
+identification with GP models. The presented toolbox is  not yet
+in the form we would like, but we still think it might be useful
+as a springboard for any future work.
+
+
+While there are numerous methods for the identification of linear
+dynamic systems from measured data, the nonlinear systems
+identification requires more sophisticated approaches. The most
+common choices include artificial neural networks, fuzzy models
+and others. Gaussian process (GP) models present a new, emerging,
+complementary method for nonlinear system identification.
+
+The GP model is a probabilistic, non-parametric black-box model.
+It differs from most of the other black-box identification
+approaches as it does not try to approximate the modelled system
+by fitting the parameters of the selected basis functions but
+rather searches for the relationship among measured data. Gaussian
+process models are closely related to approaches such as Support
+Vector Machines and specially Relevance Vector Machines
+\cite{QinRas05}.
+
+The output of the Gaussian process  model is a normal
+distribution, expressed in terms of mean and variance. The mean
+value represents the most likely output and the variance can be
+interpreted as the measure of its confidence. The obtained
+variance, which depends on the amount and quality of available
+identification data, is important information distinguishing the
+GP models from other methods. The GP model structure determination
+is facilitated as only the covariance function and the regressors
+of the model need to be selected. Another potentially useful
+attribute of the GP model is the possibility to include various
+kinds of prior knowledge into the model, see \emph{e.g.}
+\cite{Azm05} for the incorporation of local models and the static
+characteristic.
+ Also the number of model parameters, which need to be
+optimised is smaller than in other black-box identification
+approaches. The disadvantage of the method is the potential
+computational burden for optimization that increases with amount
+of data and number of regressors.
+
+The GP model was first used for solving a  regression problem in
+the late seventies, but it gained popularity within the machine
+learning community in the late nineties of the twentieth century.
+Results of a possible implementation of the GP model for the
+identification of dynamic systems were presented only recently,
+\emph{e.g.} \cite{GreLig02,KocGirBanMur05}. The investigation of
+the model with uncertain inputs, which enables the propagation of
+uncertainty through the model, is given in
+\cite{GirRasQinMur03,QinGir03,Gir04} and illustrated in
+\cite{KocGirBanMur03,AzmKoc05} and many others.
+
+Many of dynamic systems are often considered as complex, however
+simplified input/output behaviour representations are sufficient
+for certain purposes, \emph{e.g.} feedback control design,
+prediction models for supervisory control, \emph{etc}. In the
+paper it is explained how the advantages of Gaussian process
+models can be used in identification and validation of such
+models.
+
+The purpose of the first part of manual is twofold. First, to
+present the procedure of dynamic system identification using the
+model based on Gaussian processes taken from \cite{AzmKoc07}.
+Second, a comprehensive bibliography of published works on
+Gaussian processes application for modelling of dynamic systems
+with a short survey is given. The second part of manual serves as
+a reference guide.
+
+
+
+\section{Modelling of dynamic systems with Gaussian processes}
+
+\subsection{Modelling with the GP model}
+
+
+Here, modelling with the GP model is presented only in brief, for
+a more detailed explanation see \emph{e.g.} \cite{RasWil06}.
+
+
+A Gaussian process is a Gaussian random function, fully described
+by its mean and variance. Gaussian processes can be viewed as a
+collection of random variables $f(\bi x_i)$ with joint
+multivariate Gaussian distribution: $f(\bi x_1), \dots, f(\bi x_n)
+\sim {\cal N}(0, \bi K)$. Elements $K_{ij}$ of the covariance
+matrix $\bi K$ are covariances between values of the function
+$f(\bi x_i)$ and $f(\bi x_j)$ and are functions of corresponding
+arguments $\bi x_i$ and $\bi x_j$: $K_{ij} = C(\bi x_i, \bi x_j)$.
+Any function $C(\bi x_i,\bi x_j)$ can be a covariance function,
+providing it generates a nonnegative definitive covariance matrix
+$\bi K$.
+
+
+Certain assumptions about the process are made implicitly with the
+covariance function selection. The \emph{stationarity of the
+process} results in the value of covariance function $C(\bi
+x_i,\bi x_j)$ between inputs $\bi x_i$ and $\bi x_j$ depending
+only on their distance and being invariant to their translation in
+the input space, see \emph{e.g.} \cite{RasWil06}. \emph{Smoothness
+of the output} reflects in outputs $f(\bi x_i)$ and $f(\bi x_j)$
+having higher covariance when inputs $\bi x_i$ and $\bi x_j$ are
+closer together. The common choice \cite{RasWil06} for the
+covariance function, representing these assumptions, is the
+Gaussian covariance function:
+\begin{eqnarray}\label{eq:cov}
+C(\bi x_i,\bi x_j)&=&\text{cov}[f(\bi x_i),f(\bi
+x_j)]\nonumber\\
+&=&v \exp\left[-\frac{1}{2}\sum_{d=1}^D w_d (x_i^d-x_j^d)^2\right]
++ \delta_{ij} v_0\nonumber\\
+\end{eqnarray}
+where $D$ is the length of vector $\bi x$ and $\bs\Theta = [w_1,
+\hdots, w_D, v, v_0]^T$ is a vector of parameters called
+hyperparameters.\footnote{The parameters of a Gaussian process are
+called hyperparameters due to their close relationship to the
+hyperparameters of a neural network \cite{RasWil06}.} The first
+term in (\ref{eq:cov}) corresponds to functional dependance under
+presumed stationarity, while the second term corresponds to noise.
+Hyperparameter $v$ controls the magnitude of the covariance and
+hyperparameters $w_i$ represent the relative importance of each
+component $x^d$ of vector $\bi x$. The part $ \delta_{ij} v_0$
+represents the covariance between outputs due to white noise,
+where $\delta_{ij}$ is the Kronecker operator and $v_0$ is the
+white noise variance. When assuming different kinds of noise the
+covariance function should be changed appropriately, \emph{e.g.}
+\cite{MurGir01}. With the use of covariance
+function~(\ref{eq:cov}) the total number of the GP model
+parameters is $D+2$ for the size $D$ input, where for example the
+number of comparable artificial neural networks parameters would
+be considerably larger.
+
+The GP model fits nicely into the Bayesian modelling framework.
+The idea behind GP modelling is to place the prior directly over
+the space of functions  instead of parameterizing the unknown
+function $f(\bi x)$ \cite{RasWil06}. The simplest type of such a
+prior is Gaussian. Consider the system
+\begin{equation}\label{eq:NDS}
+y(k)=f(\bi x(k)) + \epsilon(k)
+\end{equation}
+ with white Gaussian noise $\epsilon(k) \sim {\cal N}(0, v_0)$ with
+ variance $v_0$ and the vector of
+regressors $\bi x(k)$ from operating space ${\cal R}^{D}$. We put
+the GP prior with covariance function~(\ref{eq:cov}) with unknown
+hyperparameters on the space of functions $f(.)$.
+
+Within this framework we have  $y_1, \dots, y_N \sim {\cal N}(0,
+\bi K)$ with $\bi{K} = \bs{\Sigma} + v_0 \bi{I}$, where $\bi{I}$
+is $N \times N$ identity matrix. Based on a set of $N$ training
+data pairs $\{\bi x_i, y_i\}_{i=1}^N$  we wish to find the
+predictive distribution of $y_{N+1}$ corresponding to a new given
+input $\bi x_{N+1}$. For the collection of random variables $(y_1,
+\dots, y_N, y_{N+1})$ we can write:
+\begin{equation} \label{eq:tot}
+\left( \begin{matrix} \bi y \\ y_{N+1}  \end{matrix} \right)
+ \sim {\cal N}(0, \bi K_{N+1}) \end{equation}
+with covariance matrix
+\begin{equation}
+ \bi
+K_{N+1}=\left[
+\begin{matrix}
+\left[\begin{matrix}\phantom{C} \phantom{C} \phantom{C}\cr
+\phantom{C} \bi K \phantom{C}\cr \phantom{C} \phantom{C}
+\phantom{C}\end{matrix}\right] &
+\left[\begin{matrix}\phantom{C}\cr \bi k(\bi x_{N+1})
+\cr\phantom{C}\end{matrix}\right]\cr\cr \left[\begin{matrix}
+\phantom{} \bi k(\bi x_{N+1})^T \phantom{}\end{matrix}\right] &
+\left[\begin{matrix}\phantom{} k(\bi x_{N+1})
+\phantom{}\end{matrix}\right]\end{matrix}\right]
+\end{equation}
+where $\bi y = [y_1,\dots,y_N]^T$ is an $N \times 1$ vector of
+training targets, \linebreak $\bi k(\bi x_{N+1})=[C(\bi x_1,\bi
+x_{N+1}),\ldots,C(\bi x_N,\bi x_{N+1})]^T$ is the $N \times 1$
+vector of covariances between training inputs and the test input
+and $k(\bi x_{N+1})=C(\bi x_{N+1},\bi x_{N+1})$ is the
+autocovariance of the test input.
+ We can divide this joint
+probability into a marginal and a conditional part. The marginal
+term gives us the likelihood of the training data: $\bi y|\bi X
+\sim {\cal N}(0, \bi K)$, where $\bi X$ is the $N \times D$ matrix
+of training inputs.
+
+
+
+We need to estimate the unknown hyperparameters $\bs\Theta=[w_1,
+\dots, w_D,~v,~v_0]^T$ of the covariance function~(\ref{eq:cov}).
+This is usually done via maximization of the log-likelihood
+\begin{eqnarray}
+\mathcal L(\bs\Theta)&=&\log(p(\bi y|\bi X)) = \nonumber
+\\ &= &  -\frac{1}{2}\log(\mid \bi K\mid)-\frac{1}{2}\bi y^T\bi
+K^{-1}\bi y-\frac{N}{2}\log(2\pi) \label{log}
+\end{eqnarray}
+with the vector of hyperparameters $\bs\Theta$ and $N \times N$
+training covariance matrix $\bi K$. The optimization requires the
+computation of the derivative of $\mathcal L$ with respect to each
+of the parameters:
+\begin{equation}
+\frac{\partial \mathcal
+L(\bs\Theta)}{\partial\Theta_i}=-\frac{1}{2}\text{trace}\left(\bi
+K^{-1}\frac{\partial \bi K}{\partial\Theta_i}\right
+)+\frac{1}{2}\bi y^T\bi K^{-1}\frac{\partial \bi
+K}{\partial\Theta_i}\bi K^{-1}\bi y \label{eq:log:derive}
+\end{equation}
+Here, it involves the computation of the inverse of the $N \times
+N$ covariance matrix $\bi K$ at every iteration, which can be
+computationally demanding for large $N$. The reader is referred to
+\emph{e.g.} \cite{RasWil06} for alternative methods of parameter
+optimisation.
+
+Given that the hyperparameters are known, we can obtain a
+prediction of the GP model at the input $\bi x_{N+1}$. The
+conditional part of (\ref{eq:tot}) provides the predictive
+distribution of $y_{N+1}$:
+
+\begin{equation}
+p(y_{N+1}|\bi y, \bi X, \bi x_{N+1})=\frac{p(\bi y,
+y_{N+1})}{p(\bi y|\bi X)} \end{equation}
+
+It can be shown \cite{RasWil06} that this distribution is Gaussian
+with mean and variance:
+\begin{eqnarray} \label{eq:GPmean}
+ \mu(\bi x_{N+1}) & = & \bi k(\bi x_{N+1})^T\bi K^{-1}\bi y  \\
+ \label{eq:GPvar}
+ \sigma^2(\bi x_{N+1}) & = & k(\bi x_{N+1})-\bi k(\bi
+x_{N+1})^T\bi K^{-1}\bi k(\bi x_{N+1})+v_0.
+\end{eqnarray}
+
+Vector $\bi k(\bi x_{N+1})^T~\bi K^{-1}$ in (\ref{eq:GPmean}) can
+be interpreted as a vector of smoothing  terms which weights
+training outputs $\bi y$ to make a prediction at the test point
+$\bi x_{N+1}$. If the new input is far away from the data points,
+the term $\bi k(\bi x_{N+1})^T~\bi K^{-1}~\bi k(\bi x_{N+1})$ in
+(\ref{eq:GPvar}) will be small, so that the predicted variance
+$\sigma^2(\bi x_{N+1})$ will be large. Regions of the input space,
+where there are few data or are corrupted with noise, are in this
+way indicated through higher variance.
+
+\subsection{Dynamic system identification}
+\label{sec:DSI}
+
+The presented GP model was originally used for modelling static
+nonlinearities, but it can be extended to model dynamic systems as
+well \cite{Gir04,KocGirBanMur05,QinRas05}. Our task is to model
+the dynamic system (\ref{eq:NDS}), where
+ \begin{equation}
+ \bi x = [y(k-1),\dots,y(k-L), \ u(k-1),\dots,u(k-L)]
+  \end{equation}
+ is the
+vector of regressors that determines nonlinear ARX model structure
+and be able to make multi-step ahead model prediction.
+
+One way to do multi-step ahead prediction is to make iterative
+one-step ahead predictions up to desired step whilst feeding back
+the predicted output. Two general approaches to iterated one-step
+ahead prediction are possible using the GP model. In the first
+only the mean values of the predicted output are fed back to the
+input. In this, so called ``naive'' approach, the input vector
+$\bi x$ into the GP model at time step $k$ is:
+ \begin{equation}
+  \bi x = [\hat y(k-1),\dots, \hat y(k-L), \ u(k-1),\dots,u(k-L)]
+  \label{e12}
+  \end{equation}
+Although this approach is approximate, as the variance of the
+lagged output estimates on the right-hand side of Equation
+(\ref{e12}) is neglected, it has been used when modelling dynamic
+systems with neural networks or fuzzy models. This way of
+generating multiple-step-ahead predictions is commonly referred to
+as 'output error' in the identification literature. However, it
+has been shown to lead to unrealistically small variances for the
+multiple-step-ahead predictions when modelling with GP models and
+with the predictive distribution calculated with Equations
+(\ref{eq:GPmean}) and (\ref{eq:GPvar}) \cite{GirRasMur02}.
+
+In \cite{GirRasMur02,GirRasQinMur03,QinGir03,Gir04,KocGirBanMur05}
+the iterative, multiple-step-ahead prediction is done by feeding
+back the mean of the predictive distribution as well as the
+variance of the predictive distribution at each time-step, thus
+taking the uncertainty attached to each intermediate prediction
+into account. In this way, each input for which we wish to predict
+becomes a normally distributed random variable. However, this is
+still an approximation, as is explained in more detail in
+\cite{Gir04}. The illustration of such a dynamical model
+simulation is given in Figure \ref{figure1}.
+
+
+
+   \begin{figure}[thpb]
+      \centering
+       \includegraphics[width=9cm]{slika1}
+      \caption{Illustration of simulation principle for a Gaussian process model of dynamic system \cite{KocGir05}}
+      \label{figure1}
+   \end{figure}
+
+A demonstration of a Gaussian process model response is given in
+Figure \ref{figure2}.
+
+      \begin{figure}[thpb]
+      \centering
+      \includegraphics[width=12cm]{slika2}
+      \caption{Simulated response of a dynamic system modelled by Gaussian process model}
+      \label{figure2}
+   \end{figure}
+
+\section{Gaussian process model identification methodology}
+
+In this section the framework for dynamic system identification
+with GP models taken from \cite{AzmKoc07} is given. The
+identification framework consists of roughly six stages:
+ \begin{itemize}
+ \item defining the purpose of the model,
+ \item model selection,
+ \item design of the experiment,
+ \item realisation of the experiment and data processing,
+ \item training of the model and
+ \item model validation.
+ \end{itemize}
+ The model identification is an iterative process. Returning to some previous
+procedure step is possible at any step in the identification
+process and is usually necessary.
+
+\subsection{The model purpose and model selection}
+
+The decision for the use of a specific model derives from the
+model purpose and from the limitations met at the identification
+process. In this paper selection of the GP model is presumed. This
+approach can be beneficial when the information about the system
+exists in the form of input/output data, when data are corrupted,
+\emph{e.g.} by noise and measurement errors, when a measure of
+confidence in model prediction is required and when there is a
+relatively small amount of data in respect to the selected number
+of regressors.
+
+
+
+After the model is selected, its structure must be determined
+next. In the case of the GP model this means selecting the
+covariance function and the model regressors. The choice of the
+covariance function reflects the relationship between data and is
+based on prior knowledge of the process. The standard choice for
+smooth and stationary processes is function (\ref{eq:cov}). Prior
+knowledge about other attributes, \emph{e.g.} periodicity,
+non-stationarity, can be expressed through a different choice of
+the covariance function \cite{RasWil06}.
+
+The second part of structure determination is the choice of proper
+regressors. In the case of a dynamic system model this also means
+selecting the model order, which is the area of intensive
+research, as it is common to all nonlinear identification methods.
+
+
+The most frequent approach for regressor selection is the so
+called \emph{validation based regressor selection}, where the
+search for the optimal vector of regressors is initiated from some
+basic set of regressors. After the model optimisation and
+cross-validation, the regressors are added to or taken from the
+model. Prospering models according to selected performance are
+kept while dissatisfying models are rejected. In the case of
+normalised inputs the influence of each regressor can be observed
+through the value of the associated hyperparameter. If the
+associated regressor is not relevant enough it can be removed from
+the perspective model.
+
+
+
+
+\subsection{Obtaining data -- design of the experiment, experiment and data processing}
+
+Data describing the unknown system is very important in any
+black-box identification. For a good description of the process
+the influential variables and proper sample time must be chosen.
+
+
+The design of the experiment and the experiment itself are, as is
+always the case in systems modelling, very important parts of the
+identification procedure. The quality of the model depends on the
+system information contained in the measurement data, regardless
+of the identification method. Nevertheless, the design of the
+experiment is not the focus of this paper.
+
+As already mentioned the Gaussian process modelling approach
+relies on the relation among input/output data and not on
+approximation with basis functions. Consequently, this means that
+the distribution of identification data within the process
+operating region is crucial for the quality of the model. Model
+predictions can be informative only if the inputs to the model lie
+in the regions, where training data is available. The GP model is
+good for interpolation, but not for extrapolation, which is
+indicated by large variances of model predictions.
+
+Consequently, the data for model training should be chosen
+reasonably, which can be obstructed by the nature of the process
+(\emph{e.g.} limitations in the experiment design in industrial
+processes, physical limitations of the system). The preprocessing
+of measured data, such as normalisation to cancel the influence of
+different measuring scales, can be pursued.
+
+
+\subsection{Model training}
+
+In the GP model approach training means optimization of
+hyperparameters $\bs\Theta$ from (\ref{eq:cov}). Each
+hyperparameter $w_d$ expresses the relative importance of the
+associated regressor,  similar to the automatic relevant detection
+(ARD) method \cite{RasWil06}, where a higher value of $w_d$
+expresses higher importance of the regressor. Hyperparameter $v$
+expresses the overall scale of correlations and hyperparamter
+$v_0$ accounts for the influence of noise. Several possibilities
+of hyperparameter determination exist. A very rare possibility is
+that hyperparameters are known in advance as prior knowledge.
+Almost always, however, they must be determined from the training
+data, where different approaches are possible, \emph{e.g.}
+\cite{Gir04}. Mostly the likelihood maximization (ML) approach is
+used as it gives good results despite its simplification, where
+any optimization method could be used to achieve ML \cite{Gir04}.
+
+\subsection{Model validation}
+
+
+
+Validation concerns the level of agreement between the
+mathematical model and the system under investigation
+\cite{Murr98} and it is many times underemphasised despite its
+importance. Several features can represent the quality of the
+model. Their overview can be found \emph{e.g.} in
+\cite{Murr98,Hva05}. The most important are model plausibility,
+model falseness and model purposiveness, explained as follows.
+
+
+
+Model \emph{plausibility} expresses the model's conformity with
+the prior process knowledge by answering two questions: whether
+the model ``looks logical'' and whether the model ``behaves
+logical''. The first question addresses the model structure, which
+in the case of GP models means mainly the plausibility of the
+hyperparameters. The second one is concerned with the responses of
+the model output to typical events on the input, which can be
+validated with visual inspection of the responses as is the case
+with other black-box models.
+
+Model \emph{falseness} reflects the agreement between the process
+and the model output or the process input and the output of the
+inverse model. The comparison can be done in two ways, both
+applicable to GP models: qualitatively, \emph{i.e.} by visual
+inspection of differences in responses between the model and the
+process, or quantitatively, \emph{i.e.} through evaluation of
+performance measures.  Beside commonly used performance measures
+such as \emph{e.g.} mean squared error MSE and mean relative
+square error ($\text{MRSE}$, which compares only the mean
+prediction of the model to the output of the process:
+ \begin{equation}
+ \text{MSE}  =  \frac{1}{N}\sum_{i=1}^N e_i^2 \label{eq:MSE} \\
+ \end{equation}
+ \begin{equation}
+ \text{MRSE}  =  \sqrt{\frac{\sum_{i=1}^N e_i^2}{\sum_{i=1}^N y_i^2}} \label{eq:MRSE} \\
+ \end{equation}
+ where $y_i$ and $e_i = \hat{y}_i - y_i$ are the system's output and prediction error in $i$-th step of simulation, the
+performance measures such as log predictive density error
+($\text{LD}$, \cite{Gir04,KocGirBanMur05}) can be used for
+evaluating GP models, taking into account not only mean prediction
+but the entire predicted distribution:
+ \begin{equation}
+ \text{LD}  = \frac{1}{2} \ log(2\pi) + \frac{1}{2N} \sum_{i=1}^N \left(log(\sigma^2_i) +
+      \frac{e_i^2}{\sigma^2_i} \label{eq:LD} \right)
+ \end{equation}
+where $\sigma^2_i$ is the prediction variance in $i$-th step of
+simulation. Performance measure $\text{LD}$ weights the prediction
+error $e_i$ more heavily when it is accompanied with smaller
+predicted variance $\sigma^2_i$, thus penalising overconfident
+predictions more than acknowledged bad predictions, indicated by
+higher variance.
+ Another possible performance measure, applicable in the training procedure,
+is the negative log-likelihood of the training data ($\text{LL}$,
+\cite{Gir04}):
+ \begin{equation}
+ \text{LL}  =  \frac{1}{2} \log \mid \bi K\mid + \frac{1}{2} \bi y^T\bi
+K^{-1}\bi y + \frac{N}{2} \log(2\pi) \label{eq:LL},
+ \end{equation}
+ where $\bi K$ is the covariance matrix, $\bi y$ is the vector of targets and $N$ is the number of
+training points. LL is the measure inherent to the hyperparameter
+optimisation process, see (\ref{log}), and gives the likelihood
+that the training data is generated by given, \emph{i.e.} trained,
+model.
+%
+%
+%
+The smaller the MRSE, LD and LL are, the better the model is.
+
+Variance of the model predictions on a validation signal can be a
+validation measure itself, as it indicates whether the model
+operates in the region, where identification data were available.
+Nevertheless, it should be used carefully and in combinations with
+other validation tools, as predictions with small variance are not
+necessary good.
+
+Model \emph{purposiveness} or usefulness tells whether or not the
+model satisfies its purpose, which means the model is validated
+when the problem that motivated the modelling exercise can be
+solved using the obtained model. Here, again, the prediction
+variance can be used, \emph{e.g.} when the prediction confidence
+is too low, the model can be labelled as not purposive.
+
+
+\section{Survey of publications on Gaussian process models of dynamic systems }
+The GP model was first used for solving a regression problem in
+the late 1970s, but it only gained popularity within the
+machine-learning community in the late 1990s. Furthermore, the
+results of a possible implementation of the GP model for the
+identification of dynamic systems were presented as recent as the
+last decade.
+
+After what can be described as initial publications in year 1999
+\cite{MurJohSho99}, year 2000 \cite{LeiMurLei00,LeiLeiMur00} and
+year 2001 \cite{BabKei01,MurGir01}, numbers of publications start
+to grow. Numerus publications on conferences and as internal, but
+publicly available publications occurred in years 2002
+\cite{BanKoc02}-\cite{MurShoLei02}, 2003
+\cite{GirRasQinMur03}-\cite{SolMurLeiLeiRas03} and 2004
+\cite{Azm04}-\cite{SbaMurVal04}. After the first journal
+publication in year 2003 \cite{GreLig03c}, publications in years
+2005 \cite{Azm05}-\cite{ZhaLei05}, 2006
+\cite{AzmKoc06}-\cite{UrtFleFua06} and 2007
+\cite{Azm07}-\cite{ZhaLei07} contain more versatile publications
+including journal papers, book chapters and books mentioning use
+of GP models for the modelling of dynamic systems. In spite of
+efforts to be very thorough it is possible that the list of
+publications until year 2007 is not complete, but it certainly
+represents the majority of publications on Gaussian process models
+of dynamic systems.
+
+These publications have explored use of Gaussian process models
+for various applications:
+   \begin{itemize}
+   \item dynamic systems modelling, e.g.,
+   \cite{GirRasMur02},\cite{GreLig02},\cite{KocGirBanMur03},\cite{WanFleHer05}
+   \item time-series prediction, e.g.,
+   \cite{BabKei01},\cite{GraMlaBoz06},
+   \item dynamic systems control, e.g.,
+   \cite{GreLig02b},\cite{Koc02},\cite{MurSba02},\cite{KocMur05},
+   \item fault detection, e.g., \cite{JurKoc06},
+   \item smoothing, e.g., \cite{Azm07},
+   \item etc.
+   \end{itemize}
+
+The utility to provide the information about the model prediction
+confidence made Gaussian process models attractive for modelling
+case studies in various domains like: chemical engineering
+\cite{KocLik07} and process control \cite{LikKoc07}, biomedical
+engineering \cite{FauGreBoyMarLigCon07}, biological systems
+\cite{AzmKoc07}, environmental systems \cite{GraMlaBoz06}, power
+systems \cite{LeiHeiRin04} and engineering \cite{LeiZhaNeo05},
+motion recognition \cite{WanFleHer05}, etc., to list just a few.
+It is worth noticing that the utility of Gaussian process
+modelling could be interesting also for use in other domains and
+applications therein.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Concluding remarks}
+In the first part it is explained how the Gaussian process model
+is used for dynamic systems identification with emphasis on some
+of its properties: model predictions containing the measure of
+confidence, low number of parameters and facilitated structure
+determination.
+
+The prediction variance is one of the main differences between the
+GP model and other black box models. It can be effectively used in
+the usefulness validation, where the lack of confidence in the
+model prediction can serve as the grounds to reject the model as
+not useful. The prediction variance can also be used in falseness
+validation, whether via specific performance measures such as
+log-predictive density error, or through observation of confidence
+limits around the predicted output. Despite its usefulness in
+model validation, it should be accompanied with standard
+validation tools, as the small variance does not necessarily mean
+that the model is of good quality.
+
+In the validation based regressor selection procedure the
+log-predictive density error and the log-likelihood of the
+training data can be useful in selecting model regressors. In the
+case of normalised inputs, the model hyperparameters indicate the
+influence of corresponding regressors and can be used as a tool
+for removal of non-influental regressors at the regressor
+selection stage of the model selection.
+
+Small amounts of data relative to the number of selected
+regressors, data corrupted with noise and measurement errors and
+the need for the measure of model prediction confidence could be
+the reasons to select identification with the GP model. If there
+is not enough data or it is heavily corrupted with noise, even the
+GP model cannot perform well, but in that case the inadequacy of
+the model and the identification data is indicated through higher
+variance of the predictions.
+
+The short survey and bibliography on Gaussian process models for
+dynamic systems shows that the interest in this modelling approach
+and its applications is growing. Published results have shown the
+GP model's potential for the identification of nonlinear dynamic
+systems and where the advantages of the GP model could be
+effectively used, e.g., for control design, diagnostic system
+design etc.
+
+
+\begin{thebibliography}{99}
+
+\bibitem{Hva05} N. Hvala, S. Strm\v cnik, D. \v{S}el, S.
+Milani\v{c} and B. Banko. Influence of model validation on proper
+selection of process models --- an industrial case study.
+\emph{Computers and Chemical Engineering}, 2005,  {\bf 29},
+1507--1522.
+
+\bibitem{Murr98} D.J. Murray-Smith. Methods for the
+external validation of continuous system simulation models: a
+review. \emph{Mathematical and Computer Modelling of Dynamical
+Systems}, 1998, {\bf 4}, 5--31.
+
+\bibitem{QinRas05} J.
+Qui{\~n}onero-Candela and C.E. Rasmussen. Analysis of Some Methods
+for Reduced Rank Gaussian Process Regression. In: Murray-Smith, R.
+and Shorten R. (Eds.), \emph{Switching and Learning in Feedback
+Systems}, Lecture Notes in Computer Science, Vol. 3355, 2005.
+\newpage
+\vspace*{3mm} \textbf{Published references on Gaussian process
+models of dynamic systems and their publications listed by
+publishing year}
+\\[6mm]
+\textbf{1999}
+\\[1mm]
+
+\bibitem{MurJohSho99} R. Murray-Smith, T. A. Johansen, R. Shorten. On transient
+dynamics, off-equilibrium behaviour and identification in blended
+multiple model structures. \emph{In Proceedings of European
+Control Conference}, Paper BA-14, Karslruhe, 1999.
+\\[6mm]
+\textbf{2000}
+\\[1mm]
+\bibitem{LeiMurLei00} D. J. Leith, R. Murray-Smith, and W. E. Leithead. Nonlinear
+structure identification: A Gaussian process/velocity-based
+approach. \emph{In Proceedings of the UKACC Control Conference},
+Cambridge, 2000.
+
+\bibitem{LeiLeiMur00} W. E. Leithead, D. J. Leith, and R. Murray-Smith. A Gaussian
+Process prior/Velocity-based Framework for Nonlinear Modelling and
+Control. \emph{In Irish Signals and Systems Conference}, Dublin,
+2000.
+\\[6mm]
+\textbf{2001}
+\\[1mm]
+
+\bibitem{BabKei01} V. Babovic and M. Keijzer.
+A Gaussian process model applied to prediction of the water levels
+in Venice lagoon. \emph{In Proceedings of the XXIX Congress of
+International Association for Hydraulic Research}, 2001.
+
+\bibitem{MurGir01} R. Murray-Smith and A. Girard.
+Gaussian process priors with ARMA noise models. \emph{In
+Proceedings of Irish Signals and Systems Conference}, Pages
+147-152, Maynooth, 2001.
+\\[6mm]
+\textbf{2002}
+\\[1mm]
+
+\bibitem{BanKoc02} B. Banko and J. Kocijan.
+Uporaba Gaussovih procesov za identifikacijo nelinearnih sistemov.
+In B. Zajc, editor, \emph{Zbornik enajste elektrotehniške in
+raèunalniške konference ERK}, Volume A, pages 323-326, Portorož,
+2002. (in Slovene).
+
+\bibitem{GirRasMur02} A. Girard, C. E. Rasmussen, and R. Murray-Smith.
+Gaussian process priors with uncertain inputs: multiple-step-ahead
+prediction. Technical Report DCS TR-2002-119, University of
+Glasgow, Glasgow, 2002.
+
+\bibitem{GreLig02} G. Gregorèiè and G. Lightbody.
+Gaussian processes for modelling of dynamic non-linear systems.
+\emph{In Proceedings of Irish Signals and Systems Conference},
+Cork, Pages 141-147, Cork, June 2002.
+
+\bibitem{GreLig02b} G. Gregorèiè and G. Lightbody.
+Gaussian processes for internal model control. In A. Rakar,
+editor, \emph{Proceedings of 3rd International PhD Workshop on
+Advances in Supervision and Control Systems}, A Young Generation
+Viewpoint, Pages 39-46, Strunjan, 2002.
+
+\bibitem{Koc02} J. Kocijan.
+Gaussian process model based predictive control. Technical Report
+DP-8710, Institut Jožef Stefan, Ljubljana, 2002.
+
+\bibitem{KocLikBanGirMurRas02} J. Kocijan, B. Likar, B. Banko, A. Girard, R. Murray-Smith, and C.
+E. Rasmussen. Identification of pH neutralization process with
+neural networks and Gaussian process model: MAC project. Technical
+Report DP-8575, Institut Jožef Stefan, Ljubljana, 2002.
+
+\bibitem{Lei02} D. Leith.
+Determining nonlinear structure in time series data. \emph{In
+Proceedings of Workshop on Modern Methods for Data Intensive
+Modelling}, Maynooth, 2002. NUI Maynooth.
+
+\bibitem{LeiLeiSolMur02} D. J. Leith, W. E. Leithead, E. Solak, and R. Murray-Smith.
+Divide and conquer identification using Gaussian processes.
+\emph{In Proceedings of the 41st Conference on Decision and
+Control}, Pages 624-629, Las Vegas, AZ, 2002.
+
+\bibitem{LeiLeiSolMur02b} D. J. Leith, W. E. Leithead, E. Solak, and R. Murray-Smith.
+Divide and conquer identification using Gaussian processes.
+\emph{In Proceedings of Workshop on non-linear and non-Gaussian
+signal processing}, Peebles, UK, 2002.
+
+\bibitem{MurSba02} R. Murray-Smith and D. Sbarbaro.
+Nonlinear adaptive control using nonparametric Gaussian process
+prior models. \emph{In Proceedings of IFAC 15th World Congress},
+Barcelona, 2002.
+
+\bibitem{MurShoLei02} R. Murray-Smith, R. Shorten, and D. Leith.
+Nonparametric models of dynamic systems. In C. Cowans, editor,
+\emph{Proceedings of IEE Workshop on Nonlinear and Non-Gaussian
+signal processing - N2SP}, Peebles, UK, 2002.
+\\[6mm]
+\textbf{2003}
+\\[1mm]
+
+\bibitem{GirRasQinMur03} A. Girard, C. E. Rasmussen, J. Quinonero-Candela, and R.
+Murray-Smith. Bayesian regression and Gaussian process priors with
+uncertain inputs - application to multiple-step ahead time series
+forecasting. In S. Becker, S. Thrun, and K. Obermayer, editors,
+\emph{Advances in Neural Information Processing Systems
+conference}, Volume 15, Pages 529-536. MIT Press, 2003.
+
+\bibitem{GraMurThoMur03} G. Gray, R. Murray-Smith, K. Thompson, and D. J. Murray-Smith.
+Tutorial example of Gaussian process prior modelling applied to
+twin-tank system. Technical Report DCS TR-2003-151, University of
+Glasgow, Glasgow, 2003.
+
+\bibitem{GreLig03} G. Gregorèiè and G. Lightbody.
+Internal model control based on Gaussian process prior model.
+\emph{In Proceedings of the 2003 American Control Conference
+(ACC)}, pages 4981-4986, Denver, CO, June 2003.
+
+\bibitem{GreLig03b} G. Gregorèiè and G. Lightbody.
+From multiple model networks to the Gaussian processes prior
+model. \emph{In Proceedings of IFAC ICONS conference}, Pages
+149-154, Faro, 2003.
+
+\bibitem{GreLig03c} G. Gregorèiè and G. Lightbody.
+An afine Gaussian process approach for nonlinear system
+identification. \emph{Systems Science Journal},  Volume 29, Issue
+2, Pages 47-63, 2003.
+
+\bibitem{Han03} J. Hansen.
+Using Gaussian processes as a modelling tool in control systems.
+Technical Report DCS TR-2003, University of Glasgow, Glasgow,
+2003.
+
+\bibitem{KocBanLikGirMurRas03} J. Kocijan, B. Banko, B. Likar, A. Girard, R. Murray-Smith, and C.
+E. Rasmussen. A case based comparison of identification with
+neural networks and Gaussian process models. \emph{In Proceedings
+of IFAC ICONS conference}, Volume 1, Pages 137-142, Faro, 2003.
+
+\bibitem{KocGirBanMur03} J. Kocijan, A. Girard, B. Banko, and R. Murray-Smith.
+Dynamic systems identification with Gaussian processes. In I.
+Troch and F. Breitenecker, editors, \emph{Proceedings of 4th IMACS
+Symposium on Mathematical Modelling (MathMod)}, pages 776-784,
+Vienna, 2003.
+
+\bibitem{KocGirLei03} J. Kocijan, A. Girard, and D. J. Leith.
+Incorporating linear local models in Gaussian process model.
+Technical Report DP-8895, Institut Jožef Stefan, Ljubljana,
+December 2003.
+
+\bibitem{KocMurRasLik03} J. Kocijan, R. Murray-Smith, C. E. Rasmussen, and B. Likar.
+Predictive control with Gaussian process models. In B. Zajc and M.
+Tkalcic, editors, \emph{The IEEE Region 8 EUROCON 2003: computer
+as a tool}, Volume A, Pages 352-356, Ljubljana, 2003.
+
+\bibitem{LeiLei03} D. J. Leith and W. E. Leithead.
+Nonlinear structure identification with application to
+Wiener-Hammerstein systems. \emph{In Proceedings of 13th IFAC
+Symposium on System Identification}, Rotterdam, 2003.
+
+\bibitem{LeiSolLei03} W. E. Leithead, E. Solak, and D. J. Leith.
+Direct identification of nonlinear structure using Gaussian
+process prior models. \emph{In Proceedings of European Control
+Conference}, Cambridge, 2003.
+
+\bibitem{MurSbaRasGir03} R. Murray-Smith, D. Sbarbaro, C. E. Rasmussen, and A. Girard.
+Adaptive, cautious, predictive control with Gaussian process
+priors. \emph{In Proceedings of 13th IFAC Symposium on System
+Identification}, Pages 1195-1200, Rotterdam, 2003.
+
+\bibitem{QinGir03} J. Quinonero-Candela and A. Girard.
+Prediction at uncertain input for Gaussian processes and relevance
+vector machines - Application to multiple-step ahead time-series
+forecasting. Technical Report IMM-2003-18, Technical University
+Denmark, Informatics and Mathematical Modelling, Kongens Lyngby,
+2003.
+
+\bibitem{QinGirLarRas03} J. Quinonero-Candela, A. Girard, J. Larsen, and C. E. Rasmussen.
+Propagation of uncertainty in Bayesian kernel models - Application
+to multiple-step ahead forecasting. \emph{In Proceedings of IEEE
+International Conference on Acoustics, Speech and Signal
+Processing (ICASSP)}, Volume 2, Pages 701-704, 2003.
+
+\bibitem{RasKus03} C. E. Rasmussen and M. Kuss.
+Gaussian processes in reinforcement learning. In S. Thrun, L. K.
+Saul, and B. Schoelkopf, editors, \emph{Advances in Neural
+Information Processing Systems conference}, Volume 16, Pages
+751-759. MIT Press, 2004.
+
+\bibitem{SbaMur03} D. Sbarbaro and R. Murray-Smith.
+Self-tuning control of nonlinear systems using Gaussian process
+prior models. Technical Report DCS TR-2003-143, University of
+Glasgow, Glasgow, 2003.
+
+\bibitem{SolMurLeiLeiRas03} E. Solak, R. Murray-Smith, W. E. Leithead, D. J. Leith, and C. E.
+Rasmussen. Derivative observations in Gaussian process models of
+dynamic systems. In S. Becker, S. Thrun, and K. Obermayer,
+editors, \emph{Advances in Neural Information Processing Systems
+conference}, Volume 15, Pages 529-536. MIT Press, 2003.
+\newpage
+\textbf{2004}
+\\[1mm]
+
+
+\bibitem{Azm04} K. Ažman.
+Identifikacija dinamiènih sistemov z Gaussovimi procesi z
+vkljuèenimi lokalnimi modeli. Master's thesis, Univerza v
+Ljubljani, Ljubljana, September 2004. (in Slovene).
+
+\bibitem{Gir04} A. Girard.
+Approximate methods for propagation of uncertainty with Gaussian
+process models. PhD thesis, University of Glasgow, Glasgow, 2004.
+
+\bibitem{Gre04} G. Gregorèiè.
+Data-based modelling of nonlinear systems for control. PhD thesis,
+University College Cork, National University of Ireland, Cork,
+2004.
+
+\bibitem{KocLei04} J. Kocijan and D. J. Leith.
+Derivative observations used in predictive control. \emph{In
+Proceedings of Melecon 2004}, Volume 1, Pages 379-382, Dubrovnik,
+12.-15. May 2004.
+
+\bibitem{KocMurRasGir04} J. Kocijan, R. Murray-Smith, C. E. Rasmussen, and A. Girard.
+Gaussian process model based predictive control. \emph{In
+Proceedings of the 2004 American Control Conference (ACC)}, Pages
+2214-2218, Boston, MA, 30. June-2. July 2004.
+
+\bibitem{LeiHeiRin04} D. J. Leith, M. Heidl and J. Ringwood.
+Gaussian process prior models for electrical load forecasting.
+\emph{In 2004 International Conference on Probabilistic Methods
+Applied to Power Systems}, Pages 112-117. 2004.
+
+\bibitem{Lik04} B. Likar.
+Prediktivno vodenje nelinearnih sistemov na osnovi Gaussovih
+procesov. Master's thesis, Univerza v Ljubljani, Ljubljana,
+September 2004. (in Slovene).
+
+\bibitem{SbaMurVal04} D. Sbarbaro, R. Murray-Smith, and A. Valdes.
+Multivariable generalized minimum variance control based on
+artificial neural networks and Gaussian process models. \emph{In
+International Symposium on Neural Networks}. Springer Verlag,
+2004.
+\\[6mm]
+\textbf{2005}
+\\[1mm]
+
+\bibitem{Azm05} K. Ažman.
+Incorporating prior knowledge into Gaussian process model.
+\emph{In Proceedings of 6th International PhD Workshop on Systems
+and Control} - A Young Generation Viewpoint, Volume A,  Pages
+253-256, Izola, 2005.
+
+\bibitem{AzmKoc05} K. Ažman and J. Kocijan.
+An example of Gaussian process model identification. In L. Budin
+and S. Ribariæ, editors, \emph{Proceedings of 28th International
+conference MIPRO}, CIS - Inteligent Systems, Pages 79-84, Opatija,
+maj 2005.
+
+\bibitem{AzmKoc05b} K. Ažman and J. Kocijan.
+Identifikacija dinamiènega sistema s histerezo z modelom na osnovi
+Gaussovih procesov. In B. Zajc and A. Trost, editors,
+\emph{Zbornik štirinajste elektrotehniške in raèunalniške
+konference ERK}, Volume A, Pages 253-256, Portorož, 2005. (in
+Slovene).
+
+\bibitem{AzmKoc05c} K. Ažman and J. Kocijan.
+Comprising prior knowledge in dynamic Gaussian process models.
+\emph{In Proceedings of the International Conference on Computer
+Systems and Technologies} - CompSysTech, Pages IIIB.2-1 –
+IIIB.2-6, Varna, 2005.
+
+\bibitem{Gra05} B. Grašiè.
+Napovedovanje povišanih koncentracij ozona z uporabo umetnih
+nevronskih mrež, Gaussovih procesov in mehke logike. Master's
+thesis, Univerza v Ljubljani, Ljubljana, 2005. (in Slovene).
+
+\bibitem{GreLig05} G. Gregorèiè and G. Lightbody.
+Gaussian process approaches to nonlinear modelling and control. In
+A. Ruano, editor, \emph{Intelligent control systems using
+computational intelligence techniques}, IEE Intelligent Control
+Series. IEE, 2005.
+
+\bibitem{HanMurJoh05} J. Hansen, R. Murray-Smith, and T. A. Johansen.
+Nonparametric identification of linearizations and uncertainty
+using Gaussian process models - application to robust wheel slip
+control. \emph{In Joint 44th IEEE conference on decision and
+control and European control conference CDC-ECC 2005}, Pages
+7994-7999, Sevilla, 2005.
+
+\bibitem{KocGir05} J. Kocijan and A. Girard.
+Incorporating linear local models in Gaussian process model.
+\emph{In Proceedings of IFAC 16th World Congress}, Praga, 2005.
+
+\bibitem{KocGirBanMur05} J. Kocijan, A. Girard, B. Banko, and R. Murray-Smith.
+Dynamic systems identification with Gaussian processes.
+\emph{Mathematical and Computer Modelling of Dynamic Systems},
+Volume 11, Issue 4, Pages 411-424, December 2005.
+
+\bibitem{KocMur05} J. Kocijan and R. Murray-Smith.
+Nonlinear predictive control with Gaussian process model. In
+\emph{Switching and Learning in Feedback Systems}, volume 3355 of
+Lecture Notes in Computer Science, Pages 185-200. Springer,
+Heidelberg, 2005.
+
+\bibitem{Lei05} W. E. Leithead.
+Identification of nonlinear dynamic systems by combining
+equilibrium and off-equilibrium information. \emph{In Proceedings
+of International Conference on Industrial Electronics and Control
+Applications (ICIECA)}, Quito, 2005.
+
+\bibitem{LeiNeoLei05} W. E. Leithead, K. S. Neo, and D. J. Leith.
+Gaussian regression based on models with two stochastic processes.
+\emph{In Proceedings of IFAC 16th World Congress}, Praga, 2005.
+
+\bibitem{LeiZhaLei05} W. E. Leithead, Y. Zhang, and D. J. Leith.
+Eficient hyperparameter estimation of Gaussian process regression
+based on quasi-Newton BFGS update and power series approximation.
+\emph{In Proceedings of IFAC 16th World Congress}, Praga, 2005.
+
+\bibitem{LeiZhaLei05b} W. E. Leithead, Y. Zhang, and D. J. Leith.
+Time-series Gaussian process regresion based on Toeplitz
+computation of O(N2) operations and O(N) level storage. \emph{In
+Joint 44th IEEE conference on decision and control and European
+control conference CDC-ECC 2005}, Sevilla, 2005.
+
+\bibitem{LeiZhaNeo05} W. E. Leithead, Y. Zhang, and K.S. Neo.
+Wind turbine rotor acceleration: Identification using Gaussian
+regression. \emph{In Proceedings of International conference on
+informatics in control automation and robotics (ICINCO)},
+Barcelona, 2005.
+
+\bibitem{MurPer05} R. Murray-Smith, B. A. Pearlmutter.
+Transformations of Gaussian Process priors. In \emph{Deterministic
+and Statistical Methods in Machine Learning}, Volume 3536 of
+Lecture Notes in Artificial Intelligence,  Pages 110-123.
+Springer, Heidelberg, 2005.
+
+\bibitem{Pal05} R. Palm.
+Multi-step-ahead prediction with Gaussian processes and TS-fuzzy
+models. \emph{In Proceedings of 14th IEEE International Conference
+on Fuzzy Systems}, Pages 945-950, 2005.
+
+\bibitem{SbaMur05} D. Sbarbaro and R. Murray-Smith.
+Self-tuning control of nonlinear systems using Gaussian process
+prior models. In \emph{Switching and Learning in Feedback
+Systems}, Volume 3355 of Lecture Notes in Computer Science, Pages
+140-157. Springer, Heidelberg, 2005.
+
+\bibitem{ShiMurTit05} J. Q. Shi, R. Murray-Smith, and D. M. Titterington.
+Hierarchical Gaussian process mixtures for regression.
+\emph{Statistics and Computing}, Volume 15, Pages 31-41, 2005.
+
+\bibitem{WanFleHer05} J. M.Wang, D. J. Fleet, and A. Hertzmann.
+Gaussian process dynamical models. \emph{In Advances in Neural
+Information Processing Systems}, Volume 18, Pages 1441-1448. MIT
+Press, 2005.
+
+\bibitem{XioZhaZhaSha05} Z.-H. Xiong, W.-Q. Zhang, Y. Zhao, H.-H. Shao.
+Thermal parameter soft sensor based on the mixture of Gaussian
+processes. \emph{Zhongguo Dianji Gongcheng Xuebao (Proc. Chin.
+Soc. Electr. Eng.)}, Volume 25, Issue 7, Pages 30-33, 2005.
+
+\bibitem{XioYanWuSha05} Z.-H. Xiong, H.-B. Yang, Y.-F. Wu, H.-H. Shao.
+Sparse GP-based soft sensor applied to the power plant.
+\emph{Zhongguo Dianji Gongcheng Xuebao (Proc. Chin. Soc. Electr.
+Eng.)}, Volume 25, Issue 8, Pages 130-133,  2005.
+
+\bibitem{ZhaLei05} Y. Zhang and W. E. Leithead.
+Exploiting Hessian matrix and trust region algorithm in
+hyperparameters estimation of Gaussian process. \emph{Applied
+Mathematics and Computation},  Volume 171, Issue 2, Pages 1264 -
+1281, 2005.
+\\[6mm]
+\textbf{2006}
+\\[1mm]
+
+
+\bibitem{AzmKoc06} K. Ažman and J. Kocijan.
+Gaussian process model validation: biotechnological case studies.
+In I. Troch and F. Breitenecker, editors, \emph{Proceedings of the
+5th Vienna Symposium on Mathematical Modeling - MathMod}, Vienna,
+2006.
+
+\bibitem{AzmKoc06b} K. Ažman and J. Kocijan.
+Identifikacija dinamiènega sistema z znanim modelom šuma z modelom
+na osnovi Gaussovih procesov. In B. Zajc and A. Trost, editors,
+\emph{Zbornik petnajste elektrotehniške in raèunalniške konference
+ERK}, Volume A, Pages 289-292, Portorož, 2006. (in Slovene).
+
+\bibitem{AzmKoc06c} K. Ažman and J. Kocijan.
+An application of Gaussian process models for control design.
+\emph{In UKACC International Control Conference}, Glasgow, 2006.
+
+\bibitem{Boy06} P. Boyle.
+Gaussian processes for regression and optimisation. PhD thesis,
+Victoria University of Wellington, Wellington, New Zealand, 2006.
+
+\bibitem{GraMlaBoz06} B. Grašiè, P. Mlakar, and M. Z. Božnar.
+Ozone prediction based on neural networks and Gaussian processes.
+\emph{Nuovo Cimento della Societa Italiana di Fisica, Sect. C},
+Volume 29, Issue 6, Pages 651-662, 2006.
+
+\bibitem{JurKoc06} Dj. Jurièiæ and J. Kocijan.
+Fault detection based on Gaussian process model. In I. Troch and
+F. Breitenecker, editors, \emph{Proceedings of the 5th Vienna
+Symposium on Mathematical Modeling - MathMod}, Vienna, 2006.
+
+\bibitem{Kus06} M. Kuss.
+Gaussian process models for robust regression, classification and
+reinforcement learning. PhD thesis, Technische Universitaet
+Darmstadt, Darmstadt, 2006.
+
+\bibitem{LeiMurLei06} D. J. Leith, R. Murray-Smith, and W. E. Leithead.
+Inference of disjoint linear and nonlinear subdomains of a
+nonlinear mapping. \emph{Automatica}, Volume 42, Issue 5, Pages
+849-858, May 2006.
+
+\bibitem{MooPav06} K. Moon, V. Pavloviæ.
+Impact of dynamics on subspace embedding and tracking of
+sequences. \emph{In Proceedings - 2006 IEEE Computer Society
+Conference on Computer Vision and Pattern Recognition}, CVPR 2006
+Volume 1, Pages 198-205, 2006.
+
+\bibitem{NeoLeiZha06} K. S. Neo, W. E. Leithead, and Y. Zhang.
+Multi frequency scale Gaussian regression for noisy time-series
+data. \emph{In UKACC International Control Conference}, Glasgow,
+2006.
+
+\bibitem{RasWil06} C.E. Rasmussen and C.K.I. Williams,
+\emph{Gaussian {P}rocesses for machine learning}. The MIT Press,
+Cambridge, MA, 2006.
+
+\bibitem{ThoMur06} K. Thompson and D. J. Murray-Smith.
+Implementation of Gaussian process models for nonlinear system
+identification. In I. Troch and F. Breitenecker, editors,
+\emph{Proceedings of the 5th Vienna Symposium on Mathematical
+Modeling - MathMod}, Vienna, 2006.
+
+\bibitem{UrtFleFua06} R. Urtasun, D. J. Fleet, P. Fua.
+3D people tracking with Gaussian process dynamical models.
+\emph{In Proceedings - 2006 IEEE Computer Society Conference on
+Computer Vision and Pattern Recognition}, CVPR 2006 Volume 1,
+Pages 238-245, 2006.
+\\[6mm]
+\textbf{2007}
+\\[1mm]
+
+\bibitem{Azm07} K. Ažman.
+Identifikacija dinamiènih sistemov z Gaussovimi procesi. PhD
+thesis, Univerza v Ljubljani, Ljubljana, 2007. (in Slovene).
+
+\bibitem{AzmKoc07} K. Ažman and J. Kocijan.
+Application of Gaussian processes for black-box modelling of
+biosystems. \emph{ISA Transactions}, Volume 46, Issue 4, Pages
+443-457, 2007.
+
+\bibitem{FauGreBoyMarLigCon07} S. Faul, G. Gregorèiè, G. Boylan, W. Marnane, S. Lightbody, G.
+Connolly. Gaussian process modelling of EEG for the detection of
+neonatal seizures. \emph{IEEE Transactions on Biomedical
+Engineering}, Volume 54,  Issue 12, Pages: 2151 – 2162, 2007.
+
+\bibitem{GraKocJoh07} A. Grancharova, J. Kocijan and T. A. Johansen.
+Explicit stohastic nonlinear predictive control based on Gaussian
+process models. \emph{In Proceedings of the European Control
+Conference 2007}, Pages 2340-2347, Kos, 2007.
+
+\bibitem{GreLig07} G. Gregorèiè and G. Lightbody.
+Local model identification with Gaussian processes. \emph{IEEE
+Transactions on neural networks}, Volume 18, Issue 5, Pages
+1404-1423, 2007.
+\newpage
+\bibitem{HacKad07} Hachino, T.   Kadirkamanathan, V.
+Time Series Forecasting Using Multiple Gaussian Process Prior
+Model. \emph{In IEEE Symposium on Computational Intelligence and
+Data Mining}, 2007. CIDM 2007. Pages 604-609, 2007.
+
+\bibitem{Koc07} J. Kocijan.
+Identifikacija nelinearnih sistemov z Gaussovimi procesi.
+\emph{Modeliranje dinamiènih sistemov z umetnimi nevronskimi
+mrežami in sorodnimi metodami}. Univerza v Novi Gorici, 2007,
+Pages 73-86. (in Slovene).
+
+\bibitem{KocAzm07} J. Kocijan and K. Ažman.
+Gaussian Process Model Identification: A Process Engineering Case
+Study. \emph{In Proceedings of the 16th International Conference
+on Systems Science}, Volume 1, Pages 418 - 427, Wroclaw, 2007.
+
+\bibitem{KocAzmGra07} J. Kocijan, K. Ažman and A. Grancharova.
+The Concept for Gaussian Process Model Based System Identification
+Toolbox. \emph{In Proceedings of the InternationalConference on
+Computer Systems and Technologies} - CompSysTech, Pages IIIA.23-1
+- IIIA.23-6, Rousse, 2007.
+
+\bibitem{KocLik07} J. Kocijan, B. Likar.
+Gas-Liquid Separator Modelling and Simulation with Gaussian
+Process Models. \emph{In Proceedings of the 6th EUROSIM Congress
+on Modelling and Simulation - EUROSIM 2007}, 7 pages, Ljubljana,
+2007.
+
+\bibitem{LeiZha07} W. E. Leithead, Y. Zhang.
+O(N-2)-operation approximation of covariance matrix inverse in
+Gaussian process regression based on quasi-Netwon BFGS method.
+\emph{Communications In Statistics-Simulation And Computation},
+Volume 36, Issue 2, Pages 367-380, 2007.
+
+\bibitem{LikKoc07} B. Likar and J. Kocijan.
+Predictive control of a gas-liquid separation plant based on a
+Gaussian process model. \emph{Computers and Chemical Engineering},
+Volume 31, Issue 3, Pages 142-152, 2007.
+
+\bibitem{NevNicMar07} M. Neve, G. De Nicolao, and L. Marchesi.
+Nonparametric identification of population models via Gaussian
+processes. \emph{Automatica}, Volume 43, Issue 7, Pages 1134-1144,
+2007.
+
+\bibitem{Pal07} R. Palm.
+Multiple-step-ahead prediction in control systems with Gaussian
+process models and TS-fuzzy models. \emph{Engineering Applications
+of Artificial Intelligence}, Volume 20, Issue 8, Pages 1023-1035,
+2007.
+
+\bibitem{WanFleHer07} J. M. Wang, D. J. Fleet, and A. Hertzmann.
+Multifactor Gaussian Process models for style-content separation.
+\emph{International Conference on Machine Learning (ICML)},
+Oregon, 2007.
+
+\bibitem{ZhaLei07} Y. Zhang, W. E. Leithead.
+Approximate implementation of the logarithm of the matrix
+determinant in Gaussian process regression. \emph{Journal Of
+Statistical Computation And Simulation}, Volume 77, Issue 4, Pages
+329-348, 2007.
+
+\end{thebibliography}
+
+
+
+\subsection{Acknowledgements}
+
+A lot of the work has been done previously. Biggest credits go to
+C.~E. Rasmussen, C.~K.~I. Williams, R. Murray-Smith and many
+others.
+
+\newpage
+
+\section{Gaussian Process Model Dynamic System Identification Toolbox for
+Matlab}
+
+\subsection{Prerequisites}
+
+As this toolbox is intended to use within Matlab environment the
+user should have Matlab installed. It works on Matlab 7 and later,
+but there should be no problems using the toolbox on previous
+versions of Matlab, \eg 6 or 5.
+
+It is also assumed that the GPML toolbox\footnote{It can be
+obtained from \emph{http://www.gaussianprocess.org/gpml}.},
+general purpose GP modelling toolbox for Matlab, is installed, as
+GPdyn toolbox serves as its extension.
+
+If the functions for data preprocessing (\fun{premnmx}) and data
+postprocessing (\fun{postmnmx}) are to be used, the Matlab Neural
+Network has to be installed.
+
+The user should also be (at least a little) familiar with Matlab
+structure and programming.
+
+\subsection{Installing GPdyn toolbox}
+
+Unzip the file GPdyn into chosen directory and add path (with
+subdirectories) to Matlab path.
+
+
+\subsection{Overview of the GPdyn toolbox}
+
+GPdyn files are contained in several directories, depending on
+their purpose:
+ \bds
+ \item [basic functions,] used by higher-level functions;
+ \item [simulation functions,] used for simulating the dynamical
+ GP model;
+ \item [lmgp functions,] which are used when modelling the system with
+ the GP model with incorporated local models (LMGP model);
+ \item [supporting functions,] which do not belong into other
+ groups, but make some tasks easier;
+ \item [function templates,] which allow user to write his own
+ functions; they include fault detection with GP models and
+ incorporating knowledge about coloured
+ noise on the output of the system and hysteresis;
+ \item [demo functions,] which demonstrate the use of the toolbox
+ for identification of dynamical systems.
+ \eds
+
+\clearpage
+
+ The list of included functions, demos and one model is given in
+ following tables.
+
+
+{\renewcommand{\arraystretch}{1.1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%  VSE TABELE SKUPAJ
+\begin{tabular}{|l|l|c|}
+ \hline \multicolumn{2}{|l|}{\tabelarule \bf Basic GP model functions} & p. \\
+ \hline \fun{gpr} & - (statical) GP model prediction & $\dagger$  \\
+ %\hline
+  & - data likelihood and partial derivatives  &   \\
+ \hline \fun{traingp} & GP model training & \pageref{fun:traingp} \\
+ \hline \fun{gpr\_simul} & GP model regression for simulation & \pageref{fun:gpr_simul} \\
+ \hline \fun{minimize} & local minima search of the differentiable function & $\dagger$  \\
+  & used by  \fun{traingp} &  \\
+  \hline
+%
+%
+\multicolumn{2}{l}{\tabelarule \bf } \\ \hline
+\multicolumn{3}{|l|}{\tabelarule \bf Covariance functions} \\
+\multicolumn{3}{|l|}{\tabelarule included and explained in GPML
+toolbox} \\ \hline
+%%% \hline \fun{covConst} & konstantna kovarianèna funkcija  \\
+%%% \hline \fun{covLINard} & linearna kovarianèna funkcija z ARD lastnostjo \\
+%%% \hline \fun{covLINone} & linearna kovarianèna funkcija z enotnim hiperparametrom  \\
+%%% \hline \fun{covSEard} & Gaussova kovarianèna funkcija z ARD lastnostjo (\ref{eq2:covfun:gaussian}) \\
+%%% \hline \fun{covSEiso} & Gaussova kovarianèna funkcija z izotropièno mero razdalje \\
+%%% \hline \fun{covPeriodic} & periodièna kovarianèna funkcija \\
+%%% \hline \fun{covNoiseWht} & kovarianèna funkcija, ki izraža prispevek belega šuma \\
+%%% \hline \fun{covNoiseClr} & kovarianèna funkcija, ki izraža prispevek barvnega šuma \\
+%%% \hline \fun{covSum} & seštevanje kovarianènih funkcij \\
+%%% \hline \fun{covProd} & množenje kovarianènih funkcij \\ \hline
+%
+ \multicolumn{2}{l}{\tabelarule \bf } \\
+ \hline \multicolumn{2}{|l|}{\tabelarule \bf GP model simulation} & p. \\
+ \hline \fun{simul02naive} & GP model simulation without propagation of uncertainty & \pageref{fun:simul00naive} \\
+ \hline \fun{simul00exact} & GP model simulation with analytical  & \pageref{fun:simul00exact} \\
+ & propagation of uncertainty  & \\
+  \hline \fun{gpr\_SEard\_exact} & GP model prediction with probabilistic inputs & \pageref{fun:gpr_SEard_exact}\\
+ \hline \fun{simul02mcmc} & GP model simulation with numerical  & \pageref{fun:simul00mcmc} \\
+& propagation of uncertainty  & \\
+ \hline \fun{mcmc\_getsamplesgaussmix} & sampling Gaussian mixtures & \pageref{fun:mcmc_getsamplesgaussmix} \\
+ \hline
+%
+%%%\multicolumn{3}{l}{\tabelarule \bf } \\ \hline
+%%%%
+%%% \multicolumn{3}{|l|}{\tabelarule \bf LMGP model simulation} \\
+%%%  \hline \fun{gpSD00} & - LMGP model prediction & \pageref{fun:gpSD00} \\
+%%%  & - data likelihood and its derivatives &  \\
+%%% \hline \fun{trainlmgp} & LMGP model training & \pageref{fun:trainlmgp} \\
+%%%%
+%%% \hline \fun{simullmgp00naive} & LMGP model simulation without  & \pageref{fun:simullmgp00naive} \\
+%%%  & propagation of uncertainty &  \\
+%%% \hline \fun{simullmgp00exact} & LMGP model simulation with analytical  & \pageref{fun:simullmgp00exact} \\
+%%% & propagation of uncertainty &  \\
+%%% \hline \fun{gpSD00ran} & LMGP model prediction with uncertain inputs & \pageref{fun:gpSD00ran} \\
+%%% \hline \fun{simullmgp00mcmc} & LMGP model simulation with numerical  & \pageref{fun:simullmgp00mcmc} \\
+%%% & propagation of uncertainty  & \\ \hline
+%%%%
+\end{tabular}
+\vspace{3mm}
+
+
+Note: \\
+$\dagger$ \dots GPML toolbox routines, references can be found in
+its manual.
+
+
+\begin{tabular}{|l|l|c|}
+%
+
+
+\multicolumn{3}{l}{\tabelarule \bf } \\ \hline
+%
+ \multicolumn{2}{|l|}{\tabelarule \bf LMGP model simulation} & p.  \\
+  \hline \fun{gpSD00} & - LMGP model prediction & \pageref{fun:gpSD00} \\
+  & - data likelihood and its derivatives &  \\
+ \hline \fun{trainlmgp} & LMGP model training & \pageref{fun:trainlmgp} \\
+%
+ \hline \fun{simullmgp00naive} & LMGP model simulation without  & \pageref{fun:simullmgp00naive} \\
+  & propagation of uncertainty &  \\
+ \hline \fun{simullmgp00exact} & LMGP model simulation with analytical  & \pageref{fun:simullmgp00exact} \\
+ & propagation of uncertainty &  \\
+ \hline \fun{gpSD00ran} & LMGP model prediction with uncertain inputs & \pageref{fun:gpSD00ran} \\
+ \hline \fun{simullmgp00mcmc} & LMGP model simulation with numerical  & \pageref{fun:simullmgp00mcmc} \\
+ & propagation of uncertainty  & \\ \hline
+%
+
+\multicolumn{3}{l}{\tabelarule \bf } \\
+
+
+ \hline \multicolumn{2}{|l|}{\tabelarule \bf Supporting functions} & p. \\
+ \hline \fun{add\_noise\_to\_vector} & adding white noise to noise-free simulation results & \pageref{fun:add_noise_to_vector} \\
+ \hline \fun{construct\_simul\_input} & construction of the input for the simulation routines  & \pageref{fun:construct_simul_input} \\
+  & from system's input & \\
+ \hline \fun{construct\_train\_input} & construction of the input for the training routines  & \pageref{fun:construct_train_input} \\
+  & from system's input & \\
+ \hline \fun{loss2} & performance measures & \pageref{fun:loss2} \\
+ \hline \fun{mcmc\_test\_pdfs} & testing sampled probability distributions & \pageref{fun:mcmc_test_pdfs} \\
+ \hline \fun{plotgp} & plot results (output and error) of the GP model prediction & \pageref{fun:plotgp} \\
+ \hline \fun{plotgpe} & plot error of the GP model prediction & \pageref{fun:plotgpe} \\
+ \hline \fun{plotgpy} & plot output of the GP model prediction & \pageref{fun:plotgpy} \\
+ \hline \fun{premnmx} & preprocessing of data & $\ddagger$ \\
+ \hline \fun{postmnmx} & postprocessing of data &  $\ddagger$  \\
+ \hline \fun{postmnmxvar} & postprocessing of predicted variance & \pageref{fun:postmnmxvar} \\
+ \hline \fun{sig\_prbs} & generating pseudo-random binary signal & \pageref{fun:sig_prbs} \\
+ \hline \fun{sig\_prs\_minmax} & generating pseudo-random signal & \pageref{fun:sig_prs_minmax} \\ \hline
+
+%% \hline \fun{premnmx} & normiranje podatkov, da ti ležijo med -1 in 1  \\
+%% % &   \\
+%% \hline \fun{postmnmx} & ``odnormiranje'' normiranih podatkov  \\
+%%% \hline \fun{constructinput} & konstrukcija matrike vhodnih vektorjev za simulacijo modela \\
+%% \hline \fun{makesiminput} & konstrukcija matrike vhodnih vektorjev za simulacijo modela \\
+%% \hline \fun{plotgp} & grafièni prikaz rezultatov simulacije  (primerjava odziva modela \\
+%%  &  in želenega odziva skupaj s $95\%$ pasom zaupanja) \\
+%% \hline \fun{plotgpe} & grafièni prikaz napake skupaj s $95\%$ pasom zaupanja  \\
+%% \hline \fun{loss} & kvantitativna ocena rezultatov simulacije (rezultati cenilk) \\
+
+%
+%\multicolumn{2}{l}{\tabelarule \bf } \\
+
+\end{tabular}
+
+Note: \\
+$\ddagger$ \dots part of Matlab Neural Network toolbox, references
+can be found there.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{tabular}{|l|l|c|}
+
+
+ \hline \multicolumn{2}{|l|}{\tabelarule \bf Function templates} & p. \\
+ \hline \fun{get\_K\_clrd\_noise} & construction of noise part of covariance matrix  & \pageref{fun:get_K_clrd_noise} \\
+ & for known coloured noise & \\
+ \hline \fun{simul02naive\_hystOut} & simulation of the GP model with incorporated  & \pageref{fun:simul02naive_hystOut} \\
+ & hysteresis & \\
+ %\hline \fun{template\_fsgp\_fun} & template for FSGP model simulation & \pageref{fun:template_fsgp_fun} \\
+ %\hline \fun{template\_fsgp\_control\_law\_fun} & template for control function based on FSGP & \pageref{fun:template_fsgp_control_law_fun} \\
+ \hline \fun{detect\_fault} & fault detection with the use of GP model & \pageref{fun:detect_fault} \\
+ \hline \fun{detect\_fault\_validity} & estimate the validity of the FD & \pageref{fun:detect_fault_validity} \\
+ \hline
+
+%%
+%\hline
+%%
+%\multicolumn{3}{l}{\tabelarule \bf } \\
+%\hline \multicolumn{3}{|l|}{\tabelarule \bf Simulink model template} \\
+% \hline \fun{template\_fsgp\_model} &  \multicolumn{2}{|l|}{Matlab/Simulink model, serving as a template } \\
+%&  \multicolumn{2}{|l|}{for simulation, control design and control}  \\
+%\hline
+
+ \multicolumn{3}{l}{\tabelarule \bf } \\
+
+%
+ \hline \multicolumn{2}{|l|}{\tabelarule \bf Demos} & p. \\
+
+ \hline \fun{demo\_example\_present} & present the system used in demos & \pageref{fun:demo_example_present} \\
+ \hline \fun{demo\_example\_gp\_data} & generate data for the identification and validation  & \pageref{fun:demo_example_gp_data} \\
+ & of the GP model &  \\
+ \hline \fun{demo\_example\_gp\_training} & training of the GP model & \pageref{fun:demo_example_gp_training} \\
+ \hline \fun{demo\_example\_gp\_simulation} & validation with simulation of the GP model & \pageref{fun:demo_example_gp_simulation} \\
+ \hline \fun{demo\_example\_lmgp\_data} & generate data for the identification and validation  & \pageref{fun:demo_example_lmgp_data} \\
+ &  of the LMGP model & \\
+ \hline \fun{demo\_example\_lmgp\_training} & training of the LMGP model & \pageref{fun:demo_example_lmgp_training} \\
+ \hline \fun{demo\_example\_lmgp\_simulation} & simulation of the LMGP model & \pageref{fun:demo_example_lmgp_simulation} \\
+ \hline \fun{example} & system simulation & \pageref{fun:example} \\
+ \hline \fun{example\_derivative} & obtaining system's derivatives & \pageref{fun:example_derivative} \\
+ \hline \fun{example\_LM\_ident} & identification of system's local models & \pageref{fun:example_LM_ident} \\ \hline
+
+\end{tabular}
+
+
+} % EOF arraystratch
+
+
+\clearpage
+
+
+\subsection{How to use this toolbox}
+
+
+\subsubsection{Demos}
+
+A simple nonlinear dynamical system is used to demonstrate the
+identification and simulation of the GP models:
+ \be
+ y(k+1) = \frac{y(k)}{1+y^2(k)} + u^3(k) \label{eq:narendra}
+ \ee
+ The system was used as an example of dynamical system identification
+ with artificial neural networks in: \\
+ K.S. Narendra and K. Parthasarathy. Identification
+ and Control of Dynamical Systems Using Neural Networks,
+ IEEE Transactions on NN, Vol.1 No. 1, 4-27, 1990.
+ \bds
+ \item [demo\_example\_present,] presents this
+ system.
+ \eds
+
+ Following three demos present the identification of dynamical
+ systems with the GP model:
+ \bds
+ \item [demo\_example\_gp\_data,] which presents how to obtain and
+ assemble data for identification;
+ \item [demo\_example\_gp\_training,] which demonstrates the
+ training (=identifying) the GP model;
+ \item [demo\_example\_gp\_simulation,] which shows how to simulate
+ the GP model.
+ \eds
+
+ The use of the GP model with incorporated local models is
+ presented with demos:
+ \bds
+ \item [demo\_example\_lmgp\_data,] which presents how to obtain and
+ assemble data for identification;
+ \item [demo\_example\_lmgp\_training,] which demonstrates the
+ training (=identifying) the LMGP model;
+ \item [demo\_example\_lmgp\_simulation,] which shows how to simulate
+ the LMGP model.
+ \eds
+
+
+\subsubsection{Templates}
+
+Templates are used to facilitate the incorporation of different
+prior knowledge into the GP model and to present how the GP model
+can be used for fault detection.
+
+Function \fun{get\_K\_clrd\_noise} returns the "noise part" \ of
+covariance matrix, when the system output is corrupt with known
+coloured Gaussian noise and not usually assumed white Gaussian
+noise. The returned noise part of covariance matrix must be added
+to the "function part" \ of covariance matrix.
+
+
+Function \fun{simul00naive\_hystOut} demonstrates how to simulate
+the GP model, where the $D$-th regressor represent the state of
+the hysteresis on the output.
+
+%Fixed-Structure GP model is special model, with linear structure
+%and varying parameters, which depend on scheduling variables and
+%are modelled with GP models. Model is realised in Matlab/Simulink,
+%its template is given in \fun{template\_fsgp\_model.mdl}. For
+%modelling the function \fun{template\_fsgp\_fun} is called.
+%Function \fun{template\_fsgp\_control\_law\_fun} can be used to
+%impose the controlling action to the system based on the model.
+
+In Dj. Jurièiæ and J.~Kocijan.
+\newblock Fault detection based on {G}aussian process model.
+\newblock In I.~Troch and F.~Breitenecker, editors, {\em Proceedings of the 5th
+  Vienna Symposium on Mathematical Modeling -- MathMod}, Dunaj, 2006,
+  \\it has been shown that the GP models can be used for fault
+detection. The function \fun{detect\_fault} is used for fault
+detection and the function \fun{detect\_fault\_validity} is used
+to estimate the confidence we can have in the prediction.
+
+
+\subsection{Notes}
+
+The GPML package\footnote{Rasmussen and Williams,
+\emph{http://www.gaussianprocess.org/gpml}.} is relatively new and
+introduces a new way of calling basic prediction routine
+\fun{gpr}. In previous version the routines used for dynamical GP
+modelling had only the possibility to use Gaussian covariance
+function (now \fun{covSEard}) with white noise on the output of
+the system (now \fun{covNoise}) and the necessary calculations
+were done directly in the prediction routine (now \fun{gpr}). The
+basic functions have already been recoded to employ the new
+change, but in more complex (i.e. simulation with analytical
+propagation of variance \fun{simul00exact}, LMGP functions,
+``coloured noise" \ covariance function \fun{covClrdNoise}) this
+change still has to be made.
+
+
+\subsection{Future work}
+
+In future work the needed improvements, listed in previous
+subsection, have to be considered.
+
+
+
+\section{Toolbox reference}
+
+This section gives a list of all functions, templates and demos
+constituting the model with their names, syntax and basic
+instructions.
+
+
+\newpage
+\input{./funref/traingp.tex}
+
+\newpage
+\input{./funref/gpr_simul.tex}
+
+\newpage
+\input{./funref/simul02naive.tex}
+
+\newpage
+\input{./funref/simul00exact.tex}
+
+\newpage
+\input{./funref/gpr_SEard_exact.tex}
+
+\newpage
+\input{./funref/simul02mcmc.tex}
+
+
+\newpage
+\input{./funref/mcmc_getsamplesgaussmix.tex}
+
+
+%%%%% LMGP
+
+
+ \newpage
+ \input{./funref/gpSD00.tex}
+
+  \newpage
+ \input{./funref/trainlmgp.tex}
+
+ \newpage
+ \input{./funref/simullmgp00naive.tex}
+
+ \newpage
+ \input{./funref/simullmgp00exact.tex}
+
+ \newpage
+ \input{./funref/gpSD00ran.tex}
+
+ \newpage
+ \input{./funref/simullmgp00mcmc.tex}
+
+
+
+%%%%% SUPPORTING
+
+\newpage
+\input{./funref/add_noise_to_vector}
+
+
+\newpage
+\input{./funref/construct_simul_input}
+
+\newpage
+\input{./funref/construct_train_input}
+
+\newpage
+\input{./funref/loss2}
+
+\newpage
+\input{./funref/mcmc_test_pdfs}
+
+\newpage
+\input{./funref/plotgp}
+
+\newpage
+\input{./funref/plotgpe}
+
+\newpage
+\input{./funref/plotgpy}
+
+\newpage
+\input{./funref/postmnmxvar}
+
+\newpage
+\input{./funref/sig_prbs}
+
+\newpage
+\input{./funref/sig_prs_minmax}
+
+
+
+%%%%% TEMPLATES
+
+\newpage
+\input{./funref/get_K_clrd_noise}
+
+\newpage
+\input{./funref/simul02naive_hystOut}
+
+%\newpage
+%\input{./funref/template_fsgp_control_law_fun}
+
+%\newpage
+%\input{./funref/template_fsgp_fun}
+
+\newpage
+\input{./funref/detect_fault}
+
+\newpage
+\input{./funref/detect_fault_validity}
+
+
+
+
+
+%%%%% DEMOS
+
+
+\newpage
+\input{./funref/demo_example_present}
+
+\newpage
+\input{./funref/demo_example_gp_training}
+
+\newpage
+\input{./funref/demo_example_gp_data}
+
+\newpage
+\input{./funref/demo_example_gp_simulation}
+
+
+\newpage
+\input{./funref/demo_example_lmgp_data}
+
+\newpage
+\input{./funref/demo_example_lmgp_training}
+
+\newpage
+\input{./funref/demo_example_lmgp_simulation}
+
+
+
+\newpage
+\input{./funref/example}
+
+\newpage
+\input{./funref/example_derivative}
+
+\newpage
+\input{./funref/example_LM_ident}
+
+
+
+
+
+
+\end{document}

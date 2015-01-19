@@ -1,0 +1,28 @@
+\subsection*{simul02naive} \label{fun:simul00naive}
+
+\textbf{Syntax}
+\\  \texttt{function [y, s2] = simul02naive(logtheta, covfunc, input, target,
+xt,lag)}
+
+\textbf{Description}
+\\ "Naive" (i.e. without propagation of variance) simulation of the GP
+ model.
+\\ Uses routine gpr.
+\\
+\\ Inputs:
+\\ loghteta .. optimized hyperparameters
+\\ covfunc .. specified covariance function, see help covFun for more info
+\\ input .. input part of the training data,  NxD matrix
+\\ target .. output part of the training data (ie. target), Nx1 vector
+\\ xt .. input matrix for simulation, kxD vector, see
+\\   construct\_simul\_input.m for more info
+\\ lag .. the order of the model (number of used lagged outputs)
+\\ Outputs:
+\\ y .. mean predicted output
+\\ s2 .. associated variances
+
+\textbf{Examples}
+\\ demo\_example\_gp\_simulation.m
+
+\textbf{See Also}
+\\ GPR\_SIMUL, SIMUL00EXACT, SIMUL02MCMC

@@ -1,0 +1,46 @@
+\subsection*{simul02naive\_hystOut}  \label{fun:simul02naive_hystOut}
+
+
+
+\textbf{Syntax}
+\\ \texttt{function [y, s2, hyst] = simul02naive\_hystOut(logtheta, covfunc, input,
+   target,
+   \\ \tab  xt,lag, hystProp)}
+
+\textbf{Description}
+\\ Template for function for "naive" (i.e. without propagation of variance)
+ simulation of the GP model with hysteresis on the output. Uses
+routine
+ gpr and works similar to SIMUL00NAIVE.
+ \\
+ See K. Azman, J. Kocijan, Identifikacija dinamiènega sistema s
+histerezo
+ z modelom na osnovi Gaussovih procesov. In: B. Zajc, A. Trost
+(eds.)
+ Zbornik štirinajste mednarodne Elektrotehniške in raèunalniške
+konference
+ ERK 2005, 26.-28.09., Portorož, Slovenija, 2005, Vol. A, pp.
+253--256.
+ (in Slovene)
+\\
+\\ Inputs:
+\\ loghteta .. optimized hyperparameters
+\\ covfunc .. specified covariance function, see help covFun for more info
+\\ input .. input part of the training data,  NxD matrix, D-th regressor
+  represents the state
+  \\ \tab of hysteresis
+\\ target .. output part of the training data (ie. target), Nx1 vector
+\\ xt .. input matrix for simulation, kxD vector, see
+   construct\_simul\_input.m for more info
+\\ lag .. the order of the model (number of used lagged outputs)
+\\ hystProp .. hysteresis properties:
+\\  \tab .limits .. [xmin xmax] values, where the state of hysteris changes
+\\  \tab .DYH .. change of the output due to hysteresis
+\\  \tab .state .. initial state of hysteresis
+\\ Outputs:
+\\ y .. mean predicted output
+\\ s2 .. corresponding variances with added white noise v0
+\\ hyst .. corresponding states of the hysteresis
+
+\textbf{See Also}
+\\ GPR\_SIMUL, SIMUL02NAIVE

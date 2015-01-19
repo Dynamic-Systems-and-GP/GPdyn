@@ -1,0 +1,50 @@
+\subsection*{gpSD00ran}  \label{fun:gpSD00ran}
+
+
+\textbf{Syntax}
+\texttt{function [mu, S2, invQ] = gpSD00ran(X, input, target, targetvariance, derivinput, derivtarget, derivvariance, test, SigmaX)}
+
+\textbf{Description}
+\\ This function computes the predictive mean and variance at test input for
+ the LMGP model with the covariance function as sum of covSEard
+and  covNoise.  The prediction and propagation of variance is done
+by this
+ routine. When test data are given, then (marginal) Gaussian
+predictions  are computed, whose mean and (noise free) variance
+are returned.
+\\
+\\ Inputs:
+\\ X       ..  a (column) vector (of size D+2) of hyperparameters
+\\ input   ..  a n by D matrix of training inputs
+\\ target  ..  a (column) vector (of size n) of targets
+\\ targetvariance  ..  a (column) vector (of size n) of variances of
+ targets unknown variances
+ \\ \tab are indicated by NaN -- these are then
+   replaced by the noise term in the covariance
+   \\ \tab  function
+\\ derivinput  ..  an n by D matrix of training inputs at which we have
+\\   derivative information (not necessarily the same as 'input').
+\\ derivtarget  ..  an n by D matrix of partial derivatives at 'derivinput',
+ w.r.t. each input
+\\ derivvariance  ..  an n by D\^2 matrix, where each row is the elements of
+ the covariance
+ \\ \tab  matrix associated with the appropriate derivtarget
+\\ test    ..  a nn by D matrix of test inputs
+\\ SigmaX  ..  covariance of the test input
+\\ Outputs:
+\\ mu      ..  a (column) vector (of size nn) of prediced means
+\\ S2      ..  a (column) vector (of size nn) of predicted variances
+\\ invQ    ..  the inverse or covariance matrix.
+\\
+\\ (C) Copyright 1999 - 2003, Carl Edward Rasmussen (2003-07-24).
+\\ derivative adaptation, Roderick Murray-Smith (2003-07-25). Can now cope
+\\ with a number of derivative observations independent of the number of
+\\ function observations. It has seperate noise level for the derivative
+\\ observations.
+\\ Variance propagation upgrade, Jus Kocijan, 2003
+
+\textbf{Examples}
+\\ demo\_example\_lmgp\_simulation.m
+
+\textbf{See Also}
+\\ SIMULLMGP00NAIVE SIMULLMGP00MCMC, MINIMIZE, GPSD00

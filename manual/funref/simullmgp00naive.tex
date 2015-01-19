@@ -1,0 +1,40 @@
+\subsection*{simullmgp00naive} \label{fun:simullmgp00naive}
+
+
+\textbf{Syntax}
+\texttt{function [mu, s2] = simullmgp00naive(logtheta, covfunc, input, target, targetvariance,...
+  derivinput, derivtarget, derivvariance, xt, lag)}
+
+\textbf{Description}
+\\ "Naive" (i.e. without propagation of variance) simulation of the GP
+ model with the incorporated local models (LM).
+\\ Note:
+\\Currently it can be used only with Gaussian covariance function
+and
+ with white noise model (sum of covSEard and covNoise).
+\\ Uses routine gpSD00.
+\\
+\\
+\\ Inputs:
+\\ loghteta .. optimized hyperparameters
+\\ covfunc .. specified covariance function, see help covFun for more info
+\\ input .. input part of the training data,  NxD matrix
+\\ target .. output part of the training data (ie. target), Nx1 vector
+\\ targetvariance .. target variance, use NaN where not known
+\\ derivinput .. input part of the derivative training data, NEQxD matrix
+\\ derivtarget .. target derivatives, NEQxD matrix
+\\ derivvariance .. variances of the local model prameters, NEQxD matrix
+\\ xt .. input matrix for simulation, kxD vector, see
+\\   construct\_simul\_input.m for more info
+\\ lag .. the order of the model (number of used lagged outputs)
+\\ Outputs:
+\\ mu .. mean predicted output
+\\ s2 .. asociated variances
+\\
+\\ Based on the work of R. Murray-Smith and A. Girard.
+
+\textbf{Examples}
+\\ demo\_example\_lmgp\_simulation.m
+
+\textbf{See Also}
+\\ GPSD00, SIMULLMGP00EXACT, SIMULLMGP00MCMC, SIMUL02NAIVE

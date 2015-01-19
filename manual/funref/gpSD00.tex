@@ -1,0 +1,82 @@
+\subsection*{gpSD00} \label{fun:gpSD00}
+
+
+\textbf{Syntax} \texttt{function [out1, out2, out3, out4] =
+gpSD00(X, input, target,
+\\ \tab targetvariance, derivinput,
+derivtarget, derivvariance, test)}
+
+\textbf{Description}
+\\ This function computes the predictive mean and variance at test input for
+ the LMGP model with the covariance function as sum of covSEard
+and  covNoise.
+\\ Usage:
+\\ {[}fX, dfX{]} = gpSD00(X, input, target, derivinput,derivtarget,
+derivvariance)
+\\ \tab or:
+\\{[}mu, S2, muderiv, S2deriv{]} = gpSD00(X, input, target, derivinput, derivtarget,
+  \\ \tab     derivvariance, test)
+  \\
+\\Inputs:
+\\ X       ..  a (column) vector (of size D+2) of hyperparameters
+\\ input   ..  a n by D matrix of training inputs
+\\ target  ..  a (column) vector (of size n) of targets
+\\ targetvariance  ..  a (column) vector (of size n) of variances of
+ targets. Unknown variances
+ \\ \tab are indicated by NaN - these are then
+  replaced by the noise term in the covariance
+  \\ \tab function
+\\ derivinput  ..  an n by D matrix of training inputs at which we have
+   derivative information \\ \tab (not necessarily the same as 'input').
+\\ derivtarget  ..  an n by D matrix of partial derivatives at 'derivinput',
+   w.r.t. each input
+\\ derivvariance  ..  an n by $D^2$ matrix, where each row is the elements of
+   the covariance \\ \tab matrix associated with the appropriate derivtarget
+\\ test    ..  a nn by D matrix of test inputs
+\\ Outputs:
+\\ fX      ..  the returned value of minus log likelihood
+\\ dfX     ..  a (column) vector (of size D+2) of partial
+derivatives of minus the log likelihood wrt each of the
+hyperparameters
+\\ mu      ..  a (column) vector (of size nn) of prediced means
+\\ S2      ..  a (column) vector (of size nn) of predicted variances
+\\
+ where D is the dimension of the input. The form of the
+covariance function is
+\\
+$C(x^p,x^q) = v^2 \ exp \left( -(x^p - x^q)^T P^{-1}(x^p - x^q)/2
+\right) + u^2 \ \delta_{pq}$
+\\
+ where the first term is the squared negative exponential and the
+second term
+ with the kronecker delta is the noise contribution. The P matrix
+is diagonal
+ with ``Automatic Relevance Determination" (ARD) or ``input length
+scale"
+ parameters $w_1^2,...,w_D^2$; The hyperparameter v is the
+``signal std dev'' and
+ u is the ``noise std dev''. All hyperparameters are collected in
+the vector X
+ as follows: $X = [ \log(w_1) \log(w_2) \dots \log(w_D) \log(v)
+ log(u)]^T$
+\\
+\\ Note: the reason why the log of the parameters are used in X is that this
+ often leads to a better conditioned (and unconstrained)
+optimization problem
+ than using the raw hyperparameters themselves.
+\\
+\\ This function can conveniently be used with the "minimize"  \ function to train
+ a Gaussian process:
+\\
+\\ (C) Copyright 1999 - 2003, Carl Edward Rasmussen (2003-07-24).
+ Derivative adaptation, Roderick Murray-Smith (2003-07-25). Can
+now cope  with a number of derivative observations independent of
+the number of
+ function observations. It has separate noise level for the
+derivative  observations.
+
+\textbf{Examples}
+\\ demo\_example\_lmgp\_simulation.m
+
+\textbf{See Also}
+\\ SIMULLMGP00NAIVE, SIMULLMGP00MCMC, MINIMIZE, GPSD00RAN

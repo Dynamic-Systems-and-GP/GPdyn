@@ -1,0 +1,41 @@
+\subsection*{simul00exact} \label{fun:simul00exact}
+
+\textbf{Syntax}
+\\  \texttt{[mu, sig2, m, s2] = simul00exact(logtheta, covfunc, input, target, xt, lag)}
+
+\textbf{ Description}
+\\ Simulation of the GP model, where the output variance is propagated using
+ analytical approximation, see A. Girard, Approximate Methods for
+Propagation of  Uncertainty with Gaussian Process Models, PhD
+thesis, 2004.
+\\ Notes:
+\\ Currently it can be used only with Gaussian covariance function and
+ with white noise model (sum of covSEard and covNoise).
+
+ Uses routine gpr\_SEard\_exact.
+\\
+\\ Inputs:
+\\ loghteta .. optimized hyperparameters
+\\ covfunc .. specified covariance function, see help covFun for more info
+\\ input .. input part of the training data,  NxD matrix
+\\ target .. output part of the training data (ie. target), Nx1 vector
+\\ xt .. input matrix for simulation, kxD vector, see
+   construct\_simul\_input.m for more info
+\\ lag .. the order of the model (number of used lagged outputs)
+\\ Outputs:
+\\ mu ..       predictive mean using "naive" approach (doesn't propagate the
+           uncertainty)
+\\ sig2 ..     predictive variance using "naive" approach
+\\ m  ..       predictive mean when propagating the uncertainty
+\\ s2 ..       predictive variance when propagating the uncertainty
+\\ The form of the covariance function is\\
+    $C(x^p,x^q) = v_1 \ exp \left( -\frac{1}{2} \sum_{d=1}^D w_d (x^p_d -
+x^q_d)^2 \right) + v_0 \ \delta_{pq}$
+\\  (computed using cov2.m)
+\\ Based on the work of R. Murray-Smith and A. Girard.
+
+\textbf{Examples}
+\\ demo\_example\_gp\_simulation.m
+
+\textbf{See Also}
+\\ SIMUL02NAIVE, GPR\_SEARD\_EXACT

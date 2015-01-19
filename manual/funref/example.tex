@@ -1,0 +1,33 @@
+\subsection*{example} \label{fun:example}
+
+\textbf{Syntax}
+\\  \texttt{function [Y, X, U] = example(U, varargin)}
+
+\textbf{Description}
+\\ Function simulating the nonlinear dynamic system:
+\\   $ y(k+1) = \frac{y(k)}{1+y^2(k)} + u^3(k) $
+\\ which is used to demonstrate the use of this toolbox.
+\\ {[}1{]} K.S. Narendra and K. Parthasarathy. Identification
+\\ and Control of Dynamical Systems Using Neural Networks,
+\\ IEEE Transactions on NN, Vol.1 No. 1, 4-27, 1990.
+\\
+\\ Usage:
+\\ (1) {[}Y, X, U{]} = example(u, y0), u is vector, y0 is optional
+\\ (2) {[}Y, X, U{]} = example(U, y0), U is Nx2 matrix
+\\ Inputs:
+\\ u .. vector of inputs
+\\ U .. matrix U=[x u], where x is vector of past states nad u is vector of
+\\   inputs
+\\ y0 .. intial state of the system, optional
+\\ Outputs:
+\\ Y .. vector of outputs
+\\ X .. vector of past outputs: X(k) = Y(k-1)
+\\ U .. vector of inputs
+\\
+\\
+
+\textbf{Examples}
+\\ demo\_example\_gp\_data.m
+
+\textbf{See Also}
+\\ EXAMPLE\_DERIVATIVE, EXAMPLE\_LM\_IDENT

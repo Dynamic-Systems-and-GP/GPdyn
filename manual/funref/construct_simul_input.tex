@@ -1,0 +1,28 @@
+\subsection*{construct\_simul\_input} \label{fun:construct_simul_input}
+
+
+\textbf{Syntax}
+\\ \texttt{function xt = construct\_simul\_input(lag,u,x0)}
+
+\textbf{Description}
+\\ Function contructs matrix for GP model simulation from input signal and
+ starting values of output of the system. Shape of the matrix:
+\\ xt = [y(1)... y(lag) u(1)      ... u(lag);
+\\       y(2)... 0      u(2)      ... u(lag+1);
+\\    $\vdots$
+\\       0   ... 0      u(end-lag)... u(end-1)];
+\\ Note:
+\\first u(-lag+1)=u(0) and the matrix is correspondingly shorter!
+\\ Inputs:
+\\ lag .. order of the system
+\\ u .. system input signal u, u = [u(1) ... u(end)]'
+\\ x0 .. starting values of system state (=output),  x0 = [y(1) ... y(lag)]
+\\ Outputs:
+\\ xt .. matrix used as the input to simulation rutines
+
+\textbf{Examples}
+\\ demo\_example\_gp\_simulation.m
+
+\textbf{See Also}
+\\
+\\ SIMUL02NAIVE, SIMUL00EXACT, etc.

@@ -1,0 +1,45 @@
+\subsection*{get\_K\_clrd\_noise} \label{fun:get_K_clrd_noise}
+
+
+\textbf{Syntax}
+\\  \texttt{function [Cn, Cn\_vec] = get\_K\_clrd\_noise(NN, a, b,
+noisevar)}
+
+\textbf{Description}
+\\ Function returns the noise part of covariance matrix, when the
+ coloured noise on the output of the system is known.
+ This covariance matrix should be added to its function part. The
+ function folows the derivation in {[}1{]} and differs a bit from
+{[}2{]}.
+\\ Idea:
+\\ AR part (ai-s) :
+\\ first na elements of the covariance matrix calculated using Yule-Walker
+\\ equations, the rest of them (na+1 .. NN) computed iteratively
+\\ MA part (bi-s) :
+\\ the elements of covariance matrix up to bn are calculated, the rest of
+\\ them equals 0
+\\ Notes:
+\\ (1) K(tau) = K(i,j), where $|i-j|=|j-i|=tau$
+\\ (2) Function is not compatible with the current version of the GPML
+\\ toolbox.
+\\ (3) Function uses the function TOEPLITZ.
+\\
+\\ Inputs:
+\\ NN .. size of the covariance matrix (number of training data)
+\\ a ... vector of AR elements of correlated-noise (1 a\_1 a\_2 .. a\_na)
+\\ b ... vector of MA elements of correlated-noise (b\_0 b\_1 b\_2 .. b\_nb)
+\\    usually b\_0=0
+\\ noisevar ... noise variance sigma\_e$^2$
+\\ Outputs:
+\\ Cn .. noise part of the covariance matrix
+\\ Cn\_vec .. elements of the covariance matrix in a vector
+
+\textbf{See Also}
+\\ {[}1{]} K. Azman, J. Kocijan, Identifikacija dinamiènega sistema z znanim modelom
+\\ šuma z modelom na osnovi Gaussovih procesov, n: B. Zajc, A. Trost (eds.)
+\\ Zbornik petnajste mednarodne Elektrotehniške in raèunalniške konference
+\\ ERK 2006, 25.-27.09., Portorož, Slovenija, 2006, Vol. A, pp. 289--292,
+\\ 2006.  (in Slovene)
+\\ {[}2{]} R. Murray-Smith and A. Girard. Gaussian Process Priors with ARMA
+\\ noise models. In Proceedings: Irish Signals and Systems Conference,
+\\ 147-153, Maynooth, 2001.

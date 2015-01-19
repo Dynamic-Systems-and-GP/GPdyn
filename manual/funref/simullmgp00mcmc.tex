@@ -1,0 +1,56 @@
+\subsection*{simullmgp00mcmc}  \label{fun:simullmgp00mcmc}
+
+
+\textbf{Syntax}
+\texttt{[mu, s2, MM, VV] = simullmgp00mcmc(logtheta, covfunc, input, target, targetvariance,...
+\\     derivinput, derivtarget, derivvariance, xt, lag, Nsamples)}
+
+\textbf{Description}
+\\ Simulation of the GP model with incorporated local models (LMGP models),
+ where the output variance is propagated using numerical MCMC
+approximation,
+ see K. Ažman.
+Identifikacija dinamiènih sistemov z Gaussovimi procesi. PhD
+thesis, Univerza v Ljubljani, Ljubljana, 2007. (in Slovene).
+\\ Idea:
+\\ at every time step the output of GP model is approximated with
+ the Gaussian distribution, from which we sample one value. We
+repeat the
+ procedure Nsamples-times.
+ Nsamples samples, which are used as the future inputs of the GP
+model.
+ Samples are re-used if necessary (ie. y(k-1) for y(k-2) if lag=2
+etc.)
+\\ Notes:
+\\ (1) Currently it can be used only with Gaussian covariance function and
+ with white noise model (sum of covSEard and covNoise) due to the
+gpSD00.
+\\ Uses routine gpSD00.
+\\
+\\ Inputs:
+\\ loghteta .. optimized hyperparameters
+\\ covfunc .. specified covariance function, see help covFun for more info
+\\ input .. input part of the training data,  NxD matrix
+\\ target .. output part of the training data (ie. target), Nx1 vector
+\\ targetvariance .. target variance, use NaN where not known
+\\ derivinput .. input part of the derivative training data, NEQxD matrix
+\\ derivtarget .. target derivatives, NEQxD matrix
+\\ derivvariance .. variances of the local model prameters, NEQxD matrix
+\\ xt .. input matrix for simulation, kxD vector, see
+  construct\_simul\_input.m for more info
+\\ lag .. the order of the model (number of used lagged outputs)
+\\ Nsamples .. number of samples used in algorithm (ie. runs of simulation)
+\\ Outputs:
+\\ mu .. mean predicted output
+\\ s2 .. associated variances
+\\ MM.. matrix of all predicted means, kxNsamples
+\\ VV .. associated predicted variances
+\\
+\\ Written by K.Azman, 31.05.2005
+\\ Based on the work of C.E. Rasmussen and A. Girard.
+
+\textbf{Examples}
+\\ demo\_example\_lmgp\_simulation.m
+
+\textbf{See Also}
+\\ GPSD00, SIMULLMGP00NAIVE, SIMULLMGP00EXACT, SIMUL02MCMC
