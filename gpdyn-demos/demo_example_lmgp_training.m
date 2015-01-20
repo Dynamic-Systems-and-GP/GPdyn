@@ -60,7 +60,7 @@ end
 
 
 % covariance function: SE + white noise 
-covfunc = {'covSum',{'covSEard','covNoise'}}; 
+covfunc = {'covSEard','covNoise'}; 
 
 %************************************************************************
 % training

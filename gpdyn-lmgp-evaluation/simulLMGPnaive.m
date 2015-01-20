@@ -1,4 +1,4 @@
-function [mu, s2] = simulLMGPnaive(logtheta, covfunc, input, target, targetvariance,...
+function [mu, s2] = simulLMGPnaive(hyp, covfunc, input, target, targetvariance,...
     derivinput, derivtarget, derivvariance, xt, lag)
 % simulLMGPnaive - 'Naive' (i.e. without propagation of variance) simulation of the GP
 % model with the incorporated local models (LM).
@@ -42,15 +42,9 @@ function [mu, s2] = simulLMGPnaive(logtheta, covfunc, input, target, targetvaria
 
 fun_name = 'simulLMGPnaive'; 
 
-if ~(isequal(covfunc{1},'covSum') &  isequal(covfunc{2}{1},'covSEard') & ...
-        isequal(covfunc{2}{2},'covNoise'))
-    error(strcat([fun_name,': function can be called only with the sum', ...
-        ' of covariance functions ''covSEard'' and ''covNoise'' '])); 
-end 
-
 % 1st point
 test = xt(1,:); 
-[mu(1), s2(1)] = gpSD00(logtheta, input, target, targetvariance, derivinput, derivtarget, derivvariance, test);
+[mu(1), s2(1)] = gp(hyp, input, target, targetvariance, derivinput, derivtarget, derivvariance, test);
 for k=2:size(xt,1)
 
     if(mod(k,50)==0)
