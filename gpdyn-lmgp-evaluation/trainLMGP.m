@@ -1,4 +1,4 @@
- function [logtheta, flogtheta, i] = trainLMGP(covfunc, likfunc, input, target, inputDer, targetDer, deriveVar, hyp0)
+ function [logtheta, flogtheta, i] = trainLMGP(covfunc, input, target, inputDer, targetDer, deriveVar, logtheta0)
 % trainLMGP - Function for optimization (training) of the LMGP model (GP model v local
 % information) hyperparameters based on the training data via Maximum 
 % Likelihood (ML).
@@ -37,23 +37,21 @@
 
 fun_name = 'trainLMGP'; 
 
-if ~(isequal(covfunc{1},'covSEard'))
-    error(strcat([fun_name,': function can be called only with covSEard'])); 
-end 
-
-if ~(isequal(likfunc{1},'likGauss'))
-    error(strcat([fun_name,': function can be called only with likGauss'])); 
+if ~(isequal(covfunc{1},'covSum') &  isequal(covfunc{2}{1},'covSEard') & ...
+        isequal(covfunc{2}{2},'covNoise'))
+    error(strcat([fun_name,': function can be called only with the sum', ...
+        ' of covariance functions ''covSEard'' and ''covNoise'' '])); 
 end 
 
 [n D] = size(target);
 [nd D] = size(targetDer);
 
   if nargin == 6
-    hyp0 = struct('cov',-rand(D+2,1),'lik',-rand(),'mean',[]); 
+    logtheta0 = -rand(D+2,1); 
   end
 flogtheta = 0;
 
-[logtheta, flogthetatmp, i] = minimize(hyp0, 'gpSD00', -200, input,target, NaN*ones(n,1),...
+[logtheta, flogthetatmp, i] = minimize(logtheta0, 'gpSD00', -200, input,target, NaN*ones(n,1),...
     inputDer,targetDer, deriveVar);
 
 if isempty(flogthetatmp)
@@ -74,7 +72,6 @@ end
 if exp(logtheta(end)) < 1e-6
   logtheta(end) =log(1e-6);
 end
-
 
 
 

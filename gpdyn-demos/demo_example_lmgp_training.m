@@ -16,7 +16,7 @@ close all;
 
 
 %%%%% off-equlibrium data 
-load example_data 
+example_train_data=load('example_data.mat');
 ind_oeq = 5:2:length(example_train_data.utrain); 
 
 utrain = example_train_data.utrain(ind_oeq); 
@@ -60,7 +60,7 @@ end
 
 
 % covariance function: SE + white noise 
-covfunc = {'covSEard','covNoise'}; 
+covfunc = {'covSum',{'covSEard','covNoise'}}; 
 
 %************************************************************************
 % training

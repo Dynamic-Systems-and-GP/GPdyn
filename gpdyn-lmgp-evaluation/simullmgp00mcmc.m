@@ -83,7 +83,7 @@ for jjj=1:Nsamples
 
     for k=2:length(xt)
 
-        test = [xt(k, lag+1:end)];
+        test = [xt(k, lag+1:end)]; % why do we need this? 
 
         % For the NEXT prediction...
         % assumed normal distribution, for more accurate procedure see
