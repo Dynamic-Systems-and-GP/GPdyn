@@ -39,6 +39,7 @@ function [mu, s2] = simullmgp00naive(logtheta, covfunc, input, target, targetvar
 % GPSD00, SIMULLMGP00EXACT, SIMULLMGP00MCMC, SIMUL02NAIVE
 
 
+
 fun_name = 'simullmgp00naive'; 
 
 if ~(isequal(covfunc{1},'covSum') &  isequal(covfunc{2}{1},'covSEard') & ...

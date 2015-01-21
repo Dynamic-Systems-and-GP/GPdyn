@@ -23,10 +23,10 @@ clear;
 close all;
 
 % validation data
-load example_data
+example_valid_data=load('example_data.mat')
 
 % trained LMGP model
-load example_LMGP_trained
+load example_lmgp_trained
 
 
 flag_naive_simulation = 1;
@@ -43,7 +43,7 @@ t = [0:length(uvalid)-1]';
 
 if(flag_naive_simulation)
     % naive simulation
-    [ynaive, s2naive] = simulLMGPnaive(logtheta, covfunc, input, target, targetvar,...
+    [ynaive, s2naive] = simulLMGPnaive(logtheta, input, target, targetvar,...
         inputDer, targetDer, derivevar, xt, lag); 
 
     plotgp(101,t,yvalid, ynaive, sqrt(s2naive));
