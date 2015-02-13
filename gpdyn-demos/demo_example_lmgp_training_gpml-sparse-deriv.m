@@ -39,9 +39,9 @@ dfdu = eq.dfdu;
 %***************************
 % training data construction
 % functional  
-input = [Yeq Ueq; xtrain utrain]; 
-target = [Yeq; ytrain]; 
-targetvar = NaN*ones(size(target)); 
+inputSimple = [Yeq Ueq; xtrain utrain]; 
+targetSimple = [Yeq; ytrain]; 
+%~ targetvarSimple = NaN*ones(size(target));  % not implemented anymore
 % derivative 
 
 inputDer = [Yeq Ueq]; 
@@ -49,41 +49,45 @@ targetDer = [dfdy dfdu];
 
 % LM variance 
 
-for ii=1:size(inputDer,1)    
-    if(flag_LM_data_ident == 1)
-%         eq.lm{ii}.CovarianceMatrix
-        derivevar(ii,:) = reshape(eq.lm{ii}.CovarianceMatrix,1,4);
-    else
-        derivevar(ii,:) = reshape(0.01*eye(2),1,4); 
-    end 
-end 
+%~ for ii=1:size(inputDer,1)    
+    %~ if(flag_LM_data_ident == 1)
+%~ %         eq.lm{ii}.CovarianceMatrix
+        %~ derivevar(ii,:) = reshape(eq.lm{ii}.CovarianceMatrix,1,4);
+    %~ else
+        %~ derivevar(ii,:) = reshape(0.01*eye(2),1,4); 
+    %~ end 
+%~ end 
 
+
+n=size(inputSimple,1);
+nD=size(inputDer,1);
+D=size(inputSimple,2);
+
+
+input=[ zeros(n,1)	inputSimple;
+		ones(nD,1)*1	inputDer];
+target=[targetSimple;
+		targetDer];
 
 % covariance function: SE + white noise 
-covfunc = {'covSum',{'covSEard','covNoise'}}; 
+mean = @meanZeroDerObs;
+cov  = {@covSEisoDerObs};
+lik  = @likGaussDerObs;
+inf = @infExactDerObs;
 
 %************************************************************************
 % training
 
-% set the mean, covariance, inference method, and likelihood function. These
-% are all unused and dummy, since the gpSD00 function has its own implementation.
-inffunc= 'infExact';
-meanfunc='meanZero';
-covfunc= 'covSEard';
-likfunc= 'likGauss';
-
-%initialize hyperparameters:
-hyp0.cov=ones(size(target,2)+1);
-hyp0.lik=-1;
 
 lag = 1; 
 
-hyp=minimize(hyp0,'gpSD00',-200,inffunc,meanfunc,covfunc,likfunc,input,target,targetvar, inputDer, targetDer, derivevar);
+[logtheta,flogtheta,i] = gp(cov,mean, inf, lik, input, target);
+
 
 % validation on ident data 
 for ii=1:size(input,1)
     test = input(ii,:);
-    [mug(ii) s2(ii)]=gpSD00(hyp,inffunc,meanfunc,covfunc,likfunc,input,target,targetvar, inputDer, targetDer, derivevar, test);
+    [mug(ii) s2(ii)]=gp(cov,mean, inf, lik, input, target,test);
 end
 
 figure(299);
@@ -91,7 +95,7 @@ plot(Ueq,Yeq,'r',utrain(:,1),ytrain,'or',[input(:,2)],mug,'k*',...
     [input(:,2)],mug+2*s2,'k.',[input(:,2)],mug-2*s2,'k.');
 
 disp('Hyperparameters: ');
-disp(num2str(exp(unwrap(hyp))));
+disp(num2str(exp(logtheta)));
 disp(' ');
 disp(['Number of local models: ', num2str(length(targetDer))]);
 disp(['Number of points out of equilibrium: ', num2str(length(utrain))]);
@@ -101,8 +105,8 @@ disp(' ');
 
 
 if(1)
-    save example_lmgp_trained hyp input target targetvar ...
-        inputDer targetDer derivevar covfunc meanfunc inffunc likfunc lag;
+    save example_lmgp_trained logtheta input target targetvar ...
+        inputDer targetDer derivevar covfunc lag;
 end
 
 return 

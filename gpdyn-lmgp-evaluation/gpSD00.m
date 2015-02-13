@@ -1,36 +1,40 @@
-function [out1, out2, out3, out4] = gpSD00(X, input, target, targetvariance, derivinput, derivtarget, derivvariance, test)
+function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, target, ...
+							targetvariance, derivinput, derivtarget, derivvariance, xs)
 % gpSD00 computes the predictive mean and variance at test input for
 % the GP model with incorporated local models, i.e., derivative observations, 
-% with the covariance function as sum of covSEard and
-% covNoise. It is used for training and prediction. 
+% with the covariance function covSEard and gaussian likelihood likGauss.
+% It is used for training and prediction. 
 %
 %
 %% Syntax
-%  training:   [fX dfX] = gpSD00(X, input, target, derivinput, derivtarget, derivvariance)
-%  prediction: [mu S2 muderiv S2deriv]  = gpSD00(X, input, target, derivinput,
-% derivtarget, derivvariance, test)
+%  training:   [nlZ dnlZ] = gpSD00(hyp, inf, mean, cov, lik, input, target, 
+%								 derivinput, derivtarget, derivvariance)
+%
+%  prediction: [mu S2 muderiv S2deriv]  = gpSD00(hyp,inf,mean,cov,lik,
+%		           input, target, derivinput, derivtarget, derivvariance, xs)
 %
 %% Description
 % This function computes the predictive mean and variance at test input for
 % the LMGP model with the covariance function as sum of covSEard and
 % covNoise. The form of the covariance function is
 %
-% C(x^p,x^q) = v^2 * exp[-(x^p - x^q)'*inv(P)*(x^p - x^q)/2]
-%            + u^2 * delta_{p,q}
+% C(x^p,x^q) = sf^2 * exp[-(x^p - x^q)'*inv(P)*(x^p - x^q)/2]
+%            + sn^2 * delta_{p,q}
 %
 % where the first term is the squared negative exponential and the second term
 % with the kronecker delta is the noise contribution. The P matrix is diagonal
 % with "Automatic Relevance Determination" (ARD) or "input length scale"
-% parameters w_1^2,...,w_D^2; The hyperparameter v is the "signal std dev" and
-% u is the "noise std dev". All hyperparameters are collected in the vector X
+% parameters ell_1^2,...,ell_D^2; The hyperparameter sf is the "signal std dev" and
+% sn is the "noise std dev". All hyperparameters are collected in the vector X
 % as follows:
 %
-% X = [ log(w_1)
-%       log(w_2) 
-%        .
-%       log(w_D)
-%       log(v)
-%       log(u) ]
+% hyp.cov = [ log(ell_1)
+%        	 ...
+%       	 log(ell_D)
+%       	 log(sf)]
+%
+% hyp.lik  =[ log(sn) ]  
+% hyp.mean =[ ]
 %
 % Note: the reason why the log of the parameters are used in X is that this
 % often leads to a better conditioned (and unconstrained) optimization problem
@@ -39,11 +43,15 @@ function [out1, out2, out3, out4] = gpSD00(X, input, target, targetvariance, der
 % This function can conveniently be used with the "minimize" function to train
 % a Gaussian process:
 %
-% [X, fX, i] = minimize(X, 'gpSD00', length, input, target)
+% [nlZ, dnlZ, i] = minimize(hyp, 'gpSD00', length, input, target)
 %
 %      
 % Input: 
-% * X              ... a (column) vector (of size D+2) of hyperparameters
+% * hyp            ... a struct of hyperparameters
+%   inf      	   ... the inference method 	  --> this is never evaluated, just being compatible with gpml
+%   cov      	   ... prior covariance function  --> this is never evaluated, just being compatible with gpml
+%   mean    	   ... prior mean function        --> this is never evaluated, just being compatible with gpml
+%   lik      	   ... likelihood function        --> this is never evaluated, just being compatible with gpml
 % * input          ... a n by D matrix of training inputs
 % * target         ... a (column) vector (of size n) of targets
 % * targetvariance ... a (column) vector (of size n) of variances of
@@ -55,12 +63,12 @@ function [out1, out2, out3, out4] = gpSD00(X, input, target, targetvariance, der
 %                      w.r.t. each input
 % * derivvariance  ... an n by D^2 matrix, where each row is the elements of
 %                      the covariance matrix associated with the appropriate derivtarget
-% * test           ... a nn by D matrix of test inputs
+% * xs             ... a nn by D matrix of test inputs
 %
 % Output: 
-% * fX             ... the returned value of minus log likelihood
-% * dfX            ... a (column) vector (of size D+2) of partial derivatives
-%                      of minus the log likelihood wrt each of the hyperparameters
+% * nlZ            ... the returned value of negative log likelihood
+% * dnlZ           ... a (column) vector (of size D+2) of partial derivatives
+%                      of negative log likelihood w.r.t. the hyperparameters
 % * mu             ... a (column) vector (of size nn) of predicted means
 % * S2             ... a (column) vector (of size nn) of predicted variances
 % * muderiv        ... a vector of derivatives of predicted mean
@@ -84,10 +92,33 @@ function [out1, out2, out3, out4] = gpSD00(X, input, target, targetvariance, der
 %      function observations. It has seperate noise level for the derivative
 %      observations.
 %    * modified 2013 by Jus Kocijan. Comments.
+%    * modified 2015 by Martin Stepancic. Modified the input arguments to match the gpml 3.1 toolbox
 
 [n, D]      = size(input);              % number of examples and dimension of input space
 [nD, D] = size(derivinput);             % number of derivative examples and dimension of input space
 
+X=[hyp.cov;hyp.lik];
+
+if isempty(inf),  inf = @infExact; else                        % set default inf
+  if iscell(inf), inf = inf{1}; end                      % cell input is allowed
+  if ischar(inf), inf = str2func(inf); end        % convert into function handle
+end
+if isempty(mean),mean = {@meanZero}; end 			    % set default mean
+if ischar(mean)  || isa(mean,  'function_handle'), mean  = {mean};  end  % make cell
+mean1 = mean{1}; if isa(mean1, 'function_handle'), mean1 = func2str(mean1); end
+if isempty(cov),cov = {@covSEard}; end 			    % set default covariance
+if ischar(cov)  || isa(cov,  'function_handle'), cov  = {cov};  end  % make cell
+cov1 = cov{1}; if isa(cov1, 'function_handle'), cov1 = func2str(cov1); end
+if strcmp(cov1,'covFITC'); inf = @infFITC; end       % only one possible inf alg
+if isempty(lik),  lik = @likGauss; else                        % set default lik
+  if iscell(lik), lik = lik{1}; end                      % cell input is allowed
+  if ischar(lik), lik = str2func(lik); end        % convert into function handle
+end
+
+if strcmpi(cov1,'covSEard')==0 error('Unsupported covariance function. Please use covSEard.m');
+if strcmpi(func2str(lik),'likGauss')==0 error('Unsupported likelihood function. Please use likGauss.m');
+if strcmpi(mean1,'meanZero')==0 error('Unsupported mean function. Please use meanZero.m');
+if (size(X,1)!=D) error('Number of hyperparameters disagree with input dataset dimensions');
 
 % create the full input matrix, stacking the function observations and
 % derivative observations (one repeat for each partial derivative) together
