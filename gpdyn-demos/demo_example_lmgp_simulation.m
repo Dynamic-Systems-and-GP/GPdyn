@@ -23,7 +23,7 @@ clear;
 close all;
 
 % validation data
-example_valid_data=load('example_data.mat')
+mat_data=load('example_data_lmgp_oeq.mat')
 
 % trained LMGP model
 load example_lmgp_trained
@@ -32,9 +32,9 @@ load example_lmgp_trained
 flag_naive_simulation = 1;
 flag_mcmc_simulation = 1;
 
-uvalid = example_valid_data.uvalid;
-xvalid = example_valid_data.xvalid;
-yvalid = example_valid_data.yvalid;
+uvalid = mat_data.valid_data.u;
+xvalid = mat_data.valid_data.x;
+yvalid = mat_data.valid_data.y;
 
 xt = [xvalid uvalid];
 lag = 1;
@@ -43,8 +43,8 @@ t = [0:length(uvalid)-1]';
 
 if(flag_naive_simulation)
     % naive simulation
-    [ynaive, s2naive] = simulLMGPnaive(logtheta, input, target, targetvar,...
-        inputDer, targetDer, derivevar, xt, lag); 
+    [ynaive, s2naive] = simulLMGPnaive(hyp, inffunc, meanfunc, covfunc, likfunc , ...
+        input, target, targetvar, inputDer, targetDer, derivevar, xt, lag); 
 
     plotgp(101,t,yvalid, ynaive, sqrt(s2naive));
     plotgpe(201,t,yvalid, ynaive, sqrt(s2naive));
@@ -54,8 +54,9 @@ end
 if(flag_mcmc_simulation)
     % mcmc simulation
     Nsamples = 40;
-    [ymcmc, s2mcmc, mcmcMM, mcmcVV] = simulLMGPmcmc(logtheta, covfunc, input,target,targetvar,...
-        inputDer, targetDer, derivevar, xt, lag, Nsamples);
+    [ymcmc, s2mcmc, mcmcMM, mcmcVV] = simulLMGPmcmc(hyp, inffunc, meanfunc, ...
+        covfunc, likfunc , input,target,targetvar,inputDer, targetDer, derivevar, ...
+        xt, lag, Nsamples);
 
     plotgp(104,t,yvalid, ymcmc, sqrt(s2mcmc));
     plotgpe(204,t,yvalid, ymcmc, sqrt(s2mcmc));

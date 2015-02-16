@@ -1,4 +1,4 @@
-function [mu, s2] = simulLMGPnaive(logtheta, inf, mean, cov, lik, input, target, targetvariance,...
+function [mu, s2] = simulLMGPnaive(hyp, inf, mean, cov, lik, input, target, targetvariance,...
     derivinput, derivtarget, derivvariance, xt, lag)
 % simulLMGPnaive - 'Naive' (i.e. without propagation of variance) simulation of the GP
 % model with the incorporated local models (LM).
@@ -12,13 +12,17 @@ function [mu, s2] = simulLMGPnaive(logtheta, inf, mean, cov, lik, input, target,
 % present time instant with the data at one time instant before and using the mean 
 % value of prediction from the previous prediction step instead of the measured 
 % output value. This is then repeated as many times as there are test samples.
-% Currently it can be used only with Gaussian covariance function and
-% with white noise model (sum of covSEard and covNoise). 
-% Uses routine gpSD00. 
+% Currently it can be used only with covSEard covariance function and
+% with likGauss likelihood. 
+% Uses routine gpSD00.
 % Based on the work of R. Murray-Smith and A. Girard. 
 % 
 % Input: 
-% * loghteta       ... optimized hyperparameters 
+% * hyp            ... a struct of hyperparameters
+% x inf      	   ... the inference method 	  --> this is never used here
+% x cov      	   ... prior covariance function  --> this is never used here
+% x mean    	   ... prior mean function        --> this is never used here
+% x lik      	   ... likelihood function        --> this is never used here
 % * covfunc        ... specified covariance function, see help covFun for more info 
 % * input          ... input part of the training data,  NxD matrix
 % * target         ... output part of the training data (ie. target), Nx1 vector 
@@ -39,18 +43,20 @@ function [mu, s2] = simulLMGPnaive(logtheta, inf, mean, cov, lik, input, target,
 %
 % Examples
 % demo_example_LMGP_simulation.m
-
+%
+% Changelog:
+%
+% 16.2.2015, Martin Stepancic:
+%		 	-changed the function interface as gpml > 3.0
+%			-removed the addition of autocovariance - this is now
+%			 already included in gpSD00.m
+%
 fun_name = 'simulLMGPnaive'; 
-
-
-
-
-
 
 
 % 1st point
 test = xt(1,:); 
-[mu(1), s2(1)] = gpSD00(hyp, input, target, targetvariance, derivinput, derivtarget, derivvariance, test);
+[mu(1), s2(1)] = gpSD00(hyp, inf, mean, cov, lik, input, target, targetvariance, derivinput, derivtarget, derivvariance, test);
 for k=2:size(xt,1)
 
     if(mod(k,50)==0)
@@ -66,13 +72,10 @@ for k=2:size(xt,1)
     
 
 
-[mu(k), s2(k)] = gpSD00(logtheta, input, target, targetvariance,...
+[mu(k), s2(k)] = gpSD00(hyp, inf, mean, cov, lik, input, target, targetvariance,...
     derivinput, derivtarget, derivvariance, test);
 
 end
-
-% adding noise variance  
-s2 = s2 + exp(2*logtheta(end));
 
 mu=mu';
 s2=s2';

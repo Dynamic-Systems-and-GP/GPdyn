@@ -11,6 +11,12 @@
 clear;
 close all;
 
+%load "system" folder to path
+me = mfilename;                                            % what is my filename
+mydir = which(me); mydir = mydir(1:end-2-numel(me));        % where am I located
+addpath([mydir 'system']);
+
+
 % data parameters 
 umax = 1.5; 
 umin = -umax; 
@@ -56,3 +62,5 @@ return;
 
 
 
+%remove "system" folder from path:
+rmpath([mydir 'system'])

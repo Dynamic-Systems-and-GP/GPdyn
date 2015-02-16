@@ -9,25 +9,33 @@
 % See Also
 % demo_example_LMGP_data.m, demo_example_LMGP_simulation.m, trainLMGP.m,
 % gpSD00.m
- 
+
+%
+% Changelog:
+%
+% 16.2.2015, Martin Stepancic:
+%		 	-removed the use of traingLMGP since it is esentially an
+%			 optimization of hyperparameters in one row
+%
+
 clear;
 global flag_LM_data_ident
 close all;
 
 
 %%%%% off-equlibrium data 
-example_train_data=load('example_data.mat');
-ind_oeq = 5:2:length(example_train_data.utrain); 
+mat_data=load('example_data_lmgp_oeq.mat');
+ind_oeq = 5:2:length(mat_data.train_data.u); 
 
-utrain = example_train_data.utrain(ind_oeq); 
-xtrain = example_train_data.xtrain(ind_oeq); 
-ytrain = example_train_data.ytrain(ind_oeq); 
+utrain = mat_data.train_data.u(ind_oeq); 
+xtrain = mat_data.train_data.x(ind_oeq); 
+ytrain = mat_data.train_data.y(ind_oeq); 
 
 %%%%% identified local-model data
 if(flag_LM_data_ident == 1)
-    load example_data_lmgp_ident    
+    load example_data_lmgp_eq_ident   
 else
-     load example_data_lmgp_anal
+     load example_data_lmgp_eq_anal
 end 
 
 Yeq = eq.Y; 
@@ -73,7 +81,7 @@ covfunc= 'covSEard';
 likfunc= 'likGauss';
 
 %initialize hyperparameters:
-hyp0.cov=ones(size(target,2)+1);
+hyp0.cov=ones(size(input,2)+1,1);
 hyp0.lik=-1;
 
 lag = 1; 

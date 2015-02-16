@@ -48,10 +48,10 @@ function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, targ
 %      
 % Input: 
 % * hyp            ... a struct of hyperparameters
-%   inf      	   ... the inference method 	  --> this is never evaluated, just being compatible with gpml
-%   cov      	   ... prior covariance function  --> this is never evaluated, just being compatible with gpml
-%   mean    	   ... prior mean function        --> this is never evaluated, just being compatible with gpml
-%   lik      	   ... likelihood function        --> this is never evaluated, just being compatible with gpml
+%   inf      	   ... the inference method 	  --> this is never used here
+%   cov      	   ... prior covariance function  --> this is never used here
+%   mean    	   ... prior mean function        --> this is never used here
+%   lik      	   ... likelihood function        --> this is never used here
 % * input          ... a n by D matrix of training inputs
 % * target         ... a (column) vector (of size n) of targets
 % * targetvariance ... a (column) vector (of size n) of variances of
@@ -92,12 +92,11 @@ function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, targ
 %      function observations. It has seperate noise level for the derivative
 %      observations.
 %    * modified 2013 by Jus Kocijan. Comments.
-%    * modified 2015 by Martin Stepancic. Modified the input arguments to match the gpml 3.1 toolbox
+%    * modified 2015 by Martin Stepancic. The input arguments match the gp.m script from gpml >= 3.1 toolbox
 
 [n, D]      = size(input);              % number of examples and dimension of input space
 [nD, D] = size(derivinput);             % number of derivative examples and dimension of input space
-
-X=[hyp.cov;hyp.lik];
+X=[hyp.cov(:);hyp.lik(:)];
 
 if isempty(inf),  inf = @infExact; else                        % set default inf
   if iscell(inf), inf = inf{1}; end                      % cell input is allowed
@@ -115,10 +114,10 @@ if isempty(lik),  lik = @likGauss; else                        % set default lik
   if ischar(lik), lik = str2func(lik); end        % convert into function handle
 end
 
-if strcmpi(cov1,'covSEard')==0 error('Unsupported covariance function. Please use covSEard.m');
-if strcmpi(func2str(lik),'likGauss')==0 error('Unsupported likelihood function. Please use likGauss.m');
-if strcmpi(mean1,'meanZero')==0 error('Unsupported mean function. Please use meanZero.m');
-if (size(X,1)!=D) error('Number of hyperparameters disagree with input dataset dimensions');
+if strcmpi(cov1,'covSEard')==0 error('Unsupported covariance function. Please use covSEard.m'); end
+if strcmpi(func2str(lik),'likGauss')==0 error('Unsupported likelihood function. Please use likGauss.m'); end
+if strcmpi(mean1,'meanZero')==0 error('Unsupported mean function. Please use meanZero.m'); end
+if (size(X,1)~=D+2) error('Number of hyperparameters disagree with input dataset dimensions'); end
 
 % create the full input matrix, stacking the function observations and
 % derivative observations (one repeat for each partial derivative) together
@@ -181,7 +180,7 @@ noisediag(knownvarind,knownvarind) = diag(targetvariance(knownvarind));         
 noisediag(n+1:end,n+1:end) = derivcovar; %exp(2*derivvariance(:))]);     % then derivative points with known variance
 noisediag = noisediag + 1e-5*eye(N,N); %jitter
 
-if nargin == 7   % if no test cases, we compute the negative log likelihood ...
+if nargin == 11   % if no test cases, we compute the negative log likelihood ...
 
   W = inv(Q+noisediag);               % W is inv (Q plus noise term)
   invQt = W*fulltarget;                               % don't compute determinant..
@@ -215,18 +214,17 @@ if nargin == 7   % if no test cases, we compute the negative log likelihood ...
   out2(D+2) = trace(W(unknownvarind,unknownvarind))*exp(2*X(D+2));
 
 else                    % ... otherwise compute (marginal) test predictions ...
-
-  [nn, D] = size(test);     % number of test cases and dimension of input space
-  test = test;% ./ repmat(exp(X(1:D))',nn,1);
+  [nn, D] = size(xs);     % number of test cases and dimension of input space
+  xs = xs;% ./ repmat(exp(X(1:D))',nn,1);
 
   a = zeros(N, nn);    % compute the covariance between training and test cases
   for d = 1:D
-    a = a + (repmat(fullinput(:,d),1,nn)-repmat(test(:,d)',N,1)).^2*exp(X(d));
+    a = a + (repmat(fullinput(:,d),1,nn)-repmat(xs(:,d)',N,1)).^2*exp(X(d));
   end
   a = exp(2*X(D+1))*exp(-0.5*a);
   Z = a;
   for d=1:D
-     ZZ = (repmat(derivinput(:,d),1,nn)-repmat(test(:,d)',nD,1))*exp(X(d));
+     ZZ = (repmat(derivinput(:,d),1,nn)-repmat(xs(:,d)',nD,1))*exp(X(d));
      a(n+(d-1)*nD+1:d*nD+n,1:nn) =  -a(n+(d-1)*nD+1:d*nD+n,1:nn) .* ZZ;     
   end
 
@@ -237,9 +235,10 @@ else                    % ... otherwise compute (marginal) test predictions ...
   else
       invQ = inv(Q+noisediag);
       out1 = a'*(invQ*fulltarget);                       % predicted means
-      out2 = exp(2*X(D+1)) - sum(a.*(invQ*a),1)'; % predicted noise-free variance
+      %~ out2 = exp(2*X(D+1)) - sum(a.*(invQ*a),1)'; % predicted noise-free variance - this is changed to: predicted variance
+      out2 = exp(2*X(D+2)) + exp(2*X(D+1)) - sum(a.*(invQ*a),1)';								  % predicted variance
       for d = 1:D
-          c = a .* (repmat(fullinput(:,d),1,nn)-repmat(test(:,d)',N,1));
+          c = a .* (repmat(fullinput(:,d),1,nn)-repmat(xs(:,d)',N,1));
           c(n+(d-1)*nD+1:d*nD+n,1:nn) = c(n+(d-1)*nD+1:d*nD+n,1:nn) + Z(n+(d-1)*nD+1:d*nD+n,1:nn);
           out3(1:nn,d) = exp(X(d))*c'*invQ*fulltarget;                    % derivative of mean
           out4(1:nn,d) = exp(X(d))*(exp(2*X(D+1))-exp(X(d))*sum(c.*(invQ*c),1)');

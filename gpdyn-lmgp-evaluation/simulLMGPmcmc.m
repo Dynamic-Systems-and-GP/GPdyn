@@ -1,5 +1,5 @@
 
-function [mu, s2, MM, VV] = simulLMGPmcmc(logtheta, covfunc, input, target, targetvariance,...
+function [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inffcn, meanfcn, covfcn, likfcn, input, target, targetvariance,...
     derivinput, derivtarget, derivvariance, xt, lag, Nsamples)
 % simulLMGPmcmc - Simulation of the dynamic GP model with incorporated local models (LMGP models),
 % where the output variance is propagated using numerical MCMC approximation
@@ -17,12 +17,15 @@ function [mu, s2, MM, VV] = simulLMGPmcmc(logtheta, covfunc, input, target, targ
 % Currently it can be used only with Gaussian covariance function and
 % with white noise model (sum of covSEard and covNoise) due to the gpSD00. 
 % Uses routine gpSD00. 
-% see K. Ažman. Identifikacija dinamiènih sistemov z Gaussovimi procesi. PhD
+% see K. Azman. Identifikacija dinamiï¿½nih sistemov z Gaussovimi procesi. PhD
 % thesis, Univerza v Ljubljani, Ljubljana, 2007. (in Slovene). 
 %  
 % Input: 
-% * loghteta       ... optimized hyperparameters 
-% * covfunc        ... specified covariance function, see help covFun for more info 
+% * hyp            ... a struct of hyperparameters
+%   inf      	   ... the inference method 	  --> this is never used here
+%   cov      	   ... prior covariance function  --> this is never used here
+%   mean    	   ... prior mean function        --> this is never used here
+%   lik      	   ... likelihood function        --> this is never used here
 % * input          ... input part of the training data,  NxD matrix
 % * target         ... output part of the training data (ie. target), Nx1 vector 
 % * targetvariance ... target variance, use NaN where not known 
@@ -50,17 +53,21 @@ function [mu, s2, MM, VV] = simulLMGPmcmc(logtheta, covfunc, input, target, targ
 % * Written by K.Azman, 31.05.2005
 % * Based on the work of C.E. Rasmussen and A. Girard. 
 %
+%
+% Changelog:
+%
+% 16.2.2015, Martin Stepancic:
+%		 	-changed the function interface as gpml > 3.0
+%			-removed the addition of autocovariance - this is now
+%			 already included in gpSD00.m. Beware: till now, the underlying
+%			 p.d.f. for sampling did not contain the autocovariance term!
+%
 
 
 
 
-fun_name = 'simullmgp00mcmc'; 
 
-if ~(isequal(covfunc{1},'covSum') &  isequal(covfunc{2}{1},'covSEard') & ...
-        isequal(covfunc{2}{2},'covNoise'))
-    error(strcat([fun_name,': function can be called only with the sum', ...
-        ' of covariance functions ''covSEard'' and ''covNoise'' '])); 
-end 
+fun_name = 'simulLMGPmcmc'; 
 
 
 
@@ -82,7 +89,8 @@ for jjj=1:Nsamples
 
     % 1st point - input is "point" 
     test = xt(1,:);
-    [mu(1), s2(1)] = gpSD00(logtheta, input, target, targetvariance, derivinput, derivtarget, derivvariance, test);
+    [mu(1), s2(1)] = gpSD00(hyp, inffcn, meanfcn, covfcn, likfcn, input, target, ...
+			targetvariance, derivinput, derivtarget, derivvariance, test);
 
     for k=2:length(xt)
 
@@ -101,7 +109,8 @@ for jjj=1:Nsamples
             test = [xt(k, 1:lag-k+1) mu(1:k-2) ysampled xt(k, lag+1:end)];
         end
 
-        [mu(k), s2(k)] = gpSD00(logtheta, input, target, targetvariance, derivinput, derivtarget, derivvariance, test);
+        [mu(k), s2(k)] = gpSD00(hyp, inffcn, meanfcn, covfcn, likfcn, input, target, ...
+			targetvariance, derivinput, derivtarget, derivvariance, test);
     end
 
     MM(jjj,:) = mu;
@@ -109,7 +118,6 @@ for jjj=1:Nsamples
 
 end
 % individual realisations saved in matrices MM and VV 
-
 % approximate all output distributions with Gaussian distribution 
 mu = mean(MM);
 s2 = mean(VV) + mean((MM-repmat(mu,Nsamples,1)).^2);
@@ -117,8 +125,6 @@ s2 = mean(VV) + mean((MM-repmat(mu,Nsamples,1)).^2);
 mu = mu';
 s2 = s2';
 
-% add noise variance 
-s2 = s2 + exp(2*logtheta(end));
 
 MM = MM'; 
 VV = VV'; 
