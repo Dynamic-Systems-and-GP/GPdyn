@@ -3,7 +3,7 @@ function [mu, s2] = simulLMGPnaive(hyp, inf, mean, cov, lik, input, target, targ
 % simulLMGPnaive - 'Naive' (i.e. without propagation of variance) simulation of the GP
 % model with the incorporated local models (LM).
 %% Syntax
-%  function [mu, s2] = simulLMGPnaive(logtheta, covfunc, input, target, targetvariance,...
+%  function [mu, s2] = simulLMGPnaive(hyp, inf, mean, cov, lik, input, target, targetvariance,...
 %   derivinput, derivtarget, derivvariance, xt, lag)
 
 %% Description

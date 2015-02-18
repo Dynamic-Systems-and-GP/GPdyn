@@ -5,7 +5,7 @@ function [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inffcn, meanfcn, covfcn, likfcn, 
 % where the output variance is propagated using numerical MCMC approximation
 %
 %% Syntax
-%  [mu, s2, MM, VV] = simulLMGPmcmc(logtheta, covfunc, input, target, targetvariance,...
+%  [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inf, mean, cov, lik, input, target, targetvariance,...
 %     derivinput, derivtarget, derivvariance, xt, lag, Nsamples)
 %
 %% Description

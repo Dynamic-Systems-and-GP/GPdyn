@@ -14,8 +14,7 @@
 % Changelog:
 %
 % 16.2.2015, Martin Stepancic:
-%		 	-removed the use of traingLMGP since it is esentially an
-%			 optimization of hyperparameters in one row
+%		 	-added compatibility with gpml>=3.1
 %
 
 clear;
@@ -86,7 +85,7 @@ hyp0.lik=-1;
 
 lag = 1; 
 
-hyp=minimize(hyp0,'gpSD00',-200,inffunc,meanfunc,covfunc,likfunc,input,target,targetvar, inputDer, targetDer, derivevar);
+hyp=trainLMGP([],inffunc,meanfunc,covfunc,likfunc,input,target,inputDer, targetDer, derivevar);
 
 % validation on ident data 
 for ii=1:size(input,1)
