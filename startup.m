@@ -18,6 +18,5 @@ addpath([mydir_gpdyn,'gpdyn-utilities'])
 addpath([mydir_gpdyn,'gpml-matlab'])
 
 run([mydir_gpdyn,'gpml-matlab/startup.m'])          % execute gpml startup script
-run([mydir_gpdyn,'gpml-sparse-deriv/startup.m'])          % execute gpml startup script
 
 clear me mydir OCT

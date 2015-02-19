@@ -2,16 +2,12 @@ function [ae, se, lpd, mrse, smse, msll] = loss(y, yp_m, yp_se2)
 % Function computes several frequently used perforamnce values
 %
 %% Syntax
-% function [ae, se, lpd, mrse] = loss(tt, y, s2)
+% function [ae, se, lpd, mrse, smse, msll] = loss(y, yp_m, yp_se2)
 %
 %
 %% Description
 % Function computes several frequently used perforamnce values. It can be
 % used with one-step-ahead prediction or simulation results. 
-% * mean absolute error AE 
-% * mean squared error SE 
-% * minus log-predicted density error LPD 
-% * mean relative squared error MRSE 
 %
 % Input: 
 % * y      ... target output values (=system output, ground truth) 
