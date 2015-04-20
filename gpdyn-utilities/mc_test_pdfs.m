@@ -1,9 +1,9 @@
-function [] = mcmc_test_pdfs(MM,VV,desired_steps)
+function [] = mc_test_pdfs(MM,VV,desired_steps)
 % Function tests and plots the Gaussian mixture in the desired simulation
 % steps. 
 %
 %% Syntax
-% mcmc_test_pdfs(MM,VV,desired_steps)
+% mc_test_pdfs(MM,VV,desired_steps)
 %
 %% Description
 % Function tests and plots the Gaussian mixture described my vector of Gaussian
@@ -84,7 +84,7 @@ for jj = 1:length(desired_steps)
     legend('true','GP approx','samples')
 
 
-    title(strcat(['test mcmc pdfs, simul step=', num2str(kk)]));
+    title(strcat(['test MC pdfs, simul step=', num2str(kk)]));
 
 
     disp('press sth to continue'); 

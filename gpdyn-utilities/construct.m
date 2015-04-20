@@ -51,7 +51,7 @@ function [in, t] = construct(lag, x, y, xind, yind)
 % * t    ... target vector for the training routines
 %
 % See also:
-% simulGPnaive, simulGPmcmc, simulGPexactLIN, simulGPexactSE
+% simulGPnaive, simulGPmc, simulGPexactLIN, simulGPexactSE
 %
 % Examples:
 % demo_example_gp_simulation

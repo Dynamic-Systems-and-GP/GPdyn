@@ -39,7 +39,7 @@ function [mu, s2] = simulLMGPnaive(hyp, inf, mean, cov, lik, input, target, targ
 % * s2             ... asociated variances 
 % 
 % See Also
-% gpSD00, simulLMGPmcmc, simulGPnaive
+% gpSD00, simulLMGPmc, simulGPnaive
 %
 % Examples
 % demo_example_LMGP_simulation.m

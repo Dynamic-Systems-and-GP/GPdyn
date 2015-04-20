@@ -4,7 +4,7 @@
 % This demo presents the simulation of the GP model, describing dynamic
 % system. Five different simulations are presented: 
 % * "naive" simulation (without propagation of uncertainty) 
-% * simulation with numerical (MCMC) propagation of uncertainty. 
+% * simulation with numerical (Monte Carlo) propagation of uncertainty. 
 % * simulation using taylor approximation for propagation of uncertainty. 
 % * "exact" simulation (anayltical propagation of uncertainty) 
 % * "exact" simulation (anayltical propagation of uncertainty) using linear
@@ -16,7 +16,7 @@
 %% See Also
 % example, demo_example_present, demo_example_gp_data,
 % demo_example_gp_training, demo_example_gp_norm, simulGPnaive,
-% simulGPmcmc, simulGPtaylorSE, simulGPexactSE, simulGPexactLIN, construct
+% simulGPmc, simulGPtaylorSE, simulGPexactSE, simulGPexactLIN, construct
 
 clear all;
 close all;
@@ -45,16 +45,16 @@ t = [0:length(uvalid)-1]'; %time
 f1=figure('Name', 'Naive Simulation');
 plotgp(f1,t,yvalid, ynaive, sqrt(s2naive));
 
-%% MCMC Simulation - Numerical Variance Propagation
+%% MC Simulation - Numerical Variance Propagation
 
 Nsamples = 100;
-[ymcmc, s2mcmc, MU, SIGMA2] = simulGPmcmc(hyp, inf, mean, cov, lik, input, target, test, lag,Nsamples);
-f2=figure('Name', 'MCMC Simulation');
-plotgp(f2,t,yvalid, ymcmc, sqrt(s2mcmc));
+[ymc, s2mc, MU, SIGMA2] = simulGPmc(hyp, inf, mean, cov, lik, input, target, test, lag,Nsamples);
+f2=figure('Name', 'MC Simulation');
+plotgp(f2,t,yvalid, ymc, sqrt(s2mc));
 
 % testing pdfs in steps 1 and 14
 desired_steps = [1 14]; 
-mcmc_test_pdfs(MU,SIGMA2,desired_steps); 
+mc_test_pdfs(MU,SIGMA2,desired_steps); 
 
 %% Taylor Simulation - Variance Propagation using Taylor Approximation
 
@@ -93,8 +93,8 @@ load example_trained
 
 fprintf('\nNaive Simulation:\n');
 loss(yvalid, ynaive, s2naive);                 
-fprintf('\nMCMC Simulation:\n');
-loss(yvalid, ymcmc, s2mcmc);
+fprintf('\nMonte Carlo Simulation:\n');
+loss(yvalid, ymc, s2mc);
 fprintf('\nTaylor Simulation:\n');
 loss(yvalid, ytaylor, s2taylor);
 fprintf('\nExact Simulation:\n');

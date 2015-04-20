@@ -1,9 +1,9 @@
-function [mu, s2, MU, SIG2] = simulGPmcmc(hyp, inf, meanfunc, cov, lik, input, target, test, lag, Nsamples)
-% simulGPmcmc - Simulation of the dynamic GP model, where the output variance is
-% propagated using simple MCMC method
+function [mu, s2, MU, SIG2] = simulGPmc(hyp, inf, meanfunc, cov, lik, input, target, test, lag, Nsamples)
+% simulGPmc - Simulation of the dynamic GP model, where the output variance is
+% propagated using Monte Carlo method
 %
 %% Syntax
-%  [mu, s2, MU, SIG2] = simulGPmcmc(hyp, inf, mean, cov, lik, input, target, test,
+%  [mu, s2, MU, SIG2] = simulGPmc(hyp, inf, mean, cov, lik, input, target, test,
 %  lag, Nsamples)
 % 
 %% Description
@@ -77,7 +77,7 @@ s2(2,1) = mean(SIG2(2,:)) + mean((MU(2,:)-mu(2)).^2);
 for k=3:num_iters
 
     if(mod(k,50)==0 || k==3)
-        disp(['simulGPmcmc, step: ',int2str(k),'/',int2str(length(test))]);    
+        disp(['simulGPmc, step: ',int2str(k),'/',int2str(length(test))]);    
     end
 
     

@@ -27,7 +27,7 @@ function [y, s2, fmu, fs2] = simulGPnaive(hyp, inf, mean, cov, lik, input, targe
 % * s2   ... associated variances 
 %
 % See also: 
-% gpx.m, simulGPmcmc, construct.m
+% gpx.m, simulGPmc, construct.m
 %
 % Examples: 
 % demo_example_gp_simulation.m

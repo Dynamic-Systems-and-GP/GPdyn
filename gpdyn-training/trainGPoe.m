@@ -19,7 +19,7 @@ function [hyp, flogtheta, i] = trainGPoe(hyp, inf, mean, cov, lik, input, target
 % * lik  ... likelihood function
 % * input    ... input part of the training data,  NxD matrix
 % * target   ... output part of the training data (ie. target), Nx1 vector
-% * simf     ... function handle of simulation function (e.g. @simulGPmcmc)
+% * simf     ... function handle of simulation function (e.g. @simulGPmc)
 % * lag      ... the order of the model (number of used lagged outputs)
 % * Nsamples ... number of samples for MCMC simulation (optional)
 % * minf     ... function handle of the minimization method to be used 

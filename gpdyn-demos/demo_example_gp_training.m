@@ -76,7 +76,7 @@ hyp0_lin = gp_initial(bounds, inf, mean, @covLINard, lik, input, target);
 [hyp_lin, flogtheta_lin, i] = trainGParx(hyp0_lin, inf, mean, @covLINard, lik, input, target, @minimizeDE);
 
 % Training using Output Error alorithm
-[hyp_oe, flogtheta, i] = trainGPoe(hyp0, inf, mean, cov, lik, input, target, @simulGPmcmc, 1);
+[hyp_oe, flogtheta, i] = trainGPoe(hyp0, inf, mean, cov, lik, input, target, @simulGPmc, 1);
 
 %% Validation (Regression)
 % validation on identification data 

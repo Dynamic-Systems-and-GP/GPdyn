@@ -4,7 +4,7 @@
 % Demo to present the simulation of the LMGP model of the chosen dynamic
 % system. Three different simulations are presented: 
 % (1) 'naive' simulation (without propagation of uncertainty) 
-% (2) simulation with numerical (MCMC) propagation of uncertainty. 
+% (2) simulation with numerical (Monte Carlo) propagation of uncertainty. 
 % See: 
 %   A. Girard, Approximate Methods for Propagation of Uncertainty 
 %   with Gaussian Process Models, PhD thesis, 2004. 
@@ -17,7 +17,7 @@
 %
 % See Also
 % example.m, demo_example_LMGP_data.m, demo_example_LMGP_training.m,
-% simulLMGPnaive.m, simulLMGPmcmc, gpSD00 
+% simulLMGPnaive.m, simulLMGPmc, gpSD00 
 
 clear;
 close all;
@@ -30,7 +30,7 @@ load example_lmgp_trained
 
 
 flag_naive_simulation = 1;
-flag_mcmc_simulation = 1;
+flag_mc_simulation = 1;
 
 uvalid = mat_data.valid_data.u;
 xvalid = mat_data.valid_data.x;
@@ -51,19 +51,19 @@ if(flag_naive_simulation)
 end
 
 
-if(flag_mcmc_simulation)
-    % mcmc simulation
+if(flag_mc_simulation)
+    % mc simulation
     Nsamples = 40;
-    [ymcmc, s2mcmc, mcmcMM, mcmcVV] = simulLMGPmcmc(hyp, inffunc, meanfunc, ...
+    [ymc, s2mc, mcMM, mcVV] = simulLMGPmc(hyp, inffunc, meanfunc, ...
         covfunc, likfunc , input,target,targetvar,inputDer, targetDer, derivevar, ...
         xt, lag, Nsamples);
 
-    plotgp(104,t,yvalid, ymcmc, sqrt(s2mcmc));
-    plotgpe(204,t,yvalid, ymcmc, sqrt(s2mcmc));
+    plotgp(104,t,yvalid, ymc, sqrt(s2mc));
+    plotgpe(204,t,yvalid, ymc, sqrt(s2mc));
 
     % testing probability density function in various steps
     steps_test_pdf = [1 135];
-    mcmc_test_pdfs(mcmcMM,mcmcVV,[steps_test_pdf]);
+    mc_test_pdfs(mcMM,mcVV,[steps_test_pdf]);
 
 end
 

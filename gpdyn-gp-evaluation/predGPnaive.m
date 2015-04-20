@@ -32,7 +32,7 @@ function [y, s2] = predGPnaive(hyp, inf, mean, cov, lik, input, target, test, la
 % demo_example_gp_simulation
 %
 % See Also:
-% gpx, simulGPnaive, simulGPmcmc
+% gpx, simulGPnaive, simulGPmc
 %
 
 %% 

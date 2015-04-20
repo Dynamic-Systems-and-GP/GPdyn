@@ -55,7 +55,7 @@ function [varargout] = gpx(hyp, inf, mean, cov, lik, x, y, xs, post)
 % 
 %
 % Examples: 
-% simulGPnaive.m, simulGPmcmc.m
+% simulGPnaive.m, simulGPmc.m
 %
 % See also: 
 % gp.m, covFunctions.m, infMethods.m, likFunctions.m, meanFunctions.m

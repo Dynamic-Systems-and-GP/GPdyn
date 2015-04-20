@@ -1,11 +1,11 @@
 
-function [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inffcn, meanfcn, covfcn, likfcn, input, target, targetvariance,...
+function [mu, s2, MM, VV] = simulLMGPmc(hyp, inffcn, meanfcn, covfcn, likfcn, input, target, targetvariance,...
     derivinput, derivtarget, derivvariance, xt, lag, Nsamples)
-% simulLMGPmcmc - Simulation of the dynamic GP model with incorporated local models (LMGP models),
-% where the output variance is propagated using numerical MCMC approximation
+% simulLMGPmc - Simulation of the dynamic GP model with incorporated local models (LMGP models),
+% where the output variance is propagated using numerical Monte Carlo approximation
 %
 %% Syntax
-%  [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inf, mean, cov, lik, input, target, targetvariance,...
+%  [mu, s2, MM, VV] = simulLMGPmc(hyp, inf, mean, cov, lik, input, target, targetvariance,...
 %     derivinput, derivtarget, derivvariance, xt, lag, Nsamples)
 %
 %% Description
@@ -44,7 +44,7 @@ function [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inffcn, meanfcn, covfcn, likfcn, 
 % * VV             ... associated predicted variances 
 %
 % See Also
-% gpSD00.m, simulLMGPnaive.m, simulGPmcmc.m
+% gpSD00.m, simulLMGPnaive.m, simulGPmc.m
 %
 % Examples
 % demo_example_lmgp_simulation.m
@@ -67,7 +67,7 @@ function [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inffcn, meanfcn, covfcn, likfcn, 
 
 
 
-fun_name = 'simulLMGPmcmc'; 
+fun_name = 'simulLMGPmc'; 
 
 
 
@@ -98,7 +98,7 @@ for jjj=1:Nsamples
 
         % For the NEXT prediction...
         % assumed normal distribution, for more accurate procedure see
-        % simulGPmcmc 
+        % simulGPmc 
 
         % random sample from assumed distribution 
         ysampled = mu(k-1) + randn(1)*sqrt(s2(k-1));

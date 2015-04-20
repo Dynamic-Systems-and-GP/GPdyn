@@ -83,7 +83,7 @@ function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, targ
 % demo_example_lmgp_simulation.m
 %
 % See Also
-% simullmgp00naive.m, simullmgp00mcmc.m, minimize.m
+% simulLMGPnaive.m, simulLMGPmc.m, minimize.m
 %
 %% Signature
 %  Copyright (C) by Carl Edward Rasmussen 1999 - 2003 (2003-07-24).
