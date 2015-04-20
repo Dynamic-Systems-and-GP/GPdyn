@@ -30,7 +30,7 @@ function [m, S2] = gpExactLINard(hyp, inf, mean, cov, lik, invQ, input, target, 
 % 
 % Outputs: 
 % * m  ... predicted mean 
-% * S2 ... predicted variance (noise free) 
+% * S2 ... predicted variance   (including noise variance)
 %
 %
 % See also:
@@ -77,11 +77,11 @@ b = test.^2*expX(1:D);
 m = a'*invQ*target;
 % Predicted variance
 sig2 = b - sum(a.*(invQ*a),1)';
-S2 = sig2;
+S2 = sig2 + expX(D+1);
 if nargin > 9
     W=diag(expX(1:D));
     alpha=W-(input*W)'*invQ*(input*W);
     beta=invQ*target;
     gamma=(input*W)'*beta*beta'*(input*W);
-    S2=test*alpha*test'+trace(alpha*SigmaX)+trace(gamma*SigmaX);
+    S2=test*alpha*test'+trace(alpha*SigmaX)+trace(gamma*SigmaX)+expX(D+1);  %(including noise variance)
 end

@@ -27,7 +27,7 @@ function [mu, s2, MU, SIG2] = simulGPmcmc(hyp, inf, meanfunc, cov, lik, input, t
 % 
 % Output:
 % * mu    ... mean predicted output 
-% * s2    ... associated variances 
+% * s2    ... associated variances (with noise variances)
 % * MU    ... matrix of all predicted means, kxNsamples
 % * SIG2  ... associated predicted variances 
 % 

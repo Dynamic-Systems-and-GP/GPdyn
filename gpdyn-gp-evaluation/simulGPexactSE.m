@@ -28,10 +28,10 @@ function [m, s2, mu, sig2] = simulGPexactSE(hyp, inf, mean, cov, lik, input, tar
 % 
 % Outputs: 
 % *  m     ... predictive mean when propagating the uncertainty 
-% *  s2    ... predictive variance when propagating the uncertainty 
+% *  s2    ... predictive variance when propagating the uncertainty    (including noise variance)
 % *  mu    ... predictive mean using "naive" approach (doesn't propagate
 %              the uncertainty)
-% *  sig2  ... predictive variance using "naive" approach
+% *  sig2  ... predictive variance using "naive" approach   (including noise variance, as usual)
 % 
 % See also:
 % gpExactSEard, simulGPtaylorSE, simulGPnaive
@@ -222,10 +222,6 @@ for i=1:length(s2)
         sig2(i)=0;
     end
 end
-% output noise variance added in the end
- s2 = s2 + vy;
-% output noise variance added in the end 
- sig2 = sig2 + vy; 
 
 
 

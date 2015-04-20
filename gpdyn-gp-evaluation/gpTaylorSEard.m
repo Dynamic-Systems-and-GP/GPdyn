@@ -29,7 +29,7 @@ function [mu, S2, deriv, S2deriv] = gpTaylorSEard(hyp, inf, mean, cov, lik, invQ
 %
 % Output:
 % *  m       ... is a (column) vector (of size nn) of prediced means
-% *  S2      ... is a (column) vector (of size nn) of predicted variances
+% *  S2      ... is a (column) vector (of size nn) of predicted variances (including noise variance)
 % *  deriv   ... is a n by D matrix of mean partial derivatives
 % *  S2deriv ... is a n by D by D matrix of (co-)variances on the
 %                partial derivatives (3 dimensional array (full covariance
@@ -70,8 +70,8 @@ for d = 1:D
 end
 a = expX(D+1)*exp(-0.5*a);
 
-% Covariance between the test input and themselves 
-b = expX(D+1);
+% Covariance between the test input and themselves
+b = expX(D+1) + expX(D+2); % signal variance plus noise variance
 
 % Predicted mean  
 invQt = invQ*target;

@@ -39,7 +39,7 @@ function [mu, s2, MM, VV] = simulLMGPmcmc(hyp, inffcn, meanfcn, covfcn, likfcn, 
 %
 % Output: 
 % * mu             ... mean predicted output 
-% * s2             ... associated variances 
+% * s2             ... associated variances (including noise variance)
 % * MM             ... matrix of all predicted means, kxNsamples
 % * VV             ... associated predicted variances 
 %

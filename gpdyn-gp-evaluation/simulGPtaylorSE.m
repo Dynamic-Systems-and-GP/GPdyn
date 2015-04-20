@@ -28,7 +28,7 @@ function [mu, s2] = simulGPtaylorSE(hyp, inf, mean, cov, lik, input, target, tes
 % 
 % Output: 
 % * mu       ... predictive mean when propagating the uncertainty 
-% * s2       ... predictive variance when propagating the uncertainty 
+% * s2       ... predictive variance when propagating the uncertainty  (including noise variance)
 %
 % See also:
 % gpTaylorSEard, simulGPexactSE, simulGPnaive
@@ -102,6 +102,4 @@ end
 mu = mu'; 
 s2 = s2'; 
 
-% output noise variance added in the end
- s2 = s2 + vy; 
 return; 

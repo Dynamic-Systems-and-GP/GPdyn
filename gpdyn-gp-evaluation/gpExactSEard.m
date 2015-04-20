@@ -29,7 +29,7 @@ function [m, S2] = gpExactSEard(hyp, inf, mean, cov, lik, invQ, input, target, m
 %
 % Output: 
 % * m  ...predicted mean 
-% * S2 ... predicted variance (noise free) 
+% * S2 ... predicted variance  (including noise variance)
 %
 % See Also:
 % covSEard, simulGPexactSE, gpTaylorSEard
@@ -75,9 +75,9 @@ a = expX(D+1)*exp(-0.5*a);
 % Covariance between the test input and themselves 
 b = expX(D+1);   
 
-% Predictive mean  and variance (noise-free test input)
+% Predictive mean  and variance (test input including noise variance)
 m = a'*beta;
-S2 = b - sum(a.*(invQ*a),1)';
+S2 = b - sum(a.*(invQ*a),1)'  + expX(D+2);
 
 if  nargin > 9 % random test input
     
@@ -123,6 +123,6 @@ if  nargin > 9 % random test input
     I2 = (1/sqrt(det(2*invLL*SigX+eye(L))))*exp(-0.5*(t1+repmat(t2,1,n)+repmat(t2',n,1)-T3));
     
     CCC = CC*CC';
-    S2 = b - b^2*sum(sum((invQ-beta*beta').*(CCC.*I2))) - m^2;
+    S2 = b - b^2*sum(sum((invQ-beta*beta').*(CCC.*I2))) - m^2 + expX(D+2); % including noise variance
    
 end

@@ -70,7 +70,7 @@ function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, targ
 % * dnlZ           ... a (column) vector (of size D+2) of partial derivatives
 %                      of negative log likelihood w.r.t. the hyperparameters
 % * mu             ... a (column) vector (of size nn) of predicted means
-% * S2             ... a (column) vector (of size nn) of predicted variances
+% * S2             ... a (column) vector (of size nn) of predicted variances (including noise variance)
 % * muderiv        ... a vector of derivatives of predicted mean
 % * S2deriv        ... derivatives of predicted variances
 %
@@ -235,8 +235,7 @@ else                    % ... otherwise compute (marginal) test predictions ...
   else
       invQ = inv(Q+noisediag);
       out1 = a'*(invQ*fulltarget);                       % predicted means
-      %~ out2 = exp(2*X(D+1)) - sum(a.*(invQ*a),1)'; % predicted noise-free variance - this is changed to: predicted variance
-      out2 = exp(2*X(D+2)) + exp(2*X(D+1)) - sum(a.*(invQ*a),1)';								  % predicted variance
+      out2 = exp(2*X(D+2)) + exp(2*X(D+1)) - sum(a.*(invQ*a),1)';								  % predicted variance (including noise variance)
       for d = 1:D
           c = a .* (repmat(fullinput(:,d),1,nn)-repmat(xs(:,d)',N,1));
           c(n+(d-1)*nD+1:d*nD+n,1:nn) = c(n+(d-1)*nD+1:d*nD+n,1:nn) + Z(n+(d-1)*nD+1:d*nD+n,1:nn);
