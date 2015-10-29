@@ -10,20 +10,21 @@ function [varargout] = likGauss(hyp, y, mu, s2, inf, i)
 % hyp = [  log(sn)  ]
 %
 % Several modes are provided, for computing likelihoods, derivatives and moments
-% respectively, see likelihoods.m for the details. In general, care is taken
+% respectively, see likFunctions.m for the details. In general, care is taken
 % to avoid numerical issues when the arguments are extreme.
 %
-% See also likFunctions.m.
+% Copyright (c) by Carl Edward Rasmussen and Hannes Nickisch, 2015-07-13.
+%                                      File automatically generated using noweb.
 %
-% Copyright (c) by Carl Edward Rasmussen and Hannes Nickisch, 2011-02-18
+% See also LIKFUNCTIONS.M.
 
-if nargin<2, varargout = {'1'}; return; end   % report number of hyperparameters
+if nargin<3, varargout = {'1'}; return; end   % report number of hyperparameters
 
 sn2 = exp(2*hyp);
 
 if nargin<5                              % prediction mode if inf is not present
-  if numel(y)==0,  y = zeros(size(mu)); end
-  s2zero = 1; if nargin>3, if norm(s2)>0, s2zero = 0; end, end         % s2==0 ?
+  if isempty(y),  y = zeros(size(mu)); end
+  s2zero = 1; if nargin>3&&numel(s2)>0&&norm(s2)>eps, s2zero = 0; end  % s2==0 ?
   if s2zero                                                    % log probability
     lp = -(y-mu).^2./sn2/2-log(2*pi*sn2)/2; s2 = 0;
   else
@@ -41,7 +42,7 @@ else
   switch inf 
   case 'infLaplace'
     if nargin<6                                             % no derivative mode
-      if numel(y)==0, y=0; end
+      if isempty(y), y=0; end
       ymmu = y-mu; dlp = {}; d2lp = {}; d3lp = {};
       lp = -ymmu.^2/(2*sn2) - log(2*pi*sn2)/2; 
       if nargout>1
@@ -53,11 +54,12 @@ else
           end
         end
       end
-      varargout = {sum(lp),dlp,d2lp,d3lp};
+      varargout = {lp,dlp,d2lp,d3lp};
     else                                                       % derivative mode
       lp_dhyp = (y-mu).^2/sn2 - 1;  % derivative of log likelihood w.r.t. hypers
+      dlp_dhyp = 2*(mu-y)/sn2;                               % first derivative,
       d2lp_dhyp = 2*ones(size(mu))/sn2;   % and also of the second mu derivative
-      varargout = {lp_dhyp,d2lp_dhyp};
+      varargout = {lp_dhyp,dlp_dhyp,d2lp_dhyp};
     end
 
   case 'infEP'
@@ -77,24 +79,10 @@ else
     end
 
   case 'infVB'
-    if nargin<6
-      % variational lower site bound
-      % t(s) = exp(-(y-s)^2/2sn2)/sqrt(2*pi*sn2)
-      % the bound has the form: b*s - s.^2/(2*ga) - h(ga)/2 with b=y/ga
-      ga = s2; n = numel(ga); b = y./ga; y = y.*ones(n,1);
-      db = -y./ga.^2; d2b = 2*y./ga.^3;
-      h = zeros(n,1); dh = h; d2h = h;         % allocate memory for return args
-      id = ga(:)<=sn2+1e-8;                            % OK below noise variance
-      h(id) = y(id).^2./ga(id) + log(2*pi*sn2); h(~id) = Inf;
-      dh(id) = -y(id).^2./ga(id).^2;
-      d2h(id) = 2*y(id).^2./ga(id).^3;
-      id = ga<0; h(id) = Inf; dh(id) = 0; d2h(id) = 0;     % neg. var. treatment
-      varargout = {h,b,dh,db,d2h,d2b};
-    else
-      ga = s2; n = numel(ga); 
-      dhhyp = zeros(n,1); dhhyp(ga(:)<=sn2) = 2;
-      dhhyp(ga<0) = 0;              % negative variances get a special treatment
-      varargout = {dhhyp};                               % deriv. w.r.t. hyp.lik
-    end
+    % variational lower site bound
+    % t(s) = exp(-(y-s)^2/2sn2)/sqrt(2*pi*sn2)
+    % the bound has the form: (b+z/ga)*f - f.^2/(2*ga) - h(ga)/2
+    n = numel(s2); b = zeros(n,1); y = y.*ones(n,1); z = y;
+    varargout = {b,z};
   end
 end

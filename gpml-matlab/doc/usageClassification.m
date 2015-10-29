@@ -1,13 +1,14 @@
 % demonstrate usage of classification
 %
-% Copyright (c) by Carl Edward Rasmussen and Hannes Nickisch 2010-06-21.
+% Copyright (c) by Carl Edward Rasmussen and Hannes Nickisch 2013-10-16.
 clear all, close all
 
 %% SAY WHICH CODE WE WISH TO EXERCISE
-% id = [1,1]; % use Gauss/Exact
+id = [1,1]; % use Gauss/Exact
 id = [1,2; 2,2; 3,2]; % compare Laplace
-% id = [1,3; 2,3; 3,3]; % compare EP
-% id = [1,4; 3,4]; % compare VB
+id = [1,3; 2,3; 3,3]; % study EP
+id = [1,5; 2,5]; % look into KL (takes quite a while)
+id = [1,4; 2,4; 3,4]; % deal with VB
 
 seed = 943; randn('seed',seed), rand('seed',seed)
 
@@ -23,14 +24,14 @@ hyp0.cov  = log([ell;sf]);
 mean = {@meanZero};                                                   % m(x) = 0
 hyp0.mean = [];
 lik_list = {'likGauss','likErf','likLogistic'};          % allowable likelihoods
-inf_list = {'infExact','infLaplace','infEP','infVB'};  % possible inference algs
+inf_list = {'infExact','infLaplace','infEP','infVB','infKL'};   % inference algs
 
 Ncg = 50;                                   % number of conjugate gradient steps
 sdscale = 0.5;                  % how many sd wide should the error bars become?
 col = {'k',[.8,0,0],[0,.5,0],'b',[0,.75,.75],[.7,0,.5]};                % colors
 ymu{1} = 2*p(xte)-1; ys2{1} = 0;
 for i=1:size(id,1)
-  lik = lik_list{id(i,1)};                                % setup the likelihood
+  lik = lik_list(id(i,1));                                % setup the likelihood
   if strcmp(lik,'likGauss')
     sn = .2; hyp0.lik = log(sn);
   else

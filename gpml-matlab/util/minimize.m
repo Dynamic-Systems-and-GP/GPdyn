@@ -96,7 +96,7 @@ while i < abs(length)                                      % while not finished
         
         [f3 df3] = feval(f, rewrap(Z,X+x3*s), varargin{:});
         df3 = unwrap(df3);
-        if isnan(f3) || isinf(f3) || any(isnan(df3)+isinf(df3)), error(''), end
+        if isnan(f3) || isinf(f3) || any(isnan(df3)+isinf(df3)), error(' '),end
         success = 1;
       catch                                % catch any error which occured in f
         x3 = (x2+x3)/2;                                  % bisect and try again
@@ -170,12 +170,10 @@ end
 X = rewrap(Z,X); 
 fprintf('\n'); if exist('fflush','builtin') fflush(stdout); end
 
+function v = unwrap(s)
 % Extract the numerical values from "s" into the column vector "v". The
 % variable "s" can be of any type, including struct and cell array.
 % Non-numerical elements are ignored. See also the reverse rewrap.m. 
-
-function v = unwrap(s)
-
 v = [];   
 if isnumeric(s)
   v = s(:);                        % numeric values are recast to column vector
@@ -187,13 +185,10 @@ elseif iscell(s)
   end
 end                                                   % other types are ignored
 
-
+function [s v] = rewrap(s, v)
 % Map the numerical elements in the vector "v" onto the variables "s" which can
 % be of any type. The number of numerical elements must match; on exit "v"
 % should be empty. Non-numerical entries are just copied. See also unwrap.m.
-
-function [s v] = rewrap(s, v)
-
 if isnumeric(s)
   if numel(v) < numel(s)
     error('The vector for conversion contains too few elements')
@@ -201,7 +196,7 @@ if isnumeric(s)
   s = reshape(v(1:numel(s)), size(s));            % numeric values are reshaped
   v = v(numel(s)+1:end);                        % remaining arguments passed on
 elseif isstruct(s) 
-  [s p] = orderfields(s); p(p) = 1:numel(p);      % alphabetize, store ordering  
+  [s p] = orderfields(s); p(p) = 1:numel(p);      % alphabetize, store ordering
   [t v] = rewrap(struct2cell(s), v);                 % convert to cell, recurse
   s = orderfields(cell2struct(t,fieldnames(s),1),p);  % conv to struct, reorder
 elseif iscell(s)

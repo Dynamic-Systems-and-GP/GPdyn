@@ -7,13 +7,13 @@ function [post nloo dnloo loo] = infLOO(hyp, mean, cov, lik, x, y)
 % lik{Erf,Logistic} the result corresponds to probabilistic least-squares
 % classification. In any case, the objective returned is not the marginal
 % likelihood but the predictive log probability.
-% The standard deviation of the noise either comes from the sn paramtere of the 
+% The standard deviation of the noise either comes from the sn parameter of the 
 % likelihood function lik{Gauss,Laplace,Sech2} or from the covariance function
-% by means of using covSum and covNoise i.e. for lik{Erf,Logistic}.
+% by means of using covSum and covNoise i.e. for lik{Uni,Erf,Logistic}.
 % We then compute the negative leave-one-out predictive probability and its 
 % derivatives w.r.t. the hyperparameters. See also "help infMethods".
 %
-% Copyright (c) by Carl Edward Rasmussen and Hannes Nickisch, 2010-12-14
+% Copyright (c) by Carl Edward Rasmussen and Hannes Nickisch, 2012-11-07
 %
 % See also INFMETHODS.M.
 
@@ -52,10 +52,10 @@ if nargout>1                               % do we want the marginal likelihood?
   V = post.L'\diag(1./sdeff); r = sum(V.*V,1)';               % r=diag( inv(K) )
   loo.fmu = mneff - alpha./r;                              % GPML book, eq. 5.12
   loo.fs2 = 1./r - sn2;                                    % GPML book, eq. 5.12
-  [loo.lp, loo.ymu, loo.ys2] = feval(lik,hyp.lik,y,loo.fmu,loo.fs2);
+  [loo.lp, loo.ymu, loo.ys2] = feval(lik{:},hyp.lik,y,loo.fmu,loo.fs2);
   nloo = -sum(loo.lp);           % negative leave-one-out predictive probability
   if nargout>2                                         % do we want derivatives?
-    [lZ,dlZmn,d2lZmn] = feval(lik,hyp.lik,y,loo.fmu,loo.fs2,'infEP');
+    [lZ,dlZmn,d2lZmn] = feval(lik{:},hyp.lik,y,loo.fmu,loo.fs2,'infEP');
     dlZva = (d2lZmn+dlZmn.*dlZmn)/2;                % derivative w.r.t. variance
     dnloo = hyp;
     iK = solve_chol(L,eye(n))/sn2;
@@ -68,7 +68,7 @@ if nargout>1                               % do we want the marginal likelihood?
       dnloo.cov(j) = -dlZmn'*dmn -dlZva'*dva;
     end
     for j=1:numel(hyp.lik)     
-      dnloo.lik(j) = -sum( feval(lik,hyp.lik,y,loo.fmu,loo.fs2,'infEP',j) );
+      dnloo.lik(j) = -sum( feval(lik{:},hyp.lik,y,loo.fmu,loo.fs2,'infEP',j) );
       if j==numel(hyp.lik)
         dva = 2*sn2*sum(iK.*iK,2)./(r.*r);                 % GPML book, eq. 5.13
         dmn = 2*solve_chol(L,alpha)./r - alpha.*dva;       % GPML book, eq. 5.13

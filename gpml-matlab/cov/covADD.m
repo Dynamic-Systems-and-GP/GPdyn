@@ -17,6 +17,9 @@ function K = covADD(cov, hyp, x, z, i)
 % where hyp_d are the parameters of the 1d covariance function which are shared
 % over the different values of R(1) to R(end).
 %
+% Please see the paper Additive Gaussian Processes by Duvenaud, Nickisch and 
+% Rasmussen, NIPS, 2011 for details.
+%
 % Copyright (c) by Carl Edward Rasmussen and Hannes Nickisch, 2010-09-10.
 %
 % See also COVFUNCTIONS.M.
@@ -29,7 +32,7 @@ if nargin<3                                  % report number of hyper parameters
   return
 end
 if nargin<4, z = []; end                                   % make sure, z exists
-xeqz = numel(z)==0; dg = strcmp(z,'diag') && numel(z)>0;        % determine mode
+xeqz = isempty(z); dg = strcmp(z,'diag');                       % determine mode
 
 [n,D] = size(x);                                                % dimensionality
 sf2 = exp( 2*hyp(D*nh+(1:nr)) );        % signal variances of individual degrees
@@ -71,7 +74,7 @@ function K = Kdim(cov,hyp,x,z)
     if xeqz, K = zeros(n,n,D); else K = zeros(n,size(z,1),D); end
   end
 
-  for d=1:D                               
+  for d=1:D
     hyp_d = hyp(nh*(d-1)+(1:nh));                 % hyperparamter of dimension d
     if dg
       K(:,:,d) = feval(cov,hyp_d,x(:,d),'diag');
