@@ -5,8 +5,6 @@ Version 1.2.2
 
 Martin Stepančič and Juš Kocijan
 
-.
-
 Introduction
 ============
 
