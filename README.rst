@@ -1,103 +1,21 @@
-\documentclass[ignorenonframetext,]{beamer}
-\setbeamertemplate{caption}[numbered]
-\setbeamertemplate{caption label separator}{:}
-\setbeamercolor{caption name}{fg=normal text.fg}
-\usepackage{amssymb,amsmath}
-\usepackage{ifxetex,ifluatex}
-\usepackage{fixltx2e} % provides \textsubscript
-\usepackage{lmodern}
-\ifxetex
-  \usepackage{fontspec,xltxtra,xunicode}
-  \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-  \newcommand{\euro}{€}
-\else
-  \ifluatex
-    \usepackage{fontspec}
-    \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
-    \newcommand{\euro}{€}
-  \else
-    \usepackage[T1]{fontenc}
-    \usepackage[utf8]{inputenc}
-      \fi
-\fi
-% use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-% use microtype if available
-\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
-\usepackage{longtable,booktabs}
-\usepackage{caption}
-% These lines are needed to make table captions work with longtable:
-\makeatletter
-\def\fnum@table{\tablename~\thetable}
-\makeatother
+.. role:: math(raw)
+   :format: html latex
+..
 
-% Comment these out if you don't want a slide with just the
-% part/section/subsection/subsubsection title:
-\AtBeginPart{
-  \let\insertpartnumber\relax
-  \let\partname\relax
-  \frame{\partpage}
-}
-\AtBeginSection{
-  \let\insertsectionnumber\relax
-  \let\sectionname\relax
-  \frame{\sectionpage}
-}
-\AtBeginSubsection{
-  \let\insertsubsectionnumber\relax
-  \let\subsectionname\relax
-  \frame{\subsectionpage}
-}
+**Gaussian-Process-Model-based**
 
-\setlength{\parindent}{0pt}
-\setlength{\parskip}{6pt plus 2pt minus 1pt}
-\setlength{\emergencystretch}{3em}  % prevent overfull lines
-\setcounter{secnumdepth}{0}
+**System-Identification**
 
-\date{}
+**Toolbox for Matlab**
 
-\begin{document}
+**Version 1.2.2**
 
-\begin{frame}
+Martin Stepančič and Juš Kocijan
 
-\thispagestyle{empty}
+.
 
-\vspace{3cm}
-
-\vspace{4cm}
-
-\Huge\textbf{Gaussian-Process-Model-based}
-
-\vspace{4mm}
-
-\Huge\textbf{System-Identification}
-
-\vspace{4mm}
-
-\Huge\textbf{Toolbox for Matlab}
-
-\vspace{4mm}
-
-\Huge\textbf{Version 1.2.2}
-
-\vspace{3mm}
-
-\vspace{3cm}
-
-{\LargeMartin Stepančič and Juš Kocijan}
-
-\vfill
-
-\Large\today
-
-\pagebreak\setcounter{page}{1} \newpage
-
-\newpage\thispagestyle{empty} .\newpage\pagenumbering{arabic}
-\setcounter{page}{1}
-
-\end{frame}
-
-\begin{frame}{Introduction}
+Introduction
+============
 
 The idea of this toolbox is to facilitate dynamic systems identification
 with Gaussian-process (GP) models. The presented toolbox is continuously
@@ -136,246 +54,187 @@ simplified input-output behaviour representations are sufficient for
 certain purposes, e.g., feedback control design, prediction models for
 supervisory control, etc.
 
-More on the topic of system identification with GP models and the use of
-this models for control design can be found in the book:\\Juš Kocijan
-(2016) Modelling and Control of Dynamic Systems Using Gaussian Process
-Models, Springer.
+| More on the topic of system identification with GP models and the use
+  of this models for control design can be found in the book:
+| Juš Kocijan (2016) Modelling and Control of Dynamic Systems Using
+  Gaussian Process Models, Springer.
 
-\end{frame}
+GP-Model-based System-Identification Toolbox for Matlab
+=======================================================
 
-\begin{frame}{GP-Model-based System-Identification Toolbox for Matlab}
-
-\begin{block}{Prerequisites}
+Prerequisites
+-------------
 
 As this toolbox is intended to use within Matlab environment the user
 should have Matlab installed. It works on Matlab 7 and later, but there
 should be no problems using the toolbox on previous versions of Matlab,
 e.g., 6 or 5.
 
-It is also assumed that the GPML toolbox\footnote<.->{It can be obtained
-  from \emph{http://www.gaussianprocess.org/gpml}.}, general purpose GP
+It is also assumed that the GPML toolbox [1]_, general purpose GP
 modelling toolbox for Matlab, is installed. The GP-model-based
 system-identification toolbox serves as upgrade to GPML toolbox.
 
 The user should posses some familiarity with the Matlab structure and
 programming.
 
-\end{block}
-
-\begin{block}{Installing GPdyn toolbox}
+Installing GPdyn toolbox
+------------------------
 
 Unzip the file GPdyn into chosen directory and add path, with
 subdirectories, to Matlab path.
 
-\end{block}
-
-\begin{block}{Overview of the GPdyn toolbox}
+Overview of the GPdyn toolbox
+-----------------------------
 
 GPdyn files are contained in several directories, depending on their
 purpose:
 
-\begin{description}[<+->]
-\item[training functions,]
-used for training GP models of dynamic systems;
-\item[GP-model evaluation functions,]
-used for simulating the dynamic GP model;
-\item[LMGP-model evaluation functions,]
-which are used when modelling and simulating the system with a GP model
-with incorporated local models (LMGP model);
-\item[utilities functions,]
-that are various support functions;
-\item[demo functions,]
-which demonstrate the use of the toolbox for identification of dynamic
-systems.
-\end{description}
+training functions,
+    used for training GP models of dynamic systems;
 
-\clearpage
+GP-model evaluation functions,
+    used for simulating the dynamic GP model;
+
+LMGP-model evaluation functions,
+    which are used when modelling and simulating the system with a GP
+    model with incorporated local models (LMGP model);
+
+utilities functions,
+    that are various support functions;
+
+demo functions,
+    which demonstrate the use of the toolbox for identification of
+    dynamic systems.
 
 The list of included functions, demos and one model is given in
 following tables.
 
-\renewcommand{\arraystretch}{1.1}
+| \|l\|l\|
+|  & GP-model training of ARX model
+|  & GP-model training of OE model
+|  & - finding initial values of hyperparameters with random search
+|  & minimize a multivariate function using differential evolution
+|  & GP model simulation without the propagation of uncertainty
+|  & GP model simulation with Monte Carlo approximation
+|  & GP model simulation with analytical approximation of statistical
+| & moments with a Taylor expansion for the squared exponential
+| & covariance function
+|  & GP model simulation with exact matching of statistical moments
+| &for the squared exponential covariance function
+|  & GP model simulation with exact matching of statistical moments
+| &for the linear covariance function
+|  & multi-step-ahead prediction of GP model without
+| &the propagation of uncertainty
+|  & modified version of GP rutine from the GPML toolbox
+|  & creates samples of mixture components
+|  & GP model prediction with stochastic inputs for
+| &the squared exponential covariance function with Taylor expansion
+|  & GP model prediction with stochastic inputs for
+| &the linear covariance function
+|  & GP model prediction with stochastic inputs for
+| &the squared exponential covariance function
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%  VSE TABELE SKUPAJ
+\|l\|l\|c\|
 
-\begin{longtable}[c]{@{}ll@{}}
-\toprule
-\multicolumn{2}{|l|}{\tabelarule \bf GP-model training functions}
-&\tabularnewline
-\midrule
-\endhead
-\fun{trainGParx} & GP-model training of ARX model\tabularnewline
-\fun{trainGPoe} & GP-model training of OE model\tabularnewline
-\fun{gp\_initial} & - finding initial values of hyperparameters with
-random search\tabularnewline
-\fun{minimizeDE} & minimize a multivariate function using differential
-evolution\tabularnewline
-\multicolumn{2}{l}{\tabelarule \bf } &\tabularnewline
-\multicolumn{2}{|l|}{\tabelarule \bf Covariance functions}
-&\tabularnewline
-\multicolumn{2}{|l|}{\tabelarule included and explained in enclosed GPML
-toolbox} &\tabularnewline
-\multicolumn{2}{l}{\tabelarule \bf } &\tabularnewline
-\multicolumn{2}{|l|}{\tabelarule \bf GP-model evaluation}
-&\tabularnewline
-\fun{simulGPnaive} & GP model simulation without the propagation of
-uncertainty\tabularnewline
-\fun{simulGPmcmc} & GP model simulation with Monte Carlo
-approximation\tabularnewline
-\fun{simulGPtaylorSE} & GP model simulation with analytical
-approximation of statistical\tabularnewline
-& moments with a Taylor expansion for the squared
-exponential\tabularnewline
-& covariance function\tabularnewline
-\fun{simulGPexactSE} & GP model simulation with exact matching of
-statistical moments\tabularnewline
-& for the squared exponential covariance function\tabularnewline
-\fun{simulGPexactLIN} & GP model simulation with exact matching of
-statistical moments\tabularnewline
-& for the linear covariance function\tabularnewline
-\fun{predGPnaive} & multi-step-ahead prediction of GP model
-without\tabularnewline
-& the propagation of uncertainty\tabularnewline
-\fun{gpx} & modified version of GP rutine from the GPML
-toolbox\tabularnewline
-\fun{gmx\_sample} & creates samples of mixture components\tabularnewline
-\fun{gpTaylorSEard} & GP model prediction with stochastic inputs
-for\tabularnewline
-& the squared exponential covariance function with Taylor
-expansion\tabularnewline
-\fun{gpExactLINard} & GP model prediction with stochastic inputs
-for\tabularnewline
-& the linear covariance function\tabularnewline
-\fun{gpExactSEard} & GP model prediction with stochastic inputs
-for\tabularnewline
-& the squared exponential covariance function\tabularnewline
-\bottomrule
-\end{longtable}
+| 
+|  & LMGP model simulation without the propagation of uncertainty
+|  & LMGP model simulation with Monte Carlo approximation
+|  & LMGP model training
+|  & - LMGP model prediction
+| & - data likelihood and its derivatives
 
-\vspace{3mm}
+| 
+|  & adding white noise to noise-free simulation results
+|  & construction of the input regressors
+| & from system’s input signals
+|  & method to evaluate covariance, mean and likelihood functions
+|  & calculates negative log marginal likelihood
+|  & the method for the lag-space selection, based on Lipschitz
+  quotients
+|  & checking of the parameters match
+|  & performance measures
+|  & testing sampled probability distributions
+|  & plot results (output and error) of the GP model prediction
+|  & plot error of the GP model prediction
+|  & plot output of the GP model prediction
+|  & preprocessing of data
+|  & postprocessing of data
+|  & postprocessing of predicted variance
+|  & generating pseudo-random binary signal
+|  & generating pseudo-random signal
 
-\begin{tabular}{|l|l|c|}
-%
+\|l\|l\|
 
+| 
 
-\multicolumn{2}{l}{\tabelarule \bf } \\ \hline
-%
- \multicolumn{2}{|l|}{\tabelarule \bf LMGP-model evaluation} \\
-  \hline \fun{simulLMGPnaive} & LMGP model simulation without the propagation of uncertainty \\
- \hline \fun{simulLMGPmcmc} & LMGP model simulation with Monte Carlo approximation\\
-  \hline \fun{trainLMGP} & LMGP model training \\
-  \hline \fun{gpSD00} & - LMGP model prediction \\
-  & - data likelihood and its derivatives \\
-\hline
-%
+| 
 
-\multicolumn{2}{l}{\tabelarule \bf } \\
+| & present the system used in demos
+|  & generate data for the identification and validation
+| & of the GP model
+|  & normalization of input and output data
+|  & training of the GP model
+|  & validation with simulation of the GP model
+|  & generate data for the identification and validation
+| & of the LMGP model
+|  & training of the LMGP model
+|  & simulation of the LMGP model
+|  & system simulation
+|  & obtaining system’s derivatives
+|  & identification of system’s local models
 
+How to use this toolbox
+-----------------------
 
- \hline \multicolumn{2}{|l|}{\tabelarule \bf Supporting functions}\\
- \hline \fun{add\_noise\_to\_vector} & adding white noise to noise-free simulation results\\
- \hline \fun{construct} & construction of the input regressors\\
-  & from system's input signals\\
- \hline \fun{eval\_func} & method to evaluate covariance, mean and likelihood functions\\
- \hline \fun{likelihood} & calculates negative log marginal likelihood\\
- \hline \fun{lipschitz} & the method for the lag-space selection, based on Lipschitz quotients\\
- \hline \fun{validate} & checking of the parameters match \\
- \hline \fun{loss} & performance measures \\
- \hline \fun{mcmc\_test\_pdfs} & testing sampled probability distributions\\
- \hline \fun{plotgp} & plot results (output and error) of the GP model prediction \\
- \hline \fun{plotgpe} & plot error of the GP model prediction \\
- \hline \fun{plotgpy} & plot output of the GP model prediction \\
- \hline \fun{preNorm} & preprocessing of data \\
- \hline \fun{postNorm} & postprocessing of data \\
- \hline \fun{postNormVar} & postprocessing of predicted variance\\
- \hline \fun{sig\_prbs} & generating pseudo-random binary signal \\
- \hline \fun{sig\_prs\_minmax} & generating pseudo-random signal \\ \hline
+Demos
+~~~~~
 
+| A simple nonlinear dynamic system is used to demonstrate the
+  identification and simulation of the GP models:
 
-\end{tabular}
+  .. math:: y(k+1) = \frac{y(k)}{1+y^2(k)} + u^3(k) \label{eq:narendra}
 
-\begin{tabular}{|l|l|}
+  The system was used as an example of dynamic system identification
+  with artificial neural networks in:
+| K.S. Narendra and K. Parthasarathy. Identification and Control of
+  Dynamical Systems Using Neural Networks, IEEE Transactions on Neural
+  Networks, Vol.1 No. 1, 4–27, 1990.
 
-
- \multicolumn{2}{l}{\tabelarule \bf } \\
-
-%
- \hline \multicolumn{2}{|l|}{\tabelarule \bf Demos}\\
-
- \hline \fun{demo\_example\_present} & present the system used in demos  \\
- \hline \fun{demo\_example\_gp\_data} & generate data for the identification and validation  \\
- & of the GP model \\
- \hline \fun{demo\_example\_gp\_norm} & normalization of input and output data \\
- \hline \fun{demo\_example\_gp\_training} & training of the GP model \\
- \hline \fun{demo\_example\_gp\_simulation} & validation with simulation of the GP model \\
- \hline \fun{demo\_example\_lmgp\_data} & generate data for the identification and validation \\
- &  of the LMGP model \\
- \hline \fun{demo\_example\_lmgp\_training} & training of the LMGP model \\
- \hline \fun{demo\_example\_lmgp\_simulation} & simulation of the LMGP model\\
- \hline \fun{demo\_example} & system simulation\\
- \hline \fun{demo\_example\_derivative} & obtaining system's derivatives\\
- \hline \fun{demo\_example\_LM\_ident} & identification of system's local models \\ \hline
-
-\end{tabular}
-
-\clearpage
-
-\end{block}
-
-\begin{block}{How to use this toolbox}
-
-\begin{block}{Demos}
-
-A simple nonlinear dynamic system is used to demonstrate the
-identification and simulation of the GP models:
-\[y(k+1) = \frac{y(k)}{1+y^2(k)} + u^3(k) \label{eq:narendra}\] The
-system was used as an example of dynamic system identification with
-artificial neural networks in:\\K.S. Narendra and K. Parthasarathy.
-Identification and Control of Dynamical Systems Using Neural Networks,
-IEEE Transactions on Neural Networks, Vol.1 No. 1, 4--27, 1990.
-
-\begin{description}[<+->]
-\item[demo\_example\_present,]
-presents this system.
-\end{description}
+demo\_example\_present,
+    presents this system.
 
 Following three demos present the identification of dynamic systems with
 the GP model:
 
-\begin{description}[<+->]
-\item[demo\_example\_gp\_data,]
-which presents how to obtain and assemble data for identification;
-\item[demo\_example\_gp\_norm,]
-which shows how to normalise input and output data for training;
-\item[demo\_example\_gp\_training,]
-which demonstrates the identification with a GP model;
-\item[demo\_example\_gp\_simulation,]
-which shows how to simulate the GP model.
-\end{description}
+demo\_example\_gp\_data,
+    which presents how to obtain and assemble data for identification;
+
+demo\_example\_gp\_norm,
+    which shows how to normalise input and output data for training;
+
+demo\_example\_gp\_training,
+    which demonstrates the identification with a GP model;
+
+demo\_example\_gp\_simulation,
+    which shows how to simulate the GP model.
 
 The use of the GP model with incorporated local models is presented with
 demos:
 
-\begin{description}[<+->]
-\item[demo\_example\_lmgp\_data,]
-which presents how to obtain and assemble data for identification;
-\item[demo\_example\_lmgp\_training,]
-which demonstrates the training (=identifying) the LMGP model;
-\item[demo\_example\_lmgp\_simulation,]
-which shows how to simulate the LMGP model.
-\end{description}
+demo\_example\_lmgp\_data,
+    which presents how to obtain and assemble data for identification;
 
-\end{block}
+demo\_example\_lmgp\_training,
+    which demonstrates the training (=identifying) the LMGP model;
 
-\begin{block}{Acknowledgements}
+demo\_example\_lmgp\_simulation,
+    which shows how to simulate the LMGP model.
+
+Acknowledgements
+~~~~~~~~~~~~~~~~
 
 We would like to thank all past, present and future contributors to this
 toolbox.
 
-\end{block}
-
-\end{block}
-
-\end{frame}
-
-\end{document}
+.. [1]
+   It can be obtained from *http://www.gaussianprocess.org/gpml*.
