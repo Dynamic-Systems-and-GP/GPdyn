@@ -1,8 +1,8 @@
 function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, target, ...
 							targetvariance, derivinput, derivtarget, derivvariance, xs)
-% gpSD00 computes the predictive mean and variance at test input for
-% the GP model with incorporated local models, i.e., derivative observations, 
-% with the covariance function covSEard and gaussian likelihood likGauss.
+% gpSD00 computes the predictive mean and variance at the test input for
+% GP model with incorporated local models, i.e., derivative observations, 
+% with the covariance function covSEard and the Gaussian likelihood likGauss.
 % It is used for training and prediction. 
 %
 %
@@ -15,7 +15,7 @@ function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, targ
 %
 %% Description
 % This function computes the predictive mean and variance at test input for
-% the LMGP model with the covariance function as sum of covSEard and
+% LMGP model with the covariance function as sum of covSEard and
 % covNoise. The form of the covariance function is
 %
 % C(x^p,x^q) = sf^2 * exp[-(x^p - x^q)'*inv(P)*(x^p - x^q)/2]
@@ -47,31 +47,31 @@ function [out1, out2, out3, out4] = gpSD00(hyp, inf, mean, cov, lik, input, targ
 %
 %      
 % Input: 
-% * hyp            ... a struct of hyperparameters
-%   inf      	   ... the inference method 	  --> this is never used here
-%   cov      	   ... prior covariance function  --> this is never used here
-%   mean    	   ... prior mean function        --> this is never used here
-%   lik      	   ... likelihood function        --> this is never used here
-% * input          ... a n by D matrix of training inputs
-% * target         ... a (column) vector (of size n) of targets
-% * targetvariance ... a (column) vector (of size n) of variances of
+% * hyp            ... the structure of hyperparameters
+%   inf      	   ... the inference method      	  --> not used, for interface compatibility only
+%   cov      	   ... the prior covariance function  --> not used, for interface compatibility only
+%   mean    	   ... the prior mean function        --> not used, for interface compatibility only
+%   lik      	   ... the likelihood function        --> not used, for interface compatibility only
+% * input          ... the n by D matrix of training inputs
+% * target         ... the (column) vector (of size n) of targets
+% * targetvariance ... the (column) vector (of size n) of variances of
 %                      target's unknown variances are indicated by NaN - these are then
 %                      replaced by the noise term in the covariance function
-% * derivinput     ... an n by D matrix of training inputs at which we have
+% * derivinput     ... the n by D matrix of training inputs at which we have
 %                      derivative information (not necessarily the same as 'input').
-% * derivtarget    ... n by D matrix of partial derivatives at 'derivinput',
+% * derivtarget    ... the n by D matrix of partial derivatives at 'derivinput',
 %                      w.r.t. each input
-% * derivvariance  ... an n by D^2 matrix, where each row is the elements of
+% * derivvariance  ... the n by D^2 matrix, where each row is the elements of
 %                      the covariance matrix associated with the appropriate derivtarget
-% * xs             ... a nn by D matrix of test inputs
+% * xs             ... the nn by D matrix of test inputs
 %
 % Output: 
 % * nlZ            ... the returned value of negative log likelihood
-% * dnlZ           ... a (column) vector (of size D+2) of partial derivatives
+% * dnlZ           ... the (column) vector (of size D+2) of partial derivatives
 %                      of negative log likelihood w.r.t. the hyperparameters
-% * mu             ... a (column) vector (of size nn) of predicted means
-% * S2             ... a (column) vector (of size nn) of predicted variances (including noise variance)
-% * muderiv        ... a vector of derivatives of predicted mean
+% * mu             ... the (column) vector (of size nn) of predicted means
+% * S2             ... the (column) vector (of size nn) of predicted variances (including noise variance)
+% * muderiv        ... the vector of derivatives of predicted mean
 % * S2deriv        ... derivatives of predicted variances
 %
 % where D is the dimension of the input. 
@@ -123,9 +123,9 @@ if (size(X,1)~=D+2) error('Number of hyperparameters disagree with input dataset
 % derivative observations (one repeat for each partial derivative) together
 N = n+D*nD;
 fullinput  = [input; repmat(derivinput,D,1)];
-input      = input;%./repmat(exp(X(1:D))',n,1);
-fullinput  = fullinput;% ./ repmat(exp(X(1:D))',N,1);
-derivinput = derivinput;%./ repmat(exp(X(1:D))',nD,1);
+input      = input;
+fullinput  = fullinput;
+derivinput = derivinput;
 
 fulltarget = [target; derivtarget(:)];
 

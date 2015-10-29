@@ -1,6 +1,6 @@
 function [mu, S2, deriv, S2deriv] = gpTaylorSEard(hyp, inf, mean, cov, lik, invQ, input, target, test, SigmaX)
-% Computes the predictive meand and variance at test input  and test inputs with 
-% Gaussian distribution for squared exponential covariance function using Taylor 
+% Computes the predictive meand and variance at the test input  and test inputs with 
+% the Gaussian distribution for the squared exponential covariance function using the Taylor 
 % approximation
 % 
 %% Syntax
@@ -10,28 +10,28 @@ function [mu, S2, deriv, S2deriv] = gpTaylorSEard(hyp, inf, mean, cov, lik, invQ
 %% Description
 % See A. Girard, Approximate Methods for Propagation of
 % Uncertainty with Gaussian Process Models, PhD thesis, 2004.
-% If input SigmaX exist, consider random input, i.e., input with Gaussian distribution, 
+% If input SigmaX exist, consider random input, i.e., input with the Gaussian distribution, 
 % with covariance SigX. Predictions computed using the equations for 
-% uncertainty propagation approximated with Taylor linearisation. 
-% It can be used only with Gaussian covariance function 
-% covSEard. covNoise is not accounted for. 
+% uncertainty propagation approximated with the Taylor linearisation. 
+% It can be used only with the Gaussian covariance function 
+% covSEard. Noise variance is added at the end. 
 %
 % Input:
-% *  hyp      ... struct of optimized hyperparameters 
-% *  inf      ... function specifying the inference method 
-% *  mean     ... prior mean function
-% *  cov      ... specified covariance function, see help covFun for more info 
-% *  lik      ... likelihood function
-% *  input    ... is a n by D matrix of training inputs
-% *  target   ... is a (column) vector (of size n) of targets
-% *  test     ... 1 by D test input
+% *  hyp      ... the structure of optimized hyperparameters 
+% *  inf      ... the function specifying the inference method 
+% *  mean     ... the prior mean function
+% *  cov      ... the specified covariance function, see help covFun for more info 
+% *  lik      ... the likelihood function
+% *  input    ... the n by D matrix of training inputs
+% *  target   ... the (column) vector (of size n) of targets
+% *  test     ... the 1 by D test input
 % *  SigmaX   ... is the D by D input covariance matrix (optional)
 %
 % Output:
-% *  m       ... is a (column) vector (of size nn) of prediced means
-% *  S2      ... is a (column) vector (of size nn) of predicted variances (including noise variance)
-% *  deriv   ... is a n by D matrix of mean partial derivatives
-% *  S2deriv ... is a n by D by D matrix of (co-)variances on the
+% *  m       ... the (column) vector (of size nn) of prediced means
+% *  S2      ... the (column) vector (of size nn) of predicted variances (including noise variance)
+% *  deriv   ... the n by D matrix of mean partial derivatives
+% *  S2deriv ... the n by D by D matrix of (co-)variances on the
 %                partial derivatives (3 dimensional array (full covariance
 %                per test point) 
 %
@@ -41,24 +41,24 @@ function [mu, S2, deriv, S2deriv] = gpTaylorSEard(hyp, inf, mean, cov, lik, invQ
 % Examples:
 % demo_example_gp_simulation.m
 %
-%%
+%% Signature
 % Written by K. Azman, 2007, based on the software of A. Girard. 
 
-[n, D] = size(input);   % number of training cases and dimension of input space
-[nn, D] = size(test);       % number of test cases and dimension of input space
+[n, D] = size(input);   % the number of training cases and dimension of input space
+[nn, D] = size(test);       % the number of test cases and dimension of input space
 
 % input validation
-% [ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean, cov, lik, D);
-% 
-% if ~isequal(cov,{@covSEard}) 
-%     error(strcat([fun_name,': function can only be called with the', ...
-%         ' covariance function ''covSEard'' '])); 
-% end
-% 
-% if ~isequal(lik,{@likGauss}) 
-%     error(strcat([fun_name,': function can only be called with the', ...
-%         ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
-% end
+[ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean, cov, lik, D);
+
+if ~isequal(cov,{@covSEard}) 
+    error(strcat([fun_name,': function can only be called with the', ...
+        ' covariance function ''covSEard'' '])); 
+end
+
+if ~isequal(lik,{@likGauss}) 
+    error(strcat([fun_name,': function can only be called with the', ...
+        ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
+end
 
 X=[-2*hyp.cov(1:end-1);2*hyp.cov(end);2*hyp.lik]; % adapt hyperparameters to local format
 expX = exp(X);              % exponentiate the hyperparameters once and for all

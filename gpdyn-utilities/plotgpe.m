@@ -1,19 +1,19 @@
 function [i] = plotgpe(i, t, sys, y, std)
-% Function plots the error with corresponding 95% confidence band. Can be
-% used to plot in new or currently active figure. 
+% Function plots the error with corresponding 95 % confidence band. Can be
+% used to plot in a new or the currently active figure. 
 %
 %% Syntax
 % [i] = plotgpe(i, t, sys, y, std);
 %
 % Input: 
-% * i   ... figure handle, if i==0 function plots in current figure 
-% * t   ... time vector (x-axis) 
-% * sys ... target output 
-% * y   ... predicted output 
-% * std ... predicted standard deviation 
+% * i   ... the figure handle, if i==0 function plots in current figure 
+% * t   ... the time vector (x-axis) 
+% * sys ... the target output 
+% * y   ... the predicted output 
+% * std ... the predicted standard deviation 
 % 
 % Output: 
-% i ... figure handle 
+% i ... the figure handle 
 %
 % See Also:
 % plotgp, plotgpy 
@@ -53,7 +53,7 @@ end
 xfill = [t(ix_plot); flipdim(t(ix_plot),1)]; 
 yfill = [2*std(ix_plot);zeros(size(std(ix_plot)))]; 
 fill(xfill, yfill, [7 7 7]/8, 'EdgeColor', [7 7 7]/8);
-% plot(t,2*std, 'LineWidth',2, 'Color',[0.7 0.7 0.7]); 
+
 hold on 
 plot(t,abs(y-sys), 'k-', 'LineWidth',1); 
 hold off 

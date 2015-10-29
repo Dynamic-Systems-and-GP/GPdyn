@@ -2,7 +2,7 @@
 function [mu, s2, MM, VV] = simulLMGPmc(hyp, inffcn, meanfcn, covfcn, likfcn, input, target, targetvariance,...
     derivinput, derivtarget, derivvariance, xt, lag, Nsamples)
 % simulLMGPmc - Simulation of the dynamic GP model with incorporated local models (LMGP models),
-% where the output variance is propagated using numerical Monte Carlo approximation
+% where the output variance is propagated using the numerical Monte Carlo approximation
 %
 %% Syntax
 %  [mu, s2, MM, VV] = simulLMGPmc(hyp, inf, mean, cov, lik, input, target, targetvariance,...
@@ -14,33 +14,33 @@ function [mu, s2, MM, VV] = simulLMGPmc(hyp, inffcn, meanfcn, covfcn, likfcn, in
 % procedure Nsamples-times. 
 % Nsamples samples, which are used as the future inputs of the GP model.
 % Samples are re-used if necessary (ie. y(k-1) for y(k-2) if lag=2 etc.) 
-% Currently it can be used only with Gaussian covariance function and
-% with white noise model (sum of covSEard and covNoise) due to the gpSD00. 
+% Currently it can be used only with the Gaussian covariance function and
+% with the white noise model (sum of covSEard and covNoise) due to the gpSD00. 
 % Uses routine gpSD00. 
-% see K. Azman. Identifikacija dinami�nih sistemov z Gaussovimi procesi. PhD
-% thesis, Univerza v Ljubljani, Ljubljana, 2007. (in Slovene). 
+% see K. Azman. Identifikacija dinamicnih sistemov z Gaussovimi procesi. PhD
+% thesis, University of Ljubljana, Ljubljana, 2007 (in Slovene). 
 %  
 % Input: 
-% * hyp            ... a struct of hyperparameters
-%   inf      	   ... the inference method 	  --> this is never used here
-%   cov      	   ... prior covariance function  --> this is never used here
-%   mean    	   ... prior mean function        --> this is never used here
-%   lik      	   ... likelihood function        --> this is never used here
-% * input          ... input part of the training data,  NxD matrix
-% * target         ... output part of the training data (ie. target), Nx1 vector 
-% * targetvariance ... target variance, use NaN where not known 
-% * derivinput     ... input part of the derivative training data, NEQxD matrix 
+% * hyp            ... the structure of hyperparameters
+% * inf      	   ... the inference method 	      --> not used, for interface compatibility only
+% * cov      	   ... the prior covariance function  --> not used, for interface compatibility only
+% * mean    	   ... the prior mean function        --> not used, for interface compatibility only
+% * lik      	   ... the likelihood function        --> not used, for interface compatibility only
+% * input          ... the input part of the training data,  NxD matrix
+% * target         ... the output part of the training data (ie. target), Nx1 vector 
+% * targetvariance ... the target variance, use NaN where not known 
+% * derivinput     ... the input part of the derivative training data, NEQxD matrix 
 % * derivtarget    ... target derivatives, NEQxD matrix 
 % * derivvariance  ... variances of the local model prameters, NEQxD matrix   
-% * xt             ... input matrix for simulation, kxD vector, see
+% * xt             ... the input matrix for simulation, kxD vector, see
 %                      construct_ARXsimul_input.m for more info 
 % * lag            ... the order of the model (number of used lagged outputs) 
-% * Nsamples       ... number of samples used in algorithm (ie. runs of simulation)
+% * Nsamples       ... the number of samples used in algorithm (ie. runs of simulation)
 %
 % Output: 
-% * mu             ... mean predicted output 
+% * mu             ... the mean predicted output 
 % * s2             ... associated variances (including noise variance)
-% * MM             ... matrix of all predicted means, kxNsamples
+% * MM             ... the matrix of all predicted means, kxNsamples
 % * VV             ... associated predicted variances 
 %
 % See Also
@@ -59,16 +59,10 @@ function [mu, s2, MM, VV] = simulLMGPmc(hyp, inffcn, meanfcn, covfcn, likfcn, in
 % 16.2.2015, Martin Stepancic:
 %		 	-changed the function interface as gpml > 3.0
 %			-removed the addition of autocovariance - this is now
-%			 already included in gpSD00.m. Beware: till now, the underlying
-%			 p.d.f. for sampling did not contain the autocovariance term!
+%			 already included in gpSD00.m. 
 %
 
-
-
-
-
 fun_name = 'simulLMGPmc'; 
-
 
 
 [n, D]      = size(input);

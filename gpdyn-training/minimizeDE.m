@@ -1,5 +1,5 @@
 function [X, fX, i] = minimizeDE(X, f, itermax, varargin)
-% Minimize a multivariate function using differential evolution.
+% Minimize a multivariate function using the differential evolution.
 % 
 %% Syntax
 % [X, fX, i] = trainDEgp(X, f, itermax, P1, P2, P3, ... )
@@ -28,21 +28,17 @@ function [X, fX, i] = minimizeDE(X, f, itermax, varargin)
 % fast in MATLAB's interpreter environment.
 %
 % Input:
-% * X       ... initial guess; may be of any type, including struct and cell 
+% * X       ... the initial guess; may be of any type, including struct and cell 
 %                array
 % * f       ... the name or pointer to the function to be minimized. The 
 %               function f must return the value of the function.
-% * itermax ... number of iterations.
+% * itermax ... the number of iterations.
 % * P1, P2, ... parameters are passed to the function f.
 %
 % Output:
 % * X       ... the returned solution
-% * fX      ... vector of function values indicating progress made
-% * i       ... number of iterations (generations) used at termination.
-%
-% Examples:
-%
-% See also:
+% * fX      ... the vector of function values indicating progress made
+% * i       ... the number of iterations (generations) used at termination.
 %
 %%
 %
@@ -67,11 +63,11 @@ function [X, fX, i] = minimizeDE(X, f, itermax, varargin)
 if (itermax <= 0) % validation
   itermax = 1000;
   fprintf('Number of iterations (length) should be > 0; ');
-  fprintf('set to default value 200.\n');
+  fprintf('set to default value 1000.\n');
 end
 
 % parameters
-npop = 50;                                  % Number of population memebers
+npop = 50;                                  % Number of population members
 F = 0.5;                               % DE-stepsize F from interval [0, 2]
 CR = 0.5;          % crossover probability constant CR from interval [0, 1]
 dim = length(unwrap(X));       % number of params of the objective function

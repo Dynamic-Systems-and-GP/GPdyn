@@ -7,31 +7,31 @@ function [m, s2, mu, sig2] = simulGPexactLIN(hyp, inf, mean, cov, lik, input, ta
 %
 %% Description
 % See J.Kocijan, A. Girard, D.J. Leith, Incorporating linear local models 
-% in Gaussian process model, Technical Report DP-8895, Institut Jožef Stefan, 
+% in Gaussian process model, Technical Report DP-8895, Institut Jozef Stefan, 
 % Ljubljana, December 2003.
 % Simulation of the GP model, where the output variance is propagated using
-% analytical approximation. It can be used only with linear 
-% covariance function and with white noise model (covLINard and likGauss). 
+% analytical approximation. It can be used only with the linear 
+% covariance function and with the white noise model (covLINard and likGauss). 
 % Uses routine gpExactLINard. 
 % 
-% Inputs: 
-% * hyp      ... struct of optimized hyperparameters 
-% * inf      ... function specifying the inference method 
-% * mean     ... prior mean function
-% * cov      ... specified covariance function, see help covFun for more info 
-% * lik      ... likelihood function
-% * input    ... input part of the training data,  NxD matrix
-% * target   ... output part of the training data (ie. target), Nx1 vector 
-% * xt       ... input matrix for simulation, kxD vector, see
+% Input: 
+% * hyp      ... the structure of optimized hyperparameters 
+% * inf      ... the function specifying the inference method 
+% * mean     ... the prior mean function
+% * cov      ... the specified covariance function, see help covFun for more info 
+% * lik      ... the likelihood function
+% * input    ... the input part of the training data,  NxD matrix
+% * target   ... the output part of the training data (ie. target), Nx1 vector 
+% * xt       ... the input matrix for simulation, kxD vector, see
 %                construct.m for more info 
-% * lag      ... the order of the model (number of used lagged outputs) 
+% * lag      ... the the order of the model (number of used lagged outputs) 
 % 
-% Outputs: 
-% * m     ... predictive mean when propagating the uncertainty 
-% * s2    ... predictive variance when propagating the uncertainty (including noise variance)
-% * mu    ... predictive mean using "naive" approach (doesn't propagate the
+% Output: 
+% * m     ... the predictive mean when propagating the uncertainty 
+% * s2    ... the predictive variance when propagating the uncertainty (including noise variance)
+% * mu    ... the predictive mean using "naive" approach (doesn't propagate the
 %             uncertainty)
-% * sig2  ... predictive variance using "naive" approach   (including noise variance, as usual)
+% * sig2  ... the predictive variance using "naive" approach   (including noise variance, as usual)
 % 
 % See also:
 % covLINard, covNoise, gpExactLINard, simulGPExactSE

@@ -1,18 +1,18 @@
-function [in, t] = construct(lag, x, y, xind, yind)
-% Constructs input matrix and output vector for training or simulation.
+function [in, t] = construct(lag, u, y, uind, yind)
+% Constructs the input matrix and the output vector for training or simulation.
 %
 %% Syntax
-% [in,t] = construct(lag, x, y, xind);
-% [in,t] = construct([lagy lagx], x, y, xind);
+% [in,t] = construct(lag, u, y, uind);
+% [in,t] = construct([lagy lagu], u, y, uind);
 %% Description
 % Function contructs matrix of regressors for GP model training from input 
 % and output signals of the system. Shape of the matrix:
 % 
-% in = [y(1)       ... y(lag)   x(1)       ... x(lag);
+% in = [y(1)       ... y(lag)   u(1)       ... u(lag);
 % 
-%       y(2)       ... y(lag+1) x(2)       ... x(lag+1);
+%       y(2)       ... y(lag+1) u(2)       ... u(lag+1);
 %
-%       y(end-lag) ... y(end-1) x(end-lag) ... x(end-1)];
+%       y(end-lag) ... y(end-1) u(end-lag) ... u(end-1)];
 %
 % If the passed y is empty and yind is not given, the system will be
 % considered as FIR. 
@@ -20,13 +20,13 @@ function [in, t] = construct(lag, x, y, xind, yind)
 % If the passed y is of the size of lag its values will be considered as
 % the initial values for simulation (ARX model):
 % 
-% in = [y(1)       ... y(lag-1)   y(lag)   x(1)       ... x(lag);
+% in = [y(1)       ... y(lag-1)   y(lag)   u(1)       ... u(lag);
 % 
-%       y(2)       ... y(lag)     0        x(2)       ... x(lag+1);
+%       y(2)       ... y(lag)     0        u(2)       ... u(lag+1);
 % 
-%       y(lag)     ... 0          0        x(lag)     ... x(lag+lag);
+%       y(lag)     ... 0          0        u(lag)     ... u(lag+lag);
 %
-%       0          ... 0          0        x(end-lag+1) ... x(end)];
+%       0          ... 0          0        u(end-lag+1) ... u(end)];
 %
 % t  = [y(lag+1) y(lag+2) ... y(end)]';
 %
@@ -35,20 +35,19 @@ function [in, t] = construct(lag, x, y, xind, yind)
 % inputs.
 %
 % Input:
-% * lag  ... order of the system
-% * x    ... system input signals, x = [x1(1)   ... xN(1);
-%                                       x1(2)   ... xN(2);
-%                                       x1(end) ... xN(end)],
-%            if x is empty, the system will be considered as FIR
-% * y    ... system output signal, y = [y(1)    ... y(end)]' or
-%            index of system output signal contained in x
-% * xind ... indices of signals to be considered (optional)
-% * yind ... indices of signals from x to be considered as y
+% * lag  ... the order of the system
+% * u    ... system input signals, u = [u1(1)   ... uN(1);
+%                                       u1(2)   ... uN(2);
+%                                       u1(end) ... uN(end)],
+% * y    ... the system output signal, y = [y(1)    ... y(end)]' or
+%            index of system output signal contained in u
+% * uind ... indices of signals to be considered (optional)
+% * yind ... indices of signals from u to be considered as y
 %            output(optional) 
 %
 % Output:
-% * in   ... input matrix for the training rutines
-% * t    ... target vector for the training routines
+% * in   ... the input matrix for the training rutines
+% * t    ... the target vector for the training routines
 %
 % See also:
 % simulGPnaive, simulGPmc, simulGPexactLIN, simulGPexactSE
@@ -61,7 +60,7 @@ function [in, t] = construct(lag, x, y, xind, yind)
 % Based on the work of K. Azman
 
 if (nargin < 2)
-  error('Error: lag and x are mandatory!');
+  error('Error: lag and u are mandatory!');
 end
 if (nargin < 3)
   y=[];
@@ -69,21 +68,21 @@ end
 
 if(isequal (size(lag), [1 2]))
   lagy=lag(1);
-  lagx=lag(2);
+  lagu=lag(2);
 else
   lagy=lag;
-  lagx=lag;
+  lagu=lag;
 end
 maxlag = max(lag);
 
-if (size(x,1) < size(x,2))         % no. of columns bigger than no. of rows
+if (size(u,1) < size(u,2))         % no. of columns bigger than no. of rows
   % no. of regressors > no. of data samples
   r = input('Do your data contain more regressors than data samples? Y/N [N]: ', 's');
   if isempty(r)
     r = 'N';
   end
   if (r == 'N')
-    x = x';                                                  % transpose it
+    u = u';                                                  % transpose it
   end
 end
 
@@ -97,36 +96,36 @@ if (nargin < 5 )
     end
   end
                                   % column
-  if (length(y) == size(x,1))
-    x = [x y];                               % append it to the data matrix
-    yind = size(x,2);          % index of target = index of the last column
+  if (length(y) == size(u,1))
+    u = [u y];                               % append it to the data matrix
+    yind = size(u,2);          % index of target = index of the last column
   elseif (length(y) == lagy)        % just initial values => simulation data
-    y = [y; zeros(size(x,1)-lagy+1, 1)];
-    x = [x; zeros(1, size(x,2))];
-    x = [x y];        
-    yind = size(x,2);          % index of target = index of the last column
+    y = [y; zeros(size(u,1)-lagy+1, 1)];
+    u = [u; zeros(1, size(u,2))];
+    u = [u y];        
+    yind = size(u,2);          % index of target = index of the last column
   elseif (isempty(y))
     yind = -1;                                         % y not given => FIR
   else
-    error('Error: Unless y contains inital values, must the lengths of x and y be the same!');   % len. not equal
+    error('Error: Unless y contains inital values, must the lengths of u and y be the same!');   % len. not equal
   end
 else   
     %elseif (size(y,1) == 1)
-    if (yind >= 1 && yind <= size(x,2))          % index of target is given
-      y = x(:,yind);                                   % save target column
+    if (yind >= 1 && yind <= size(u,2))          % index of target is given
+      y = u(:,yind);                                   % save target column
     else
       error('Error: yind index out of bounds!');
     end
 end
 
-% x - input (indices)
-if (nargin > 3 && ~isempty(xind));
-  xind = intersect(xind,[1:size(x,2)]);  % consider only reasonable indices
+% u - input (indices)
+if (nargin > 3 && ~isempty(uind));
+  uind = intersect(uind,[1:size(u,2)]);  % consider only reasonable indices
 else
-  xind = [1:size(x,2)];                             % all available indices
+  uind = [1:size(u,2)];                             % all available indices
 end
 if (yind > -1)                                        % if y index is given
-  xind = setdiff(xind,yind);                               % remove y index
+  uind = setdiff(uind,yind);                               % remove y index
 end
 
 % construct input
@@ -138,17 +137,14 @@ if (yind > -1)
     in(:,i) = y(i+maxlag-lagy:end-lagy+i-1);
   end
 end
-% x part
-for i = 1 : lagx
-  in = [in x(i+maxlag-lagx:end-lagx+i-1,xind)];
+% u part
+for i = 1 : lagu
+  in = [in u(i+maxlag-lagu:end-lagu+i-1,uind)];
 end
 % target
 if (yind > -1)
   % construct target arx
   t = y(maxlag+1:end);
-% else
-%   % construct target for time series
-%   t = x(lag+1:end);
 end
 
 

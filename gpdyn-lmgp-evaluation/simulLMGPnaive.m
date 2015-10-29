@@ -1,13 +1,13 @@
 function [mu, s2] = simulLMGPnaive(hyp, inf, mean, cov, lik, input, target, targetvariance,...
     derivinput, derivtarget, derivvariance, xt, lag)
-% simulLMGPnaive - 'Naive' (i.e. without propagation of variance) simulation of the GP
+% simulLMGPnaive - 'Naive' (i.e. without propagation of variance) simulation of GP
 % model with the incorporated local models (LM).
 %% Syntax
 %  function [mu, s2] = simulLMGPnaive(hyp, inf, mean, cov, lik, input, target, targetvariance,...
 %   derivinput, derivtarget, derivvariance, xt, lag)
 
 %% Description
-% The LMGP NARX model with the incorporated local models is used  
+% LMGP-NARX model with the incorporated local models is used  
 % to predict a further step ahead by replacing the data at 
 % present time instant with the data at one time instant before and using the mean 
 % value of prediction from the previous prediction step instead of the measured 
@@ -18,25 +18,25 @@ function [mu, s2] = simulLMGPnaive(hyp, inf, mean, cov, lik, input, target, targ
 % Based on the work of R. Murray-Smith and A. Girard. 
 % 
 % Input: 
-% * hyp            ... a struct of hyperparameters
-% x inf      	   ... the inference method 	  --> this is never used here
-% x cov      	   ... prior covariance function  --> this is never used here
-% x mean    	   ... prior mean function        --> this is never used here
-% x lik      	   ... likelihood function        --> this is never used here
-% * covfunc        ... specified covariance function, see help covFun for more info 
-% * input          ... input part of the training data,  NxD matrix
-% * target         ... output part of the training data (ie. target), Nx1 vector 
-% * targetvariance ... target variance, use NaN where not known 
-% * derivinput     ... input part of the derivative training data, NEQxD matrix 
+% * hyp            ... the struct of hyperparameters
+% * inf      	   ... the inference method 	      --> not used, for interface compatibility only
+% * cov      	   ... the prior covariance function  --> not used, for interface compatibility only
+% * mean    	   ... the prior mean function        --> not used, for interface compatibility only
+% * lik      	   ... the likelihood function        --> not used, for interface compatibility only
+% * covfunc        ... the specified covariance function, see help covFun for more info 
+% * input          ... the input part of the training data,  NxD matrix
+% * target         ... the output part of the training data (ie. target), Nx1 vector 
+% * targetvariance ... the target variance, use NaN where not known 
+% * derivinput     ... the input part of the derivative training data, NEQxD matrix 
 % * derivtarget    ... target derivatives, NEQxD matrix 
 % * derivvariance  ... variances of the local model prameters, NEQxD matrix   
-% * xt             ... input matrix for simulation, kxD vector, see
+% * xt             ... the input matrix for simulation, kxD vector, see
 %                      construct_simul_input.m for more info  
 % * lag            ... the order of the model (number of used lagged outputs) 
 %
 % Output: 
-% * mu             ... mean predicted output 
-% * s2             ... asociated variances 
+% * mu             ... the mean predicted output 
+% * s2             ... the asociated variance 
 % 
 % See Also
 % gpSD00, simulLMGPmc, simulGPnaive

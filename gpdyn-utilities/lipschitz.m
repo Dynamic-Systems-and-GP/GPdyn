@@ -1,5 +1,5 @@
 function [MOIndex] = lipschitz(u, y, maxlag, model, fig)
-% A method to determine lag space, based on Lipschitz quotients
+% A method to determine the lag space, based on Lipschitz quotients
 %
 %% Syntax
 % [MOIndex] = lipschitz(u, y, maxlag)
@@ -16,19 +16,19 @@ function [MOIndex] = lipschitz(u, y, maxlag, model, fig)
 %  Lipscitz number stops decreasing.
 % 
 % Input:
-% * u       ... system input(column vector)
-% * y       ... system output(column vector)
-% * maxlag  ... max lag space to investigate
+% * u       ... the system input(column vector)
+% * y       ... the system output(column vector)
+% * maxlag  ... the max lag space to investigate
 % * model   ... optional - 'arx' if we only want to investigate m = l case 
 %
 % Output:
-% * MOIndex ... maxlag by maxlag matrix containing calculated Lipscitz
+% * MOIndex ... the maxlag by maxlag matrix containing calculated Lipscitz
 %               numbers (Model order index) for each combination of m and l
 
 
-%%
-% Written by Toma� �u�tar
-% Based on an algorithm by Xiangdong He and Haruhiko Asada
+%% Signature
+% Written by Tomaz Sustar
+% Based on the algorithm by Xiangdong He and Haruhiko Asada
 
 
 if(nargin<4), model='unknown'; end;
@@ -53,12 +53,7 @@ for m=1:maxlag,                                 % number of delayed outputs
 
     % calculation of Lipschitz quotients
     
-%     dy2 = (repmat(target, 1, N) - repmat(target', N, 1)).^2;
-%     dx2 = sum((repmat(input(1:N,:), [1, 1, N])-repmat(permute(input, [3, 2, 1]), [N, 1, 1])).^2, 2);
-%     dx2 = permute(dx2, [1,3,2]);
-%     Q = dy2./dx2;
-%     Q = triu(Q, 1);                          % much slower
-      
+     
     Q = zeros(N);      % initialize Q matrix for storing Lipschitz qotients  
     
     for i=1:N-1, 
@@ -69,10 +64,6 @@ for m=1:maxlag,                                 % number of delayed outputs
       Q(i,i+1:N)=(target(i)-target(i+1:N)).^2 ./ ...
        sum((repmat(input(i,:), N-i, 1)-input(i+1:N,:)).^2, 2);  
       
-%       for j=i+1:N        
-%         Q(i,j) = abs(target(i)-target(j))/sqrt(sum( (input(i,:)-input(j,:)).^2 ));
-%       end                                % much much slower
-
     end
 
     Q_max = Q(Q~=0);                                         % remove zeros

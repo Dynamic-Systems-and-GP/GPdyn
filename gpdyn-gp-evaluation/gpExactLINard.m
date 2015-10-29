@@ -1,6 +1,6 @@
 function [m, S2] = gpExactLINard(hyp, inf, mean, cov, lik, invQ, input, target, test, SigmaX)
 % This function computes the predictive mean and variance at test input
-% with Gaussian distribution for linear covariance function.
+% with the Gaussian distribution for linear covariance function.
 %
 %% Syntax
 %  [m, S2] = gpExactLINard(hyp, inf, mean, cov, lik, invQ, input, target, test, SigmaX);
@@ -13,24 +13,24 @@ function [m, S2] = gpExactLINard(hyp, inf, mean, cov, lik, invQ, input, target, 
 % If input SigmaX exist consider random input, with covariance SigmaX. 
 % Predictions computed using the equations for 'exact' approximation 
 % of uncertainty propagation. It can be used only 
-% with linear covariance function covLINard. covNoise is not accounted
-% for.
+% with linear covariance function covLINard. 
+% Noise variance is added at the end.
 % 
-% Inputs: 
-% * hyp      ... struct of optimized hyperparameters 
-% * inf      ... function specifying the inference method 
-% * mean     ... prior mean function
-% * cov      ... specified covariance function, see help covFun for more info 
-% * lik      ... likelihood function
-% * invQ     ... inverse of the data covariance matrix
-% * input    ... input part of the training data,  NxD matrix
-% * target   ... output part of the training data (ie. target), Nx1 vector 
-% * test     ... D by 1 test input
-% * SigmaX   ... covariance of the test input (OPTIONAL)
+% Input: 
+% * hyp      ... the structure of optimized hyperparameters 
+% * inf      ... the function specifying the inference method 
+% * mean     ... the prior mean function
+% * cov      ... the specified covariance function, see help covFun for more info 
+% * lik      ... the likelihood function
+% * invQ     ... the inverse of the data covariance matrix
+% * input    ... the input part of the training data,  NxD matrix
+% * target   ... the output part of the training data (ie. target), Nx1 vector 
+% * test     ... the D by 1 test input
+% * SigmaX   ... the covariance of the test input (OPTIONAL)
 % 
-% Outputs: 
-% * m  ... predicted mean 
-% * S2 ... predicted variance   (including noise variance)
+% Output: 
+% * m  ... the predicted mean 
+% * S2 ... teh predicted variance   (including noise variance)
 %
 %
 % See also:
@@ -39,21 +39,21 @@ function [m, S2] = gpExactLINard(hyp, inf, mean, cov, lik, invQ, input, target, 
 %% 
 % Written by J. Kocijan, 2010
 
-[n, D] = size(input); % number of training cases and dimension of input space
-[nn, D] = size(test);  % number of test cases and dimension of input space
+[n, D] = size(input); % the number of training cases and dimension of input space
+[nn, D] = size(test);  % the number of test cases and dimension of input space
 
-%input validation
-% [ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean, cov, lik, D);
-% 
-% if ~isequal(cov,{@covLINard}) 
-%     error(strcat([fun_name,': function can only be called with the', ...
-%         ' covariance function ''covLINard'' '])); 
-% end
-% 
-% if ~isequal(lik,{@likGauss}) 
-%     error(strcat([fun_name,': function can only be called with the', ...
-%         ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
-% end 
+% input validation
+[ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean, cov, lik, D);
+
+if ~isequal(cov,{@covLINard}) 
+    error(strcat([fun_name,': function can only be called with the', ...
+        ' covariance function ''covLINard'' '])); 
+end
+
+if ~isequal(lik,{@likGauss}) 
+    error(strcat([fun_name,': function can only be called with the', ...
+        ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
+end 
 
 X=[-2*hyp.cov;2*hyp.lik]; % adapt hyperparameters to local format
 

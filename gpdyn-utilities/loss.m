@@ -1,30 +1,31 @@
 function [ae, se, lpd, mrse, smse, msll] = loss(y, yp_m, yp_se2)
-% Function computes several frequently used perforamnce values
+% Function computes several frequently used performance measures
 %
 %% Syntax
 % function [ae, se, lpd, mrse, smse, msll] = loss(y, yp_m, yp_se2)
 %
 %
 %% Description
-% Function computes several frequently used perforamnce values. It can be
+% Function computes several frequently used performance measures. It can be
 % used with one-step-ahead prediction or simulation results. 
 %
 % Input: 
-% * y      ... target output values (=system output, ground truth) 
+% * y      ... target output values (=system output) 
 % * yp_m   ... predicted output mean values (=model output) 
-% * yp_se2 ... predicted output variances   (=sigma*1e2 )
+% * yp_se2 ... predicted output variances   (=sigma^2)
 % 
 % Output: 
-% * ae     ... mean absolute error 
-% * se     ... mean squared error 
-% * lpd    ... log-predicted loss
-% * mrse   ... mean relative square error 
-% * smse   ... standardized mean squared error
-% * msll   ... mean standardized log loss
+% * ae     ... the mean absolute error 
+% * se     ... the mean squared error 
+% * lpd    ... the log-predicted loss
+% * mrse   ... the mean relative square error 
+% * smse   ... the standardized mean squared error
+% * msll   ... the mean standardized log loss
 % Examples:
 % demo_example_gp_simulation.m
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%% Verification of input arguments
 if nargin < 2  error('not enough input arguments'); end
 y=y(:);
@@ -38,8 +39,8 @@ else
 end
 %%%
 
-y_m=mean(y);    % mean of ground truth output
-y_se2=var(y);   % variance of ground truth output
+y_m=mean(y);    % mean of output
+y_se2=var(y);   % variance of output
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % AE: (mean absolute error )
@@ -78,10 +79,6 @@ printout('LPD ',lpd);
 printout('MSLL',msll);
 
 return; 
-
-
-
-
 
 function []=printout(errtype,value)
 disp([errtype ' = ',num2str(value)]);

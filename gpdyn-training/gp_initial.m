@@ -1,5 +1,5 @@
 function [hyp, flogtheta0] = gp_initial(bounds, inf, mean, cov, lik, input, target, islog, npop)
-% Function for finding initial values of hyperparameters with random
+% Function for finding initial values of hyperparameters with the random
 % search.
 %
 %% Syntax
@@ -15,20 +15,20 @@ function [hyp, flogtheta0] = gp_initial(bounds, inf, mean, cov, lik, input, targ
 %              hyperparameters have the same bounds, otherwise vector of
 %              two hyperparameter structs [hyp_min, hyp_max], if bouns
 %              equals [] default bounds are used [-8,7]
-% * inf    ... function specifying the inference method 
-% * mean   ... prior mean function
-% * cov    ... prior covariance function
-% * lik    ... likelihood function
-% * input  ... input part of the training data,  NxD matrix
-% * target ... output part of the training data (ie. target), Nx1 vector
+% * inf    ... the function specifying the inference method 
+% * mean   ... the prior mean function
+% * cov    ... the prior covariance function
+% * lik    ... the likelihood function
+% * input  ... the input part of the training data,  NxD matrix
+% * target ... the output part of the training data (ie. target), Nx1 vector
 
 % * islog  ... indicates if random values should be in log-scale [optional,
 %             default = 1]
-% * npop   ... number of population (sets of hyperparameters) [optional]
+% * npop   ... the number of population (sets of hyperparameters) [optional]
 %
 % Output: 
-% * hyp        ... struct icluding the initial hyperparameters 
-% * flogtheta0 ... log marginal likelihood of initial hyperparameters
+% * hyp        ... the structure icluding the initial hyperparameters 
+% * flogtheta0 ... the log marginal likelihood of initial hyperparameters
 %
 % See Also:
 % likelyhood, gp.m, minimize, covFunctions, likFunctions, meanFunctions,
@@ -39,7 +39,7 @@ function [hyp, flogtheta0] = gp_initial(bounds, inf, mean, cov, lik, input, targ
 %
 %% 
 % * Written by Dejan Petelin (2010-05-03)
-% * Modified by Tomaž Šuštar, March 2012
+% * Modified by Tomaz Sustar, March 2012
 
 
 if nargin < 7 % input validation

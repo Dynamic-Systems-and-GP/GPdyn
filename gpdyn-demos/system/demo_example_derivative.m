@@ -1,5 +1,5 @@
 function [dFdY, dFdU, Y, U] = demo_example_derivative(U)
-% demo_example_derivative - Derives analitically partial derivative of the
+% demo_example_derivative - Derives analitically partial derivatives of the
 % demo nonlinear system
 %% Syntax
 %  function [dFdY, dFdU, Y, U] = demo_example_derivative(U)

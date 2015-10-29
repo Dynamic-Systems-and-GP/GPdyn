@@ -4,18 +4,18 @@ function out = sig_prs_minmax(n, ksw, min, max)
 %  function out = sig_prs_minmax(n, ksw, min, max)
 %
 %% Description
-%  Function, which generates pseudo random signal with length n and uniform
+%  Function, which generates the pseudo random signal with length n and the uniform
 %  distribution of signal magnitudes between min and max. ksw is the minimum 
 %  duration in samples of the signal at particular magnitude.
 %
 % Input: 
-% * n   ... length of the signal 
-% * ksw ... minimum number of samples of signal at constant value 
-% * min ... minimum magnitude 
-% * max ... maximum magnitude 
+% * n   ... the length of signal 
+% * ksw ... the minimum number of samples of signal at constant value 
+% * min ... the minimum magnitude 
+% * max ... the maximum magnitude 
 %
 % Output: 
-% * out ... PRS signal values
+% * out ... PRBS signal values
 %
 % See also:
 % sig_prbs

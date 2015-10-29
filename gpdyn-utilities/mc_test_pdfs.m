@@ -6,15 +6,15 @@ function [] = mc_test_pdfs(MM,VV,desired_steps)
 % mc_test_pdfs(MM,VV,desired_steps)
 %
 %% Description
-% Function tests and plots the Gaussian mixture described my vector of Gaussian
-% means and variances in the  desired simulation steps.
+% Function tests and plots the Gaussian mixture described by the vector of Gaussian
+% means and variances in the desired simulation steps.
 %
 % Input: 
-% * MM   ... matrix of mean values of Gaussian components, the matrix of dimensions 
-%            ksteps x Nsamples
-% * VV   ... matrix of associated variances of Gaussian components 
-% * desired_steps ... vector with indices of steps, where we want to test
-%            the distributions 
+% * MM            ... the matrix of mean values of Gaussian components, the matrix of dimensions 
+%                       ksteps x Nsamples
+% * VV            ... the matrix of associated variances of Gaussian components 
+% * desired_steps ... the vector with indices of steps, where we want to test
+%                       the distributions 
 %
 % See Also:
 % demo_example_gp_simulation

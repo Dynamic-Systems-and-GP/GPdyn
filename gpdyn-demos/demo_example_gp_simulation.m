@@ -1,11 +1,11 @@
 %% demo_example_gp_simulation 
 
 %% Description
-% This demo presents the simulation of the GP model, describing dynamic
+% This demo presents the simulation of GP model, describing dynamic
 % system. Five different simulations are presented: 
 % * "naive" simulation (without propagation of uncertainty) 
 % * simulation with numerical (Monte Carlo) propagation of uncertainty. 
-% * simulation using taylor approximation for propagation of uncertainty. 
+% * simulation using Taylor approximation for propagation of uncertainty. 
 % * "exact" simulation (anayltical propagation of uncertainty) 
 % * "exact" simulation (anayltical propagation of uncertainty) using linear
 % covariance function
@@ -77,17 +77,16 @@ plotgp(f3,t,yvalid, yexactSE, sqrt(s2exactSE));
 [yexactLIN, s2exactLIN, ynaiveLIN, s2naiveLIN] = ...
     simulGPexactLIN(hyp_lin, inf, mean, @covLINard, lik, input, target, test, lag);
 
-f4=figure('Name', 'Naive Simulation (Using Linear Covariacne Function)');
+f4=figure('Name', 'Naive Simulation (Using Linear Covariance Function)');
 plotgp(f4,t,yvalid, ynaiveLIN, sqrt(s2naiveLIN));
   
-f5=figure('Name', 'Exact Simulation (Using Linear Covariacne Function)');
+f5=figure('Name', 'Exact Simulation (Using Linear Covariance Function)');
 plotgp(f5,t,yvalid, yexactLIN, sqrt(s2exactLIN));
 
 %% Comparing results
 % A function loss is available to calculate several frequently used
 % perforamnce values. See the console output.
 
-% load trained model from demo_example_gp_training
 load example_trained
 [yy, ss2] = simulGPexactSE(hyp, inf, mean, cov, lik, input, target, test, lag);
 

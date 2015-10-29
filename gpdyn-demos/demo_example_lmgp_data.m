@@ -2,14 +2,14 @@
 %
 %% Description
 % Demo to present how to obtain and compose data for the identification
-% of the GP model with incorporated local models (LMGP model). 
+% of GP model with incorporated local models (LMGP model). 
 % 
 % There are two options how to obtain local model data: 
-% a. analyticaly (set fIdentifyLm to 0) 
+% a. analytically (set fIdentifyLm to 0) 
 % b. with identification (set fIdentifyLm to 1) 
 % 
-% It can be used only with Gaussian covariance function and
-% with white noise model (sum of covSEard and covNoise). 
+% It can be used only with the Gaussian covariance function and
+% with the white noise model (sum of covSEard and covNoise). 
 %
 % See Also
 % example.m, demo_example_LMGP_training.m, demo_example_LMGP_simulation.m,
@@ -22,8 +22,8 @@
 %
 % 16.2.2015, Martin Stepancic:
 %		 	-included the gathering of both equilibrium and non-equilibrium
-%			 points in same matlab script;
-%			-changed .mat filenames and their struct contents to: 
+%			 points in the same matlab script;
+%			-changed .mat filenames and their structure contents to: 
 %			 {train|valid}_data.{x|u|y}
 %
 clear;

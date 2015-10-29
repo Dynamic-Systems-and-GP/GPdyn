@@ -6,25 +6,27 @@ function [y, s2, fmu, fs2] = simulGPnaive(hyp, inf, mean, cov, lik, input, targe
 %   [y, s2] = simulGPnaive(hyp, inf, mean, cov, lik, input, target, test, lag) 
 %
 %% Description
-% The GP NARX model is used to predict a further step ahead by replacing the data at 
+% GP-NARX model is used to predict a further step ahead by replacing the data at 
 % present time instant with the data at one time instant before and using the mean 
 % value of prediction from the previous prediction step instead of the measured 
 % output value. This is then repeated as many times as there are test samples.
 %
 % Input:
-% * hyp    ... column vector of hyperparameters
-% * inf    ... function specifying the inference method
-% * cov    ... prior covariance function (see below)
-% * mean   ... prior mean function
-% * lik    ... likelihood function
-% * input  ... input part of the training data,  NxD matrix
-% * target ... output part of the training data (ie. target), Nx1 vector 
-% * test   ... input matrix, kxD matrix, see construct.m for more info 
+% * hyp    ... the column vector of hyperparameters
+% * inf    ... the function specifying the inference method
+% * cov    ... the prior covariance function (see below)
+% * mean   ... the prior mean function
+% * lik    ... the likelihood function
+% * input  ... the input part of the training data,  NxD matrix
+% * target ... the output part of the training data (ie. target), Nx1 vector 
+% * test   ... the input matrix, kxD matrix, see construct.m for more info 
 % * lag    ... the order of the model (number of used lagged outputs) 
 % 
 % Output:
-% * y    ... mean predicted output 
-% * s2   ... associated variances 
+% * y    ... the mean predicted output 
+% * s2   ... associated variances
+% * fmu  ... the mean predicted output without noise
+% * fs2  ... associated variances without noise
 %
 % See also: 
 % gpx.m, simulGPmc, construct.m

@@ -1,7 +1,7 @@
 %% demo_example_gp_training
 
 %% Description
-% This demo presents how to train (=identify) the GP model, which
+% This demo presents how to train, i.e., identify, GP model, which
 % describes the nonlinear dynamic system.
 
 %% See Also
@@ -18,50 +18,50 @@ load example_data
 input = [xtrain utrain]; 
 target = [ytrain]; 
 
-% Define covariance function: Squared exponential covariance function with
+% Define covariance function: the squared exponential covariance function with
 % ARD
 cov = @covSEard; 
 
-% Define covariance function: Gaussinan likelihood function.
+% Define covariance function: the Gaussian likelihood function.
 lik = @likGauss;
 
-% Define mean function: Zero mean function.
+% Define mean function: the zero mean function.
 mean = @meanZero;
 
-% Define inference method: Exact Inference
+% Define inference method: the exact Inference
 inf= @infExact;
 
 %% Setting initial hyperparameters
-% For hyperparameters a struct is used. The struct has to be of the
+% For hyperparameters a structure array is used. The structure array has to be of the
 % following shape:
 % hyp = 
 %      cov: [] - covariance function parameters
 %      lik: [] - likelyhood function parameters
 %      mean: [] -  mean function parameters
 % 
-% To get the number of hyperparameters you could
+% To get the number of hyperparameters you may
 % use: eval_func(cov),  eval_func(cov) or eval_func(mean).
 %
 
 D = size(input,2); % Input space dimension
 hyp0.cov  = -ones(D+1,1); 
 
-% Define likelihood hyperparameter. In our case this parameter is noise
+% Define the likelihood hyperparameter. In our case this parameter is the noise
 % parameter.
 hyp0.lik=log(0.1);
  
 hyp0.mean = []; 
 
 %% gp_initial
-% We can also use a ruthine gp_initial to find the initial hperparameters.
-% This function returns best set of n random sets of hyperparameter values. 
-% As score it uses a log marginal likelihood. The number of the parameters
+% We can also use the function gp_initial to find initial hperparameters.
+% This function returns the best set of n random sets of hyperparameter values. 
+% As score it uses a log marginal likelihood. The number of parameters
 % is adjusted to the current covariance, likelihood and mean function.% 
 
 % Set between which bounds the best set of hyperparameters will be estimated.
 bounds=[-7,8];
 
-% Find initial hyperparamerers:
+% Find initial hyperparameters:
 hyp0_lin = gp_initial(bounds, inf, mean, @covLINard, lik, input, target);
 
 % For further use we will train another GP model with linear covariance
@@ -69,13 +69,13 @@ hyp0_lin = gp_initial(bounds, inf, mean, @covLINard, lik, input, target);
 
 
 %% Training 
-% Identification of the GP model
+% Identification of GP model
 [hyp, flogtheta, i] = trainGParx(hyp0, inf, mean, cov, lik, input, target);
 
-% Training using Differential Evolution minimization algorithm:
+% Training using Differential Evolution minimization algorithm with default value of iterations:
 [hyp_lin, flogtheta_lin, i] = trainGParx(hyp0_lin, inf, mean, @covLINard, lik, input, target, @minimizeDE);
 
-% Training using Output Error alorithm
+% Training using Output Error algorithm
 [hyp_oe, flogtheta, i] = trainGPoe(hyp0, inf, mean, cov, lik, input, target, @simulGPmc, 1);
 
 %% Validation (Regression)

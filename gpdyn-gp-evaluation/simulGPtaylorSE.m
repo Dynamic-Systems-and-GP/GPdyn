@@ -1,6 +1,6 @@
 function [mu, s2] = simulGPtaylorSE(hyp, inf, mean, cov, lik, input, target, test, lag)
-% Simulation of the GP model with square exponential covariance function, where the 
-% output variance is propagated using Taylor approximation.
+% Simulation of GP model with the square exponential covariance function, where the 
+% output variance is propagated using the Taylor approximation.
 %
 %% Syntax
 %  [mu, s2] = simulGPtaylorSE(hyp, inf, mean, cov, lik, input, target,
@@ -9,26 +9,26 @@ function [mu, s2] = simulGPtaylorSE(hyp, inf, mean, cov, lik, input, target, tes
 %% Description
 % See A. Girard, Approximate Methods for Propagation of
 % Uncertainty with Gaussian Process Models, PhD thesis, 2004.
-% Simulation of the GP model, where the output variance is propagated using
-% Taylor approximation. It can be used only with Gaussian 
-% covariance function and with white noise model (covSEard and likGauss). 
+% Simulation of GP model, where the output variance is propagated using
+% the Taylor approximation. It can be used only with the Gaussian 
+% covariance function and with the white noise model (covSEard and likGauss). 
 % Uses routine gpTaylorSEard. 
 % 
 % Input: 
-% * hyp      ... struct of optimized hyperparameters 
-% * inf      ... function specifying the inference method 
-% * mean     ... prior mean function
-% * cov      ... specified covariance function, see help covFun for more info 
-% * lik      ... likelihood function
-% * input    ... input part of the training data,  NxD matrix
-% * target   ... output part of the training data (ie. target), Nx1 vector 
-% * test     ... input matrix for simulation, kxD vector, see
+% * hyp      ... the structure of optimized hyperparameters 
+% * inf      ... the function specifying the inference method 
+% * mean     ... the prior mean function
+% * cov      ... the specified covariance function, see help covFun for more info 
+% * lik      ... the likelihood function
+% * input    ... the input part of the training data,  NxD matrix
+% * target   ... the output part of the training data (ie. target), Nx1 vector 
+% * test     ... the input matrix for simulation, kxD vector, see
 %                construct.m for more info 
 % * lag      ... the order of the model (number of used lagged outputs) 
 % 
 % Output: 
-% * mu       ... predictive mean when propagating the uncertainty 
-% * s2       ... predictive variance when propagating the uncertainty  (including noise variance)
+% * mu       ... the predictive mean when propagating the uncertainty 
+% * s2       ... the predictive variance when propagating the uncertainty  (including noise variance)
 %
 % See also:
 % gpTaylorSEard, simulGPexactSE, simulGPnaive
@@ -65,14 +65,14 @@ expX = exp(X);
 vy = expX(end);
 
 SigmaX = zeros(D,D);
-% training covariance matrix
+% training of the covariance matrix
 Q = zeros(n,n);
 for d = 1:D
   Q = Q + (repmat(input(:,d),1,n)-repmat(input(:,d)',n,1)).^2*expX(d);
 end
 Q = expX(D+1)*exp(-0.5*Q);
 
-Q = Q + vy*eye(n);  % data cov. matrix: add noise model
+Q = Q + vy*eye(n);  % data cov. matrix: add the noise model
 
 invQ = inv(Q);
 

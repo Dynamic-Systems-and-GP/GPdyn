@@ -1,12 +1,12 @@
 function [y, s2] = predGPnaive(hyp, inf, mean, cov, lik, input, target, test, lag, kstep) 
 % predGPNaive - 'Naive' (i.e. without propagation of variance) k-step-ahead prediction 
-% of the GP model.
+% of GP model.
 %
 %% Syntax
 %   [y, s2] = predGPnaive(hyp, inf, mean, cov, lik, input, target, test, lag, kstep) 
 %
 %% Description
-% The GP NARX model is used to predict a further step ahead by replacing the data at 
+% GP-NARX model is used to predict a further step ahead by replacing the data at 
 % present time instant with the data at one time instant before and using the mean 
 % value of prediction from the previous prediction step instead of the measured 
 % output value. This is then repeated for predifined number of steps, which is at 
@@ -14,19 +14,19 @@ function [y, s2] = predGPnaive(hyp, inf, mean, cov, lik, input, target, test, la
 % 
 % Input: 
 % * hyp      ... optimized hyperparameters (struct)
-% * inf      ... function specifying the inference method 
-% * mean     ... prior mean function
-% * cov      ... specified covariance function, see help covFun for more info 
-% * lik      ... likelihood function
-% * input    ... input part of the training data,  NxD matrix
-% * target   ... output part of the training data (ie. target), Nx1 vector 
-% * test     ... input matrix, kxD matrix, 
+% * inf      ... the function specifying the inference method 
+% * mean     ... the prior mean function
+% * cov      ... the specified covariance function, see help covFun for more info 
+% * lik      ... the likelihood function
+% * input    ... the input part of the training data,  NxD matrix
+% * target   ... the output part of the training data (ie. target), Nx1 vector 
+% * test     ... the input matrix, kxD matrix, 
 % * lag      ... the order of the model (number of used lagged outputs) 
-% * kstep    ... number of steps to be predicted
+% * kstep    ... the number of steps to be predicted
 % 
 % Output: 
-% * y  ... mean predicted output 
-% * s2 ... associated variances 
+% * y  ... the matrix of columns with mean outputs of predictions from 1 to kstep-ahead 
+% * s2 ... the matrix of columns with associated variances 
 %
 % Examples:
 % demo_example_gp_simulation

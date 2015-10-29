@@ -2,8 +2,8 @@
 
 %% Description
 % If different inputs are measured on different scales a normalisation can
-% be applied to achieve that all inputs have eqal impact on the output.
-% There are three functions available in this toolbox to help us with
+% be applied to achieve that all inputs have equal impact on the output.
+% There are three functions available in this toolbox to assist with
 % normalisation. This demo shows their usage.
 
 %% See Also
@@ -45,7 +45,7 @@ nTest = preNorm(test,inputMin,inputMax);
 
 %% Representing results
 
-% unnormalize sumulation mean output
+% unnormalize simulation mean output
 y = postNorm(nY, targetMin, targetMax);
 
 % unnormalize variance

@@ -1,6 +1,6 @@
 function [m, S2] = gpExactSEard(hyp, inf, mean, cov, lik, invQ, input, target, muX, SigX, lag)
-% Computes the predictive mean and variance at test input with
-% Gaussian distribution for squared exponential covariance function.
+% Computes the predictive mean and variance at teh test input with
+% Gaussian distribution for the squared exponential covariance function.
 %
 %% Syntax
 %  [m, S2] = gpExactSEard(hyp, inf, mean, cov, lik, invQ, input, target, muX, SigX, lag);
@@ -11,25 +11,24 @@ function [m, S2] = gpExactSEard(hyp, inf, mean, cov, lik, invQ, input, target, m
 % If input SigX exist, consider random input, i.e., input with Gaussian distribution, 
 % with covariance SigX. Predictions computed using the equations for 'exact' 
 % approximation of uncertainty propagation. It can be used only 
-% with Gaussian covariance function covSEard. covNoise is not accounted
-% for.
+% with the Gaussian covariance function covSEard. Noise variance is added at the end.
 % 
 % Input: 
 % * hyp      ... optimized hyperparameters 
-% * inf      ... function specifying the inference method 
-% * mean     ... prior mean function
-% * cov      ... specified covariance function, see help covFun for more info 
-% * lik      ... likelihood function
-% * invQ     ... inverse of the data covariance matrix
-% * input    ... input part of the training data,  NxD matrix
-% * target   ... output part of the training data (ie. target), Nx1 vector 
-% * muX      ... D by 1 test input
-% * SigX     ... covariance of the test input (OPTIONAL)
+% * inf      ... the function specifying the inference method 
+% * mean     ... the prior mean function
+% * cov      ... the specified covariance function, see help covFun for more info 
+% * lik      ... the likelihood function
+% * invQ     ... the inverse of the data covariance matrix
+% * input    ... the input part of the training data,  NxD matrix
+% * target   ... the output part of the training data (ie. target), Nx1 vector 
+% * muX      ... the D by 1 test input
+% * SigX     ... the covariance of the test input (OPTIONAL)
 % * lag      ... the order of the model (number of used lagged outputs) 
 %
 % Output: 
-% * m  ...predicted mean 
-% * S2 ... predicted variance  (including noise variance)
+% * m  ... the predicted mean 
+% * S2 ... the predicted variance  (including noise variance)
 %
 % See Also:
 % covSEard, simulGPexactSE, gpTaylorSEard
@@ -37,26 +36,26 @@ function [m, S2] = gpExactSEard(hyp, inf, mean, cov, lik, invQ, input, target, m
 % Examples:
 % demo_example_gp_simulation.m
 %
-%% 
+%% Signature
 % Written by K. Azman, 2007, based on the software of J. Quinonero-Candela 
 % and A. Girard. 
 
-[n, D] = size(input); % number of training cases and dimension of input space
-[nn, D] = size(muX);  % number of test cases and dimension of input space
+[n, D] = size(input); % the number of training cases and dimension of input space
+[nn, D] = size(muX);  % the number of test cases and dimension of input space
 
 % input validation
 
-% [ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean, cov, lik, D);
+[ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean, cov, lik, D);
 
-% if ~isequal(cov,{@covSEard}) 
-%     error(strcat([fun_name,': function can only be called with the', ...
-%         ' covariance function ''covSEard'' '])); 
-% end
-% 
-% if ~isequal(lik,{@likGauss}) 
-%     error(strcat([fun_name,': function can only be called with the', ...
-%         ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
-% end 
+if ~isequal(cov,{@covSEard}) 
+    error(strcat([fun_name,': function can only be called with the', ...
+        ' covariance function ''covSEard'' '])); 
+end
+
+if ~isequal(lik,{@likGauss}) 
+    error(strcat([fun_name,': function can only be called with the', ...
+        ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
+end 
 
 
 X=[-2*hyp.cov(1:end-1);2*hyp.cov(end);2*hyp.lik]; % adapt hyperparameters to local format

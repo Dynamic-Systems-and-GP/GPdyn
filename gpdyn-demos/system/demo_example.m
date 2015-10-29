@@ -5,7 +5,7 @@ function [Y, X, U] = example(U, varargin)
 %  function [Y, X, U] = example(U, varargin)
 
 %% Description
-% Function simulating the nonlinear dynamic system: 
+% Function for simulating the nonlinear dynamic system: 
 % 
 %                y(k)
 %   y(k+1) = ---------------  + [u(k)]^3

@@ -8,12 +8,12 @@ function r = gmx_sample ( Mi, Sig2, N )
 %  Creates samples of Gaussian mixture components
 % 
 % Input:
-% * Mi    ... vector of mean values of mixture components 
-% * Sig2   ... vector of variances of mixture components
-% * N     ... number of samples of mixture components
+% * Mi    ... the vector of mean values of mixture components 
+% * Sig2   ... the vector of variances of mixture components
+% * N     ... the number of samples of mixture components
 % 
 % Output:
-% * r     ... sample of the Gaussian mixture
+% * r     ... the sample of the Gaussian mixture
 % 
 % See also: 
 % simulGPnaive, gmx_sample

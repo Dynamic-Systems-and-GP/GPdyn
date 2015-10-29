@@ -6,12 +6,12 @@ function [lm, Yeq] = demo_example_LM_ident(Ueq, dU, noiseStd, test_flag)
 %
 %% Description
 % Function which identifies local models for example system (see 
-% example.m) in given equilibrium points using Instrumented Variables
-% (IV4) algortihm. 
+% example.m) in given equilibrium points using the Instrumental Variables
+% (IV4) algorithm. 
 % 
 % Input:
 % Ueq      ... equilibrium points where we would like to identify local models 
-% dU       ... amplitude of the PRBS signal uesd for the perturbation of the
+% dU       ... amplitude of the PRBS signal used for the perturbation of the
 %             system in working points 
 % noiseStd ... noise standard deviation of the system's modelled ouput 
 % test_flag... flag for ploting the identification results, 

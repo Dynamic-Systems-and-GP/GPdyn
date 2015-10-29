@@ -1,34 +1,34 @@
 function [hyp, flogtheta, i] = trainGPoe(hyp, inf, mean, cov, lik, input, target, simf, lag, Nsamples)
-% Function for optimization (training) of the GP model hyperparameters
+% Function for the optimisation (training) of GP model hyperparameters
 %
 %% Syntax
 % [hyp, flogtheta, i] = trainGPoe(hyp, inf, mean, cov, lik, input, target,
 %                                 simf, lag, Nsamples);
 %
 %% Description
-% Function for optimization (training) of the GP model hyperparameters
-% based on the training data via Maximum Likelihood (ML). 
+% Function for the optimisation (training) of GP model hyperparameters
+% based on the training data via maximum marginal likelihood. 
 % Uses routines gp and minimize.
 % Based on the work of C.E.Rasmussen. 
 % 
 % Input:
-% * hyp  ... struct of initial hyperparameters
-% * inf  ... function specifying the inference method 
-% * cov  ... prior covariance function (see below)
-% * mean ... prior mean function
-% * lik  ... likelihood function
-% * input    ... input part of the training data,  NxD matrix
-% * target   ... output part of the training data (ie. target), Nx1 vector
-% * simf     ... function handle of simulation function (e.g. @simulGPmc)
+% * hyp      ... the structure of initial hyperparameters
+% * inf      ... the function specifying the inference method 
+% * cov      ... the prior covariance function (see below)
+% * mean     ... the prior mean function
+% * lik      ... the likelihood function
+% * input    ... the input part of the training data,  NxD matrix
+% * target   ... the output part of the training data (ie. target), Nx1 vector
+% * simf     ... the function handle of simulation function (e.g. @simulGPmc)
 % * lag      ... the order of the model (number of used lagged outputs)
-% * Nsamples ... number of samples for MCMC simulation (optional)
-% * minf     ... function handle of the minimization method to be used 
+% * Nsamples ... the number of samples for MCMC simulation (optional)
+% * minf     ... the function handle of the minimization method to be used 
 %                (optional, default=@minimize)
 %
-% Outputs: 
+% Output: 
 % * hyp       ... optimized hyperparameters 
-% * flogtheta ... minus log likelihood for the different runs (init. to 0)
-% * i         ... number of iterations needed for the last optimization
+% * flogtheta ... the minus log likelihood for the different runs (init. to 0)
+% * i         ... the number of iterations needed for the last optimization
 %
 % Examples:
 % demo_example_gp_training.m
@@ -36,19 +36,14 @@ function [hyp, flogtheta, i] = trainGPoe(hyp, inf, mean, cov, lik, input, target
 % See Also:
 % gp, minimize, covFunctions, trainlgmp
 %
-%% Signature
 
 if (nargin < 10)
-  Nsamples = 100; % default value of Nsamples for MCMC simulation
+  Nsamples = 100; % default value of Nsamples for MC simulation
 end
 if(nargin < 11)
   minf = @minimize;
 end
 
-% if (nargin < 5)
-%   [n D] = size(input);
-%   logtheta0 = -rand(D+2, 1);
-% end
 if (nargin < 9)
   error('Too few parameters are given.');
 end
@@ -58,7 +53,6 @@ y = feval(simf, hyp, inf, mean, cov, lik, input, target, input, lag, Nsamples);
 inputSim = input(lag:end,:);
 for i = 1 : lag
   inputSim(:,i) = y(lag+1-i:end+1-i);
-  %inputSim(i,:) = y(lag+1-i:end+1-i);
 end
 
 MIN_DIFF = 0.002; 

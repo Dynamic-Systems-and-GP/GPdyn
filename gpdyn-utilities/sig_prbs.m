@@ -5,12 +5,12 @@ function out = sig_prbs(n,m)
 %  out = sig_prbs(n,m)
 %
 %% Description
-% Function generates pseudo-random binary signal (PRBS) with uniform
+% Function generates the pseudo-random binary signal (PRBS) with the uniform
 % amplitude , see R. Iserman: Prozessidentifikation, 1974, Springer. 
 %
 % Input: 
-% * n ... legth of the internal register 
-% * m ... number of samples per the width of the narrowest
+% * n ... the length of the internal register 
+% * m ... the number of samples per the width of the narrowest
 %         impulse of PRBS  
 %
 % Output: 

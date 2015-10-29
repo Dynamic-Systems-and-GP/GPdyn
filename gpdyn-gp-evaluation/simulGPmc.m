@@ -1,6 +1,6 @@
 function [mu, s2, MU, SIG2] = simulGPmc(hyp, inf, meanfunc, cov, lik, input, target, test, lag, Nsamples)
 % simulGPmc - Simulation of the dynamic GP model, where the output variance is
-% propagated using Monte Carlo method
+% propagated using the Monte Carlo method
 %
 %% Syntax
 %  [mu, s2, MU, SIG2] = simulGPmc(hyp, inf, mean, cov, lik, input, target, test,
@@ -13,23 +13,23 @@ function [mu, s2, MU, SIG2] = simulGPmc(hyp, inf, meanfunc, cov, lik, input, tar
 % Uses routines gpx and gmx_sample. 
 % 
 % Input:
-% * hyp      ... struct of optimized hyperparameters 
-% * inf      ... function specifying the inference method 
-% * meanfunc ... prior mean function
-% * cov      ... specified covariance function, see help covFun for more info 
-% * lik      ... likelihood function
-% * input    ... input part of the training data,  NxD matrix
-% * target   ... output part of the training data (ie. target), Nx1 vector 
-% * test     ... input matrix for simulation, kxD vector, see
+% * hyp      ... the structure of optimized hyperparameters 
+% * inf      ... the function specifying the inference method 
+% * meanfunc ... the prior mean function
+% * cov      ... the specified covariance function, see help covFun for more info 
+% * lik      ... the likelihood function
+% * input    ... the input part of the training data,  NxD matrix
+% * target   ... the output part of the training data (ie. target), Nx1 vector 
+% * test     ... the input matrix for simulation, kxD vector, see
 %                construct.m for more info  
 % * lag      ... the order of the model (number of used lagged outputs) 
-% * Nsamples ... number of samples used in algorithm (ie. runs of simulation) 
+% * Nsamples ... the number of samples used in algorithm (ie. runs of simulation) 
 % 
 % Output:
-% * mu    ... mean predicted output 
-% * s2    ... associated variances (with noise variances)
-% * MU    ... matrix of all predicted means, kxNsamples
-% * SIG2  ... associated predicted variances 
+% * mu    ... the mean predicted output 
+% * s2    ... the associated variances (with noise variances)
+% * MU    ... the matrix of all predicted means, kxNsamples
+% * SIG2  ... the associated predicted variances 
 % 
 % See also: 
 % gpx, gmx_sample, simulGPnaive

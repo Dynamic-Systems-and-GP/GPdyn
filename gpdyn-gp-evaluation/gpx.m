@@ -31,27 +31,27 @@ function [varargout] = gpx(hyp, inf, mean, cov, lik, x, y, xs, post)
 % probabilities are returned. 
 %
 % Input:
-% *  hyp  ... struct of hyperparameters
-% *  inf  ... function specifying the inference method 
-% *  cov  ... prior covariance function (see below)
-% *  mean ... prior mean function
-% *  lik  ... likelihood function
-% *  x    ... n by D matrix of training inputs
-% *  y    ... column vector of length n of training targets
-% *  xs   ... ns by D matrix of test inputs
-% *  ys   ... column vector of length nn of test targets
+% *  hyp  ... the structure of hyperparameters
+% *  inf  ... the function specifying the inference method 
+% *  cov  ... the prior covariance function (see below)
+% *  mean ... the prior mean function
+% *  lik  ... the likelihood function
+% *  x    ... the n by D matrix of training inputs
+% *  y    ... the column vector of length n of training targets
+% *  xs   ... the ns by D matrix of test inputs
+% *  ys   ... the column vector of length nn of test targets
 %
 % Output:
-% *  nlZ  ... returned value of the negative log marginal likelihood
-% *  dnlZ ... column vector of partial derivatives of the negative
+% *  nlZ  ... the returned value of the negative log marginal likelihood
+% *  dnlZ ... the column vector of partial derivatives of the negative
 %               log marginal likelihood w.r.t. each hyperparameter
-% *  ymu  ... column vector (of length ns) of predictive output means
-% *  ys2  ... column vector (of length ns) of predictive output variances
-% *  fmu  ... column vector (of length ns) of predictive latent means
-% *  fs2  ... column vector (of length ns) of predictive latent variances
-% *  lp   ... column vector (of length ns) of log predictive probabilities
-% *  post ... struct representation of the (approximate) posterior
-%            3rd output in training mode and 5th output in prediction mode
+% *  ymu  ... the column vector (of length ns) of predictive output means
+% *  ys2  ... the column vector (of length ns) of predictive output variances
+% *  fmu  ... the column vector (of length ns) of predictive latent means
+% *  fs2  ... the column vector (of length ns) of predictive latent variances
+% *  lp   ... the column vector (of length ns) of log predictive probabilities
+% *  post ... the structure array representation of the (approximate) posterior
+%            the 3rd output in training mode and the 5th output in prediction mode
 % 
 %
 % Examples: 
@@ -211,11 +211,6 @@ else
   else
       varargout = {ymu, ys2, fmu, fs2, post};        % assign output arguments
   end
-% if nargin<9
-%    varargout = {ymu, ys2, fmu, fs2, [], post};        % assign output arguments
-%   else
-%     varargout = {ymu, ys2, fmu, fs2, lp, post};
-%   end
 end
 
 

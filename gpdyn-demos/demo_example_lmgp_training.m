@@ -1,10 +1,10 @@
 % demo_example_lmgp_training - demonstration script file for LMGP model identification - training part. 
 
 %% Description
-% Demo to present the how to train (=identify) the LMGP model.
+% Demo to present the training, i.e. identification, of LMGP model.
 % Note: 
-% It can be used only with Gaussian covariance function and
-% with white noise model (sum of covSEard and covNoise). 
+% It can be used only with the Gaussian covariance function and
+% with the white noise model (sum of covSEard and covNoise). 
 
 % See Also
 % demo_example_LMGP_data.m, demo_example_LMGP_simulation.m, trainLMGP.m,
@@ -79,7 +79,7 @@ meanfunc='meanZero';
 covfunc= 'covSEard';
 likfunc= 'likGauss';
 
-%initialize hyperparameters:
+% initialize hyperparameters:
 hyp0.cov=ones(size(input,2)+1,1);
 hyp0.lik=-1;
 
@@ -93,7 +93,7 @@ for ii=1:size(input,1)
     [mug(ii) s2(ii)]=gpSD00(hyp,inffunc,meanfunc,covfunc,likfunc,input,target,targetvar, inputDer, targetDer, derivevar, test);
 end
 
-figure(299);
+figure('Name', 'Validation on Identification Data');
 plot(Ueq,Yeq,'r',utrain(:,1),ytrain,'or',[input(:,2)],mug,'k*',...
     [input(:,2)],mug+2*s2,'k.',[input(:,2)],mug-2*s2,'k.');
 
@@ -107,11 +107,8 @@ disp(' ');
 
 
 
-if(1)
     save example_lmgp_trained hyp input target targetvar ...
         inputDer targetDer derivevar covfunc meanfunc inffunc likfunc lag;
-end
-
 return 
 
 

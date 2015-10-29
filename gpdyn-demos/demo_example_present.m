@@ -1,13 +1,13 @@
 %% demo_example_present
 
 %% Description
-% Demo to present the dynamics of the chosen nonlinear dynamic system: 
+% Demo to present the dynamics of the used nonlinear dynamic system: 
 % 
 %                y(k)
 %   y(k+1) = ---------------  + [u(k)]^3
 %            1 + y(k)*y(k)
 %
-% which is used to demonstrate the use of this toolbox. 
+% which demonstrates the use of this toolbox. 
 % 
 % [1] K.S. Narendra and K. Parthasarathy. Identification
 % and Control of Dynamical Systems Using Neural Networks, 

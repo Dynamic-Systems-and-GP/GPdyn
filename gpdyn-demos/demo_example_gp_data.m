@@ -1,7 +1,7 @@
 %% demo_example_gp_data 
 
 %% Description
-% This example shows generation of the data which is used in other demors.
+% This example shows the generation of data which is used in other demos.
 
 %% See Also
 % demo_example, demo_example_present, demo_example_gp_training, 
@@ -11,7 +11,7 @@
 clear;
 close all;
 
-%load "system" folder to path
+%load the "system" folder to path
 me = mfilename;                                            % what is my filename
 mydir = which(me); mydir = mydir(1:end-2-numel(me));        % where am I located
 addpath([mydir 'system']);
@@ -25,7 +25,7 @@ N_validation_points = 200;
 noise_std = 0.05; 
 
 
-% training data --> eq curve AND samples very excited signal 
+% training data --> equilibrium curve AND samples of response 
 ueq = (-1.5:0.5:1.5)';
 for ii=1:length(ueq)
     ueq0 = ueq(ii);
@@ -47,7 +47,7 @@ plot(t, utrain, t, xtrain);
 legend('u', 'y');
 grid on;
 
-% validation data --> less excited signal 
+% validation data --> a bit less excited response 
 uvalid = sig_prs_minmax(N_validation_points,5,umin,umax); 
 [yvalid, xvalid, uvalid] = demo_example(uvalid); 
 

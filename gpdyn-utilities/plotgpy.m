@@ -1,20 +1,20 @@
 function [i] = plotgpy(i, t, sys, y, std)
-% Function plots the results of the simulation or one-step-ahead
-% prediction: target and output together with 95% confidence band.
+% Function plots results of simulation or one-step-ahead
+% prediction: target and output together with 95 % confidence band.
 %
 %% Syntax
 %  function [i] = plotgpy(i, t, sys, y, std)
 %  function [i] = plotgpy(i, t, y, std)
 %
 % Input: 
-% * i   ... figure handle, if i==0 function plots in current figure 
-% * t   ... time vector (x-axis) 
-% * sys ... target output 
-% * y   ... predicted output 
-% * std ... predicted standard deviation 
+% * i   ... the figure handle, if i==0 function plots in current figure 
+% * t   ... the time vector (x-axis) 
+% * sys ... the target output 
+% * y   ... the predicted output 
+% * std ... the predicted standard deviation 
 % 
 % Output: 
-% i ... figure handle 
+% i ... the figure handle 
 %
 % See Also:
 % plotg, plotgpe
@@ -74,9 +74,8 @@ if(nargin == 5)
 else
 	plot(t,y, 'k-', 'LineWidth',2); 
 end
-%plot(t,y-2*std, 'LineWidth',2, 'Color',[0.7 0.7 0.7]); 
-%plot(t,y+2*std, 'LineWidth',2, 'Color',[0.7 0.7 0.7]); 
-hold off 
+
+hold off
 grid on 
 xlabel('x'); 
 ylabel('f(x)'); 

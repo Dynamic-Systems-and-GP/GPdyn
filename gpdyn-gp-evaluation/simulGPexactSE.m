@@ -1,6 +1,6 @@
 function [m, s2, mu, sig2] = simulGPexactSE(hyp, inf, mean, cov, lik, input, target, test, lag)
 % Simulation of the GP model, where the output variance is propagated using
-% analytical approximation
+% the 'exact' analytical approximation
 %
 %% Syntax
 %  [m, s2, mu, sig2] = simulGPexactSE(hyp, inf, mean, cov, lik, input, target, test, lag)
@@ -8,30 +8,30 @@ function [m, s2, mu, sig2] = simulGPexactSE(hyp, inf, mean, cov, lik, input, tar
 %% Description
 % See A. Girard, Approximate Methods for Propagation of
 % Uncertainty with Gaussian Process Models, PhD thesis, 2004. 
-% Simulation of the GP model, where the output variance is propagated using
-% analytical approximation. It can be used only with Gaussian 
-% covariance function and Gaussian likelihood function with white noise
+% Simulation of GP model, where the output variance is propagated using
+% the 'exact' analytical approximation. It can be used only with the Gaussian 
+% covariance function and the Gaussian likelihood function with the white noise
 % model (covSEard and likGauss).  
 % Uses routine gpExactSEard. 
 % 
-% Inputs: 
-% *  hyp      ... struct of optimized hyperparameters 
-% *  inf      ... function specifying the inference method 
-% *  mean     ... prior mean function
-% *  cov      ... specified covariance function, see help covFun for more info 
-% *  lik      ... likelihood function
-% *  input    ... input part of the training data,  NxD matrix
-% *  target   ... output part of the training data (ie. target), Nx1 vector 
-% *  test     ... input matrix for simulation, kxD vector, see
+% Input: 
+% *  hyp      ... the structure of optimized hyperparameters 
+% *  inf      ... the function specifying the inference method 
+% *  mean     ... the prior mean function
+% *  cov      ... the specified covariance function, see help covFun for more info 
+% *  lik      ... the likelihood function
+% *  input    ... the input part of the training data,  NxD matrix
+% *  target   ... the output part of the training data (ie. target), Nx1 vector 
+% *  test     ... the input matrix for simulation, kxD vector, see
 %                 construct.m for more info 
 % *  lag      ... the order of the model (number of used lagged outputs) 
 % 
-% Outputs: 
-% *  m     ... predictive mean when propagating the uncertainty 
-% *  s2    ... predictive variance when propagating the uncertainty    (including noise variance)
-% *  mu    ... predictive mean using "naive" approach (doesn't propagate
+% Output: 
+% *  m     ... the predictive mean when propagating the uncertainty 
+% *  s2    ... the predictive variance when propagating the uncertainty    (including noise variance)
+% *  mu    ... the predictive mean using 'naive' approach (doesn't propagate
 %              the uncertainty)
-% *  sig2  ... predictive variance using "naive" approach   (including noise variance, as usual)
+% *  sig2  ... the predictive variance using 'naive' approach   (including noise variance, as usual)
 % 
 % See also:
 % gpExactSEard, simulGPtaylorSE, simulGPnaive
@@ -62,14 +62,6 @@ if ~isequal(lik,{@likGauss})
     error(strcat([fun_name,': function can only be called with the', ...
         ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
 end 
-
-
-
-% if ~(isequal(cov{1},'covSum') &  isequal(cov{2}{1},'covSEard') & ...
-%         isequal(cov{2}{2},'covNoise'))
-%     error(strcat([fun_name,': function can be called only with the sum', ...
-%         ' of covariance functions ''covSEard'' and ''covNoise'' '])); 
-% end 
 
 X=[-2*hyp.cov(1:end-1);2*hyp.cov(end);2*hyp.lik]; % adapt hyperparameters to local format
 expX = exp(X);

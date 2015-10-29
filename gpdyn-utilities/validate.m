@@ -5,36 +5,36 @@ function [ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean,
 % [ is_valid, hyp, inf, mean, cov, lik, msg ] = validate( hyp, inf, mean, cov, lik, D, throw_error)
 %
 %% Description
-% Function checks if the the number of hiperparameters in the hyp struct
+% Function checks if the the number of hiperparameters in the hyp structure
 % matches the given covariance, likelihood and mean function. It also sets
 % the default values for input functions if they are given as empty arrays.
 % If hyp is also given as an empty array, its structure will not be checked,
 % only the default input fuctions will be set it they are not given
-% (@infExact, @meanZero and @likGauss) 
+% (@infExact, @meanZero and @likGauss).
 %
-% This function is used for input validation in most of ruthines which
-% perform regretion or simulation.
+% This function is used for input validation in most of routines which
+% perform prediction or simulation.
 %
 % Input:
-% *  hyp  ... struct of hyperparameters
-% *  inf  ... function specifying the inference method 
-% *  cov  ... prior covariance function
-% *  mean ... prior mean function
-% *  lik  ... likelihood function
-% *  D    ... size of the input space
+% *  hyp  ... the structure of hyperparameters
+% *  inf  ... the function specifying the inference method 
+% *  cov  ... the prior covariance function
+% *  mean ... the prior mean function
+% *  lik  ... the likelihood function
+% *  D    ... the size of the input space
 % *  throw_error ... determines wether the error should be thrown (1) or
 %                    returned as string. Default value is 1.
 %
 % Output:
 % *  is_valid ... 1 if everything is ok, 0 on error
-% *  hyp  ... struct of hyperparameters
-% *  inf  ... function specifying the inference method 
-% *  cov  ... prior covariance function (see below)
-% *  mean ... prior mean function
-% *  lik  ... likelihood function
-% *  mgs  ... error message
+% *  hyp  ... the structure of hyperparameters
+% *  inf  ... the function specifying the inference method 
+% *  cov  ... the prior covariance function (see below)
+% *  mean ... the prior mean function
+% *  lik  ... the likelihood function
+% *  mgs  ... the error message
 %%
-% * Written by Tomaž Šuštar
+% * Written by Tomaz Sustar
 
 is_valid = 1;
 msg = '';
@@ -44,7 +44,7 @@ if nargin < 6
    error('Too few parameters are given.'); % 
 end
 if nargin < 7
-    % deafaoul throw_error
+    % default throw_error
     throw_error = 1;
 end
 
@@ -69,7 +69,7 @@ if isempty(cov) %covariance function can not be empty
 end
 if ischar(cov) || isa(cov, 'function_handle'), cov = {cov}; end  % make cell
 
-if ~isempty(hyp) % if hyp is empty do not chech hyperparameters
+if ~isempty(hyp) % if hyp is empty do not check hyperparameters
   if isstruct(hyp) % check format and size of hyp
     if ~isfield(hyp,'cov')
       hyp.cov=[];
@@ -104,7 +104,7 @@ if ~isempty(hyp) % if hyp is empty do not chech hyperparameters
     msg = 'hyp should be a struct with fields hyp.cov hyp.lik and hyp.mean.';
   end
 end
-%throw error if needed
+%throw error if necessary
 if throw_error && is_valid == 0
     error(msg);
 end

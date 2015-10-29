@@ -1,5 +1,5 @@
 function [x_noise,x_no_noise] = add_noise_to_vector(x_no_noise, noise_std)
-% Function adds white Gaussian noise to vector given as a parameter. 
+% Function adds the white Gaussian noise to vector given as a parameter. 
 % 
 %% Syntax 
 % [x_noise,x_no_noise] = add_noise_to_vector(x_no_noise, noise_std)
@@ -10,8 +10,8 @@ function [x_noise,x_no_noise] = add_noise_to_vector(x_no_noise, noise_std)
 % distribution.  
 % 
 % Input:
-% * x_no_noise ... vector of noise-free data 
-% * noise_std  ... standard deviation of white Gaussian noise 
+% * x_no_noise ... the vector of noise-free data 
+% * noise_std  ... the standard deviation of the white Gaussian noise 
 % 
 % Output:
 % * x_noise    ... noisy data 

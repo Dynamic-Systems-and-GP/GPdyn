@@ -6,12 +6,12 @@ function s2 = postNormVar(s2n,targetMin,targetMax)
 %  s2 = postNormVar(s2n,min,max) 
 %
 % Input: 
-% * s2n ... normalized predicted variance 
-% * targetMin ... target minimum
-% * targetMax ... target maximum
+% * s2n       ... the normalized predicted variance 
+% * targetMin ... the target minimum
+% * targetMax ... the target maximum
 %
 % Output: 
-% * s2 ... postprocessed predicted variance 
+% * s2 ... the postprocessed predicted variance 
 %
 %% See Also
 % preNorm, postNorm 

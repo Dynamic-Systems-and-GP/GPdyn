@@ -1,5 +1,5 @@
 function [nInput,inputMin,inputMax, nTarget, targetMin, targetMax] = preNorm(input, target, inputMax)
-%Preprocesses data so that minimum is -1 and maximum is 1.
+% Preprocesses data so that minimum is -1 and maximum is 1.
 %  
 %% Syntax
 %   [nInput,inputMin,inputMax] = preNorm(input);
@@ -8,30 +8,30 @@ function [nInput,inputMin,inputMax, nTarget, targetMin, targetMax] = preNorm(inp
 % 
 % 
 %% Description
-% Function normalizes the inputs so that they fall in the interval [-1,1].
-% Algorithm:  nInput = 2*(input-inputMin)/(inputMax-inputMin) - 1; If tde
-% data needs to be normalzed using previously coputed minimums and
+% Function normalizes inputs so that they fall in the interval [-1,1].
+% Algorithm:  nInput = 2*(input-inputMin)/(inputMax-inputMin) - 1; If the
+% data needs to be normalzed using previously computed minimums and
 % maximums, we use: nInput = preNorm(input,inputMin,inputMax);
 % 
 % Input:
-% * input ... n x D input matrix
-% * target/inputMin ... target vector/if there are 3 input arguments it
+% * input           ... the n x D input matrix
+% * target/inputMin ... the target vector/if there are 3 input arguments it
 %                       will be considered as a vector of minimums
-% * inputMax ... maximums
+% * inputMax        ... maximums
 % 
 % Output:
-% * nInput ... n x D normalized input matrix
-% * inputMin ... row vector containing minimums for each dimension
-% * inputMax ... row vector containing maximums for each dimension
-% * nTarget ... normalized target vector
-% * targetMin ... target minimum
-% * targetMax ... target maximum
+% * nInput      ... the n x D normalized input matrix
+% * inputMin    ... the row vector containing minimums for each dimension
+% * inputMax    ... the row vector containing maximums for each dimension
+% * nTarget     ... the normalized target vector
+% * targetMin   ... the target minimum
+% * targetMax   ... the target maximum
 % 
 % See also:
 % postNorm, postNormVar
 
-%%
-% * Written by Tomaž Šuštar, January 2012
+%% Signature
+% * Written by Tomaz Sustar, January 2012
 
 
 
@@ -64,7 +64,7 @@ end
 isequal = inputMin==inputMax;
 notequal = ~isequal;
 if sum(isequal) ~= 0
-  warning('Some maximums and minimums are equal. Those inputs won''t be transformed.');
+  warning('Some maximums and minimums are equal. Those inputs will not be transformed.');
   inputMin0 = inputMin.*notequal - 1*isequal; % where equal set minimums to -1
   inputMax0 = inputMax.*notequal + 1*isequal; % and maximums to +1 so the data will not be transformed
 else

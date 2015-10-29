@@ -1,5 +1,5 @@
 function [i] = plotgp(i, t, sys, y, std)
-% Function plots the results of the simulation or one-step-ahead
+% Function plots results of simulation or one-step-ahead
 % prediction. 
 %
 %% Syntax
@@ -12,14 +12,14 @@ function [i] = plotgp(i, t, sys, y, std)
 % to plot in new or currently active figure. 
 %
 % Input: 
-% * i   ... figure handle, if i==0 function plots in current figure 
-% * t   ... time vector (x-axis) 
-% * sys ... target output 
-% * y   ... predicted output 
-% * std ... predicted standard deviation 
+% * i   ... the figure handle, if i==0 function plots in current figure 
+% * t   ... the time vector (x-axis) 
+% * sys ... the target output 
+% * y   ... the predicted output 
+% * std ... the predicted standard deviation 
 % 
 % Output: 
-% * i ... figure handle 
+% * i ... the figure handle 
 %
 % See Also:
 % plotgpy, plotgpe
@@ -62,8 +62,7 @@ fill(xfill, yfill, [7 7 7]/8, 'EdgeColor', [0 0 0]/8);
 hold on 
 plot(t,y, 'k-', 'LineWidth',1); 
 plot(t,sys, 'k--', 'LineWidth',2); 
-%plot(t,y-2*std, 'LineWidth',2, 'Color',[0.7 0.7 0.7]); 
-%plot(t,y+2*std, 'LineWidth',2, 'Color',[0.7 0.7 0.7]); 
+
 hold off 
 grid on 
 xlabel('t'); 
@@ -79,7 +78,7 @@ subplot(3,1,3)
 xfill = [t(ix_plot); flipdim(t(ix_plot),1)]; 
 yfill = [2*std(ix_plot);zeros(size(std(ix_plot)))]; 
 fill(xfill, yfill, [7 7 7]/8, 'EdgeColor', [0 0 0]/8);
-% plot(t,2*std, 'LineWidth',2, 'Color',[0.7 0.7 0.7]); 
+
 hold on 
 plot(t,abs(y-sys), 'k-', 'LineWidth',1); 
 hold off 

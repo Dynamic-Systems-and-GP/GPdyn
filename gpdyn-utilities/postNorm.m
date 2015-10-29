@@ -11,21 +11,22 @@ function [data, target] = postNorm(nInput,inputMin,inputMax, nTarget, targetMin,
 % Algorithm: data = 0.5(nInput+1)*(inputMax-inputMin) + inputMin;
 %  
 % Input:
-% * nInput ... n x D normalized input matrix
-% * inputMin ... row vector containing minimums for each dimension
-% * inputMax ... row vector containing maximums for each dimension
-% * nTarget ... normalized target vector
-% * targetMin ... target minimum
-% * targetMax ... target maximum
+% * nInput    ... the n x D normalized input matrix
+% * inputMin  ... the row vector containing minimums for each dimension
+% * inputMax  ... the row vector containing maximums for each dimension
+% * nTarget   ... the normalized target vector
+% * targetMin ... the target minimum
+% * targetMax ... the target maximum
 % 
 % Output:
-% * data ... unnormalized data
-% * target ... target vector  
+% * data   ... the unnormalized data
+% * target ... the target vector  
 %
 % See also:
 % preNorm, postNormVar
-%%
-% * Written by Tomaž Šuštar, January 2012
+%
+%% Signature
+% * Written by Tomaz Sustar, January 2012
 
 data = unnormalize(nInput,inputMin,inputMax);
 
@@ -40,7 +41,7 @@ function output = unnormalize(nInput,inputMin,inputMax)
 isequal = inputMin==inputMax;
 notequal = ~isequal;
 if sum(isequal) ~= 0
-  warning('Some maximums and minimums are equal. Those inputs won''t be transformed.');
+  warning('Some maximums and minimums are equal. Those inputs will not be transformed.');
   inputMin0 = inputMin.*notequal - 1*isequal; % where equal set minimums to -1
   inputMax0 = inputMax.*notequal + 1*isequal; % and maximums to +1 so the data will not be transformed
 else
