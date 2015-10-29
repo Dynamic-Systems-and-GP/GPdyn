@@ -1,7 +1,3 @@
-.. role:: math(raw)
-   :format: html latex
-..
-
 **Gaussian-Process-Model-based**
 
 **System-Identification**
