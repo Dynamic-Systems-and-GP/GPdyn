@@ -1,3 +1,8 @@
+Gaussian-Process-Model-based System-Identification Toolbox for Matlab
+=====================================================================
+
+Version 1.2.2
+
 Martin Stepančič and Juš Kocijan
 
 .
