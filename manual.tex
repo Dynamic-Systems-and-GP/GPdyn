@@ -18,8 +18,12 @@
 %% max amount of text
 \renewcommand{\textfraction}{-1} %0.00
 
-\newcommand{\fun}[1]{{\tt {#1}}}
-\def\tabelarule{\rule[-3mm]{0mm}{10mm}}
+\newcommand{\fun}[1]{\tt #1}
+\newcommand{\tabelarule}{\rule[-3mm]{0mm}{10mm}}
+\newcommand{\scell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+%~ \renewcommand{\multicolumn}[3]{#3} %0.00
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -121,23 +125,23 @@ their purpose:
 {\renewcommand{\arraystretch}{1.1}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%  VSE TABELE SKUPAJ
+\pagebreak[0]
+{\bf GP-model training functions} \\
 \begin{tabular}{|l|l|}
- \hline \multicolumn{2}{|l|}{\tabelarule \bf GP-model training functions}\\
- \hline \fun{trainGParx} & GP-model training of ARX model \\
+ \hline trainGParx & GP-model training of ARX model \\
  \hline \fun{trainGPoe} & GP-model training of OE model \\
  \hline \fun{gp\_initial} & - finding initial values of hyperparameters with random search  \\
   \hline \fun{minimizeDE} & minimize a multivariate function using differential evolution \\
   \hline
-%
-%
-\multicolumn{2}{l}{\tabelarule \bf } \\ \hline
-\multicolumn{2}{|l|}{\tabelarule \bf Covariance functions} \\
-\multicolumn{2}{|l|}{\tabelarule included and explained in enclosed GPML
-toolbox} \\ \hline
-%
-%
- \multicolumn{2}{l}{\tabelarule \bf } \\
- \hline \multicolumn{2}{|l|}{\tabelarule \bf GP-model evaluation} \\
+\end{tabular}
+
+\pagebreak[0]
+{\bf Covariance functions} \\
+{\it Included and explained in enclosed GPML toolbox}
+
+\pagebreak[0]
+ {\bf GP-model evaluation} \\
+\begin{tabular}{|l|l|}
  \hline \fun{simulGPnaive} & GP model simulation without the propagation of uncertainty \\
  \hline \fun{simulGPmcmc} & GP model simulation with Monte Carlo approximation\\
  \hline \fun{simulGPtaylorSE} & GP model simulation with analytical approximation of statistical\\
@@ -154,32 +158,23 @@ toolbox} \\ \hline
  \hline \fun{gpTaylorSEard} & GP model prediction with stochastic inputs for\\ &the squared exponential covariance function with Taylor expansion\\
  \hline \fun{gpExactLINard} & GP model prediction with stochastic inputs for\\ &the linear covariance function \\
  \hline \fun{gpExactSEard} & GP model prediction with stochastic inputs for\\ &the squared exponential covariance function \\
-
  \hline
 %
 \end{tabular}
-\vspace{3mm}
 
-
-\begin{tabular}{|l|l|c|}
-%
-
-
-\multicolumn{2}{l}{\tabelarule \bf } \\ \hline
-%
- \multicolumn{2}{|l|}{\tabelarule \bf LMGP-model evaluation} \\
+\pagebreak
+{\bf  LMGP-model evaluation} \\
+\begin{tabular}{|l|l|}
   \hline \fun{simulLMGPnaive} & LMGP model simulation without the propagation of uncertainty \\
  \hline \fun{simulLMGPmcmc} & LMGP model simulation with Monte Carlo approximation\\
   \hline \fun{trainLMGP} & LMGP model training \\
   \hline \fun{gpSD00} & - LMGP model prediction \\
   & - data likelihood and its derivatives \\
 \hline
-%
+\end{tabular}
 
-\multicolumn{2}{l}{\tabelarule \bf } \\
-
-
- \hline \multicolumn{2}{|l|}{\tabelarule \bf Supporting functions}\\
+{\bf  Supporting functions}\\
+\begin{tabular}{|l|l|}
  \hline \fun{add\_noise\_to\_vector} & adding white noise to noise-free simulation results\\
  \hline \fun{construct} & construction of the input regressors\\
   & from system's input signals\\
@@ -197,21 +192,14 @@ toolbox} \\ \hline
  \hline \fun{postNormVar} & postprocessing of predicted variance\\
  \hline \fun{sig\_prbs} & generating pseudo-random binary signal \\
  \hline \fun{sig\_prs\_minmax} & generating pseudo-random signal \\ \hline
-
-
 \end{tabular}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\pagebreak
+{\bf Demos} \\
 \begin{tabular}{|l|l|}
-
-
- \multicolumn{2}{l}{\tabelarule \bf } \\
-
-%
- \hline \multicolumn{2}{|l|}{\tabelarule \bf Demos}\\
 
  \hline \fun{demo\_example\_present} & present the system used in demos  \\
  \hline \fun{demo\_example\_gp\_data} & generate data for the identification and validation  \\
@@ -226,7 +214,6 @@ toolbox} \\ \hline
  \hline \fun{demo\_example} & system simulation\\
  \hline \fun{demo\_example\_derivative} & obtaining system's derivatives\\
  \hline \fun{demo\_example\_LM\_ident} & identification of system's local models \\ \hline
-
 \end{tabular}
 
 

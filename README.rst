@@ -105,79 +105,144 @@ demo functions,
 The list of included functions, demos and one model is given in
 following tables.
 
-| \|l\|l\|
-|  & GP-model training of ARX model
-|  & GP-model training of OE model
-|  & - finding initial values of hyperparameters with random search
-|  & minimize a multivariate function using differential evolution
-|  & GP model simulation without the propagation of uncertainty
-|  & GP model simulation with Monte Carlo approximation
-|  & GP model simulation with analytical approximation of statistical
-| & moments with a Taylor expansion for the squared exponential
-| & covariance function
-|  & GP model simulation with exact matching of statistical moments
-| &for the squared exponential covariance function
-|  & GP model simulation with exact matching of statistical moments
-| &for the linear covariance function
-|  & multi-step-ahead prediction of GP model without
-| &the propagation of uncertainty
-|  & modified version of GP rutine from the GPML toolbox
-|  & creates samples of mixture components
-|  & GP model prediction with stochastic inputs for
-| &the squared exponential covariance function with Taylor expansion
-|  & GP model prediction with stochastic inputs for
-| &the linear covariance function
-|  & GP model prediction with stochastic inputs for
-| &the squared exponential covariance function
+| 
 
-\|l\|l\|c\|
++---------------+------------------------------------------------------------------+
+| trainGParx    | GP-model training of ARX model                                   |
++===============+==================================================================+
+| trainGPoe     | GP-model training of OE model                                    |
++---------------+------------------------------------------------------------------+
+| gp\_initial   | - finding initial values of hyperparameters with random search   |
++---------------+------------------------------------------------------------------+
+| minimizeDE    | minimize a multivariate function using differential evolution    |
++---------------+------------------------------------------------------------------+
 
 | 
-|  & LMGP model simulation without the propagation of uncertainty
-|  & LMGP model simulation with Monte Carlo approximation
-|  & LMGP model training
-|  & - LMGP model prediction
-| & - data likelihood and its derivatives
-
-| 
-|  & adding white noise to noise-free simulation results
-|  & construction of the input regressors
-| & from system’s input signals
-|  & method to evaluate covariance, mean and likelihood functions
-|  & calculates negative log marginal likelihood
-|  & the method for the lag-space selection, based on Lipschitz
-  quotients
-|  & checking of the parameters match
-|  & performance measures
-|  & testing sampled probability distributions
-|  & plot results (output and error) of the GP model prediction
-|  & plot error of the GP model prediction
-|  & plot output of the GP model prediction
-|  & preprocessing of data
-|  & postprocessing of data
-|  & postprocessing of predicted variance
-|  & generating pseudo-random binary signal
-|  & generating pseudo-random signal
-
-\|l\|l\|
+| *Included and explained in enclosed GPML toolbox*
 
 | 
 
++-------------------+---------------------------------------------------------------------+
+| simulGPnaive      | GP model simulation without the propagation of uncertainty          |
++===================+=====================================================================+
+| simulGPmcmc       | GP model simulation with Monte Carlo approximation                  |
++-------------------+---------------------------------------------------------------------+
+| simulGPtaylorSE   | GP model simulation with analytical approximation of statistical    |
++-------------------+---------------------------------------------------------------------+
+|                   | moments with a Taylor expansion for the squared exponential         |
++-------------------+---------------------------------------------------------------------+
+|                   | covariance function                                                 |
++-------------------+---------------------------------------------------------------------+
+| simulGPexactSE    | GP model simulation with exact matching of statistical moments      |
++-------------------+---------------------------------------------------------------------+
+|                   | for the squared exponential covariance function                     |
++-------------------+---------------------------------------------------------------------+
+| simulGPexactLIN   | GP model simulation with exact matching of statistical moments      |
++-------------------+---------------------------------------------------------------------+
+|                   | for the linear covariance function                                  |
++-------------------+---------------------------------------------------------------------+
+| predGPnaive       | multi-step-ahead prediction of GP model without                     |
++-------------------+---------------------------------------------------------------------+
+|                   | the propagation of uncertainty                                      |
++-------------------+---------------------------------------------------------------------+
+| gpx               | modified version of GP rutine from the GPML toolbox                 |
++-------------------+---------------------------------------------------------------------+
+| gmx\_sample       | creates samples of mixture components                               |
++-------------------+---------------------------------------------------------------------+
+| gpTaylorSEard     | GP model prediction with stochastic inputs for                      |
++-------------------+---------------------------------------------------------------------+
+|                   | the squared exponential covariance function with Taylor expansion   |
++-------------------+---------------------------------------------------------------------+
+| gpExactLINard     | GP model prediction with stochastic inputs for                      |
++-------------------+---------------------------------------------------------------------+
+|                   | the linear covariance function                                      |
++-------------------+---------------------------------------------------------------------+
+| gpExactSEard      | GP model prediction with stochastic inputs for                      |
++-------------------+---------------------------------------------------------------------+
+|                   | the squared exponential covariance function                         |
++-------------------+---------------------------------------------------------------------+
+
 | 
 
-| & present the system used in demos
-|  & generate data for the identification and validation
-| & of the GP model
-|  & normalization of input and output data
-|  & training of the GP model
-|  & validation with simulation of the GP model
-|  & generate data for the identification and validation
-| & of the LMGP model
-|  & training of the LMGP model
-|  & simulation of the LMGP model
-|  & system simulation
-|  & obtaining system’s derivatives
-|  & identification of system’s local models
++------------------+----------------------------------------------------------------+
+| simulLMGPnaive   | LMGP model simulation without the propagation of uncertainty   |
++==================+================================================================+
+| simulLMGPmcmc    | LMGP model simulation with Monte Carlo approximation           |
++------------------+----------------------------------------------------------------+
+| trainLMGP        | LMGP model training                                            |
++------------------+----------------------------------------------------------------+
+| gpSD00           | - LMGP model prediction                                        |
++------------------+----------------------------------------------------------------+
+|                  | - data likelihood and its derivatives                          |
++------------------+----------------------------------------------------------------+
+
+| **Supporting functions**
+
++--------------------------+------------------------------------------------------------------------+
+| add\_noise\_to\_vector   | adding white noise to noise-free simulation results                    |
++==========================+========================================================================+
+| construct                | construction of the input regressors                                   |
++--------------------------+------------------------------------------------------------------------+
+|                          | from system’s input signals                                            |
++--------------------------+------------------------------------------------------------------------+
+| eval\_func               | method to evaluate covariance, mean and likelihood functions           |
++--------------------------+------------------------------------------------------------------------+
+| likelihood               | calculates negative log marginal likelihood                            |
++--------------------------+------------------------------------------------------------------------+
+| lipschitz                | the method for the lag-space selection, based on Lipschitz quotients   |
++--------------------------+------------------------------------------------------------------------+
+| validate                 | checking of the parameters match                                       |
++--------------------------+------------------------------------------------------------------------+
+| loss                     | performance measures                                                   |
++--------------------------+------------------------------------------------------------------------+
+| mcmc\_test\_pdfs         | testing sampled probability distributions                              |
++--------------------------+------------------------------------------------------------------------+
+| plotgp                   | plot results (output and error) of the GP model prediction             |
++--------------------------+------------------------------------------------------------------------+
+| plotgpe                  | plot error of the GP model prediction                                  |
++--------------------------+------------------------------------------------------------------------+
+| plotgpy                  | plot output of the GP model prediction                                 |
++--------------------------+------------------------------------------------------------------------+
+| preNorm                  | preprocessing of data                                                  |
++--------------------------+------------------------------------------------------------------------+
+| postNorm                 | postprocessing of data                                                 |
++--------------------------+------------------------------------------------------------------------+
+| postNormVar              | postprocessing of predicted variance                                   |
++--------------------------+------------------------------------------------------------------------+
+| sig\_prbs                | generating pseudo-random binary signal                                 |
++--------------------------+------------------------------------------------------------------------+
+| sig\_prs\_minmax         | generating pseudo-random signal                                        |
++--------------------------+------------------------------------------------------------------------+
+
+| 
+
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_present            | present the system used in demos                      |
++===================================+=======================================================+
+| demo\_example\_gp\_data           | generate data for the identification and validation   |
++-----------------------------------+-------------------------------------------------------+
+|                                   | of the GP model                                       |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_gp\_norm           | normalization of input and output data                |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_gp\_training       | training of the GP model                              |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_gp\_simulation     | validation with simulation of the GP model            |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_lmgp\_data         | generate data for the identification and validation   |
++-----------------------------------+-------------------------------------------------------+
+|                                   | of the LMGP model                                     |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_lmgp\_training     | training of the LMGP model                            |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_lmgp\_simulation   | simulation of the LMGP model                          |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example                     | system simulation                                     |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_derivative         | obtaining system’s derivatives                        |
++-----------------------------------+-------------------------------------------------------+
+| demo\_example\_LM\_ident          | identification of system’s local models               |
++-----------------------------------+-------------------------------------------------------+
 
 How to use this toolbox
 -----------------------
