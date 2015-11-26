@@ -112,7 +112,7 @@ post.alphaQ=alphaQ;
 % 1st point
 muXp = [test(1,1:maxlag) test(1,maxlag+1:2*maxlag)]; % mean values of regressors for prediction with propagation
 SigX = zeros(2*maxlag,2*maxlag);% zero covariance matrix of regressors (assuming noise-free regressors are given)
-muX = [testy testu(1,:)];  % mean values of regressors for naive prediction (without propagation)
+muX = muXp;  % mean values of regressors for naive prediction (without propagation)
 
 [mtmp, s2tmp, vtmp] = predictExactSEard(hyp,input,muXp(lags),SigX(lags,lags),post);
 m(1) = mtmp; 
@@ -124,14 +124,18 @@ mu(1) = mutmp;
 sig2(1) = sig2tmp; 
 
 for k=2:nn
+    if (mod(k,50) == 0)
+        disp(strcat([fun_name, ', step: ', int2str(k), '/', int2str(nn)]));
+    end
+
     SigX(2:maxlag,2:maxlag) = SigX(1:maxlag-1,1:maxlag-1);
     SigX(1,1) = s2(k-1);
     ioc=SigX(lags,lags)*vtmp;
     SigX(lags(ylags~=1),1) = ioc(1:length(ylags)-1);
     SigX(1,lags(ylags~=1)) = ioc(1:length(ylags)-1)';
     
-    muXp = [m(k-1) muXp(1:maxlag-1) testu(k,:)];    
-    muX = [mu(k-1) muX(1:maxlag-1) testu(k,:)];
+    muXp = [m(k-1) muXp(1:maxlag-1) test(k,maxlag+1:2*maxlag)];    
+    muX = [mu(k-1) muX(1:maxlag-1) test(k,maxlag+1:2*maxlag)];
     
     [mtmp, s2tmp, vtmp] = predictExactSEard(hyp,input,muXp(lags),SigX(lags,lags),post);
     m(k) = mtmp; 
@@ -181,9 +185,9 @@ X = unwrap(hyp);                              % short hand for hyperparameters
 k = zeros(n,1); M = 0; V = zeros(D,1); S = 0;
 inp = bsxfun(@minus,input,m);                     % centralize inputs
 
-invQ  =egp.post.invQ;
-alphaQ=egp.post.alphaQ;
-L	  =egp.post.L;
+invQ  =post.invQ;
+alphaQ=post.alphaQ;
+L	  =post.L;
 
 % 2) compute predicted mean and inv(s) times input-output covariance
   
@@ -215,3 +219,7 @@ L	  =egp.post.L;
 S = S - M*M';                                              
 end
 
+function K = maha(a, b, Q)                         
+  aQ = a*Q;
+  K = bsxfun(@plus,sum(aQ.*a,2),sum(b*Q.*b,2)')-2*aQ*b';
+end
