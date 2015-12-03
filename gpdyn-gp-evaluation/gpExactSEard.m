@@ -38,7 +38,7 @@ function [m, S2] = gpExactSEard(hyp, inf, mean, cov, lik, invQ, input, target, m
 %
 %% Signature
 % Written by K. Azman, 2007, based on the software of J. Quinonero-Candela 
-% and A. Girard.
+% and A. Girard. 
 
 [n, D] = size(input); % the number of training cases and dimension of input space
 [nn, D] = size(muX);  % the number of test cases and dimension of input space

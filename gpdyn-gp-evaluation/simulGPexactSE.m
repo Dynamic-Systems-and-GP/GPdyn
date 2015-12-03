@@ -63,33 +63,10 @@ if ~isequal(lik,{@likGauss})
         ' likelihood function ''likGauss'', where hyp.lik parameter is log(sn)'])); 
 end 
 
-
-%define the lagged signal each regressor (system output and control input) represents:
-if nargin==9
-	switch class(lag)
-	case 'double'
-		assert(numel(lag)==1);
-		assert(lag>0);
-		maxlag=lag;
-		ylags=(lag:-1:1);
-		ulags=(lag:-1:1);
-	case 'cell'
-		maxlag=max([lag{:}]);
-		ylags=lag{1};
-		ulags=lag{2};	
-	end
-else
-	ylags=(D:-1:1);
-	ulags=[];
-end
-lags=[ylags,ulags+maxlag];
-
-
 X=[-2*hyp.cov(1:end-1);2*hyp.cov(end);2*hyp.lik]; % adapt hyperparameters to local format
 expX = exp(X);
 
 vy = expX(end);
-
 
 % training covariance matrix
 Q = zeros(n,n);
@@ -99,63 +76,130 @@ end
 Q = expX(D+1)*exp(-0.5*Q);
 
 Q = Q + vy*eye(n);  % data cov. matrix: add noise
+
 invQ = inv(Q);
-alphaQ = invQ*target; %beta really
+
+beta = invQ*target;
 b = expX(D+1); % v_1 really...
 
-post=infExact(hyp,mean,cov,lik,input,target);
-post.Q=Q;
-post.invQ=invQ;
-post.alphaQ=alphaQ;
-
-
 % 1st point
-muXp = [test(1,1:maxlag) test(1,maxlag+1:2*maxlag)]; % mean values of regressors for prediction with propagation
-SigX = zeros(2*maxlag,2*maxlag);% zero covariance matrix of regressors (assuming noise-free regressors are given)
-muX = [testy testu(1,:)];  % mean values of regressors for naive prediction (without propagation)
+muXp = test(1,:); % propagate uncertainty
+SigX = zeros(D,D); 
+muX = test(1,:);  % naive approach
 
-[mtmp, s2tmp, vtmp] = predictExactSEard(hyp,input,muXp(lags),SigX(lags,lags),post);
+if (nargin==9) % in the case of control inputs
+    [mtmp, s2tmp] = gpExactSEard(hyp, inf, mean,cov,lik, invQ, input, target, muXp, SigX, lag);
+else
+    [mtmp, s2tmp] = gpExactSEard(hyp, inf,mean,cov,lik, invQ, input, target, muXp, SigX);
+end
 m(1) = mtmp; 
+
 s2(1) = s2tmp; 
 
-[mutmp, sig2tmp] = gpx(hyp, inf, mean,cov,lik, input, target, muX(lags),post);
+[mutmp, sig2tmp] = gpExactSEard(hyp, inf, mean,cov,lik, invQ, input, target, muX);
 mu(1) = mutmp; 
 
 sig2(1) = sig2tmp; 
 
 for k=2:nn
-    SigX(2:maxlag,2:maxlag) = SigX(1:maxlag-1,1:maxlag-1);
-    SigX(1,1) = s2(k-1);
-    ioc=SigX(lags,lags)*vtmp;
-    SigX(lags(ylags~=1),1) = ioc(1:length(ylags)-1);
-    SigX(1,lags(ylags~=1)) = ioc(1:length(ylags)-1)';
     
-    muXp = [m(k-1) muXp(1:maxlag-1) testu(k,:)];    
-    muX = [mu(k-1) muX(1:maxlag-1) testu(k,:)];
+    if (mod(k,50) == 0)
+        disp(strcat([fun_name, ', step: ', int2str(k), '/', int2str(nn)]));
+    end    
     
-    [mtmp, s2tmp, vtmp] = predictExactSEard(hyp,input,muXp(lags),SigX(lags,lags),post);
+    % For the NEXT prediction...
+    
+    % cross-cov terms
+    % little things to do before we start
+    L = sum(diag(SigX)~=0); % number of stochastic dimensions (non zero vars)
+    covXY = zeros(D,1);
+    if L>0
+        if (nargin==9) % in the case of control inputs
+            rangeL = lag-L+1:lag;
+         
+        else
+            rangeL = D-L+1:D;
+       
+        end
+        rangeC = [1:rangeL(1)-1 rangeL(end)+1:D];
+        
+        SigXL = SigX(rangeL,rangeL);
+        muXL = muXp(:,rangeL);
+        muXC = muXp(:,rangeC);
+        inputL = input(:,rangeL);
+        inputC = input(:,rangeC);
+        
+        invLL = diag(expX(rangeL));
+        invLC = diag(expX(rangeC));
+        invSL = inv(SigXL);
+        invC = (invLL+invSL);    
+        invSmuX = invSL*muXL';
+        t1 = muXL*invSmuX;
+        c = invC\(invLL*inputL'+repmat(invSmuX,1,n));
+        t2 = sum(inputL.*(inputL*invLL),2);
+        t3 = sum(c.*(invC*c),1)';
+        I = (1/sqrt(det(invLL*SigXL+eye(L))))*exp(-0.5*(t1+t2-t3));    
+        
+        CC = exp(-.5*(sum((inputC-repmat(muXC,n,1)).*((inputC-repmat(muXC,n,1))*invLC),2)));
+        
+        aux = m(k-1)*muXp';
+        covXY(rangeC) = repmat(muXC',1,n)*(beta.*b.*(CC.*I));
+        covXY(rangeL) = b*c*(beta.*(CC.*I));
+        covXY = covXY - aux;
+        covXY(rangeC) = zeros(length(rangeC),1);
+  
+        
+    end
+
+    % input covariance matrix and mean
+    
+    if (nargin==9) % control inputs to take into account
+        SigX(1:lag-1,1:lag-1) = SigX(2:lag,2:lag);
+        SigX(lag,lag) = s2(k-1);
+        SigX(1:lag-1,lag) = covXY(2:lag);
+        SigX(lag,1:lag-1) = covXY(2:lag)';
+
+        
+        muXp = [muXp(2:lag) m(k-1) test(k,lag+1:end)];    
+        muX = [muX(2:lag) mu(k-1) test(k,lag+1:end)];
+        [mtmp, s2tmp] = gpExactSEard(hyp, inf, mean,cov,lik, invQ, input, target, muXp, SigX, lag);
+    else
+        SigX(1:D-1,1:D-1) = SigX(2:D,2:D);
+        SigX(D,D) = s2(k-1);
+        SigX(1:D-1,D) = covXY(2:D); 
+        SigX(D,1:D-1) = covXY(2:D)'; 
+
+        muXp = [muXp(2:D) m(k-1)];    
+        muX = [muX(2:D) mu(k-1)];
+       [mtmp, s2tmp] = gpExactSEard(hyp, inf, mean,cov,lik, invQ, input, target, muXp, SigX);
+    end
+         
     m(k) = mtmp; 
     
     if s2tmp < 0
+        
         warning(strcat([fun_name,': negative variance, step:',num2str(k)]))
+   
     end
 
     s2(k) = s2tmp;
     
-    [mutmp, sig2tmp] = gpx(hyp, inf, mean,cov,lik, input, target, muX(lags),post);
     
+    [mutmp, sig2tmp] = gpExactSEard(hyp, inf,mean, cov,lik, invQ, input, target, muX);
+
     mu(k) = mutmp;   
     
     if sig2tmp < 0
+        
         warning(strcat([fun_name,': no propagation - negative variance, step:',...
             num2str(k)])); 
      
     end
     
     sig2(k) = sig2tmp; 
-end 
+end   
 
-% transform into column vectors 
+% transform into coloumn vectors 
 m = m'; 
 s2 = s2'; 
 mu = mu';
@@ -171,47 +215,7 @@ for i=1:length(s2)
     end
 end
 
-end
 
 
-function [M, S, V] = predictExactSEard(hyp,input,m,s,post)
-
-[n, D] = size(input);    % number of examples and dimension of inputs
-X = unwrap(hyp);                              % short hand for hyperparameters
-k = zeros(n,1); M = 0; V = zeros(D,1); S = 0;
-inp = bsxfun(@minus,input,m);                     % centralize inputs
-
-invQ  =egp.post.invQ;
-alphaQ=egp.post.alphaQ;
-L	  =egp.post.L;
-
-% 2) compute predicted mean and inv(s) times input-output covariance
-  
-  iL = diag(exp(-X(1:D))); % inverse length-scales, inverse Lambda, iL
-  in = inp*iL;
-  B = iL*s*iL+eye(D); 
-  
-  t = in/B;
-  l = exp(-sum(in.*t,2)/2);
-  lb = l.*alphaQ;
-  tiL = t*iL;
-  c = exp(2*X(D+1))/sqrt(det(B));
-  
-  M = sum(lb)*c;                                           % predicted mean
-  V = tiL'*lb*c;                    % inv(s) * input-output covariance
-  k = 2*X(D+1)-sum(in.*in,2)/2;
-
-% 3) compute predictive covariance, non-central moments
-               
-  ii = bsxfun(@rdivide,inp,exp(2*X(1:D)'));
-    R = s*diag(exp(-2*X(1:D))+exp(-2*X(1:D)))+eye(D); 
-    t = 1/sqrt(det(R));
-    L = exp(bsxfun(@plus,k,k')+maha(ii,-ii,R\s/2));
-    S = t*(alphaQ'*L*alphaQ - sum(sum(invQ.*L)));
-  
-  S = S + exp(2*X(D+1)) + exp(2*X(D+2));
-
-% 4) centralize moments
-S = S - M*M';                                              
-end
+return; 
 
