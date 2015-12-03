@@ -85,7 +85,7 @@ mu(1) = mutmp;
 sig2(1) = sig2tmp; 
 
 for k=2:nn
-    if (mod(k,50) == 0)
+    if (mod(k,1) == 0)
     disp(['simulGPexactLIN, step: ', int2str(k), '/', int2str(nn)]);
     end
 
