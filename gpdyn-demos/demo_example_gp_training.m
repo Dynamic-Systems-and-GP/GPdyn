@@ -69,17 +69,32 @@ hyp0_lin = gp_initial(bounds, inf, mean, @covLINard, lik, input, target);
 
 
 %% Training 
-% Identification of GP model
+disp('Identification of GP model');
 [hyp, flogtheta, i] = trainGParx(hyp0, inf, mean, cov, lik, input, target);
 
-% Training using Differential Evolution minimization algorithm with default value of iterations:
+disp('Training using Differential Evolution minimization algorithm with default value of iterations:');
 [hyp_lin, flogtheta_lin, i] = trainGParx(hyp0_lin, inf, mean, @covLINard, lik, input, target, @minimizeDE);
 
-% Training using Output Error algorithm
-[hyp_oe, flogtheta, i] = trainGPoe(hyp0, inf, mean, cov, lik, input, target, @simulGPmc, 1);
+disp('Training using Output Error algorithm');
+[hyp_oe, flogtheta, i,simy,simse2] = trainGPoe(hyp0, inf, mean, cov, lik, input, target);
+
+figure('Name','Iterations of simulated response from Output Error algorithm.');
+subplot(2,1,1);hold on;
+plot(simy(:,1),'r');                
+cl=linspace(1,0,size(simy,2));
+for i=2:5:size(simy,2)
+	plot(simy(:,i),'color',[0,0,cl(i)]);
+end
+ylabel('response');legend({'measured response'});
+subplot(2,1,2);hold on;
+for i=2:5:size(simy,2)
+	plot(1:size(simse2,1),2*sqrt(simse2(:,i)),'color',[0,cl(i)/2,cl(i)/2]);
+end
+ylabel('2 std. devs.');
+
 
 %% Validation (Regression)
-% validation on identification data 
+disp('validation on identification data');
 [ytest S2test] = gp(hyp, inf, mean, cov, lik, input, target, input);
 
 % plot
@@ -87,16 +102,16 @@ t = [0:length(input)-1]';
 f1=figure('Name', 'Validation on Identification Data');
 plotgp(f1,t,target, ytest, sqrt(S2test));
 
-% validation on validation dataset (regression) 
+disp('validation on validation dataset (regression)');
 [ytest2 S2test2] = gp(hyp, inf, mean, cov, lik, input, target, [xvalid uvalid]);
 
-%polot
+%plot
 t = [0:length(uvalid)-1]';
 f2=figure('Name', 'Validation on Validation Data (Regression)');
 plotgp(f2,t,yvalid, ytest2, sqrt(S2test2));
 
 % save trained GP model to file 
-save example_trained hyp hyp_lin inf mean cov lik input target
+save example_trained hyp hyp_lin hyp_oe inf mean cov lik input target
 
 
 
