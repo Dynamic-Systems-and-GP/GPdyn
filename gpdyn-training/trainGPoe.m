@@ -80,7 +80,7 @@ while (abs(flogtheta(end) - flogtheta(end-1))>MIN_DIFF)
 	disp(' '); 
 	disp(strcat(['delta flogtheta: ', num2str(abs(flogtheta(end) - flogtheta(end-1)))])); 
 	disp(' ')
-	[hyp, flogthetatmp,i] = feval(minf, hyp, @simLL, -10,...
+	[hyp, flogthetatmp,i] = feval(minf, hyp, @simLL, -100,...
 				inf, mean, cov, lik, u, simulated_y, target, lag, simf);
 	
 	%in the last iteration of minimisation algorithm the simulation is evaluated again for obtaining
